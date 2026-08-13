@@ -1,6 +1,6 @@
 * {
     font-family: "JetBrains Mono Nerd Font", sans-serif;
-    font-size: 13px;
+    font-size: 14px;
     min-height: 0;
 }
 
@@ -9,10 +9,9 @@ window#waybar {
 }
 
 #waybar {
-    background-color: rgba(20, 20, 20, 0.9);
-    border-radius: 14px;
+    background-color: #161616;
+    border-radius: 4px;
     margin: 6px 10px 0 10px;
-    border: 1px solid #3a3a3a;
 }
 
 #workspaces,
@@ -22,51 +21,50 @@ window#waybar {
 #network,
 #clock,
 #tray {
-    background-color: #262626;
-    border-radius: 10px;
-    margin: 5px 3px;
-    padding: 0 12px;
-    color: #e0e0e0;
+    background-color: #1e1e1e;
+    border-radius: 2px;
+    margin: 3px 4px;
+    padding: 0 14px;
+    color: #f2f4f8;
 }
 
 #workspaces {
-    padding: 0 4px;
+    padding: 0 5px;
 }
 
 #workspaces button {
-    padding: 0 8px;
+    padding: 0 9px;
     margin: 0 2px;
-    border-radius: 8px;
-    color: #e0e0e0;
+    border-radius: 2px;
+    color: #f2f4f8;
     background-color: transparent;
 }
 
 #workspaces button.empty {
-    color: #555555;
+    color: #808080;
 }
 
 #workspaces button.focused,
 #workspaces button.active {
     background-color: #ffffff;
-    color: #141414;
+    color: #161616;
 }
 
 #workspaces button.urgent {
-    background-color: #b34747;
-    color: #ffffff;
+    background-color: #f2f4f8;
+    color: #161616;
 }
 
 tooltip {
-    background: #141414;
-    color: #e0e0e0;
-    border: 1px solid #3a3a3a;
-    border-radius: 10px;
+    background: #161616;
+    color: #f2f4f8;
+    border-radius: 4px;
 }
 
 tooltip label {
     font-family: "JetBrains Mono Nerd Font", monospace;
-    font-size: 16px;
-    padding: 12px;
+    font-size: 17px;
+    padding: 13px;
 }
 
 #clock {
@@ -75,13 +73,13 @@ tooltip label {
 }
 
 #pulseaudio.muted {
-    color: #b34747;
+    color: #808080;
 }
 
 #network.disconnected {
-    color: #b34747;
+    color: #808080;
 }
 
 #tray {
-    padding: 0 10px;
+    padding: 0 11px;
 }
