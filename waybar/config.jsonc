@@ -1,25 +1,54 @@
 {
     "layer": "top",
     "position": "top",
-    "height": 30,
-    "spacing": 4,
+    "height": 34,
+    "spacing": 0,
 
     "modules-left": ["sway/workspaces", "sway/mode"],
-    "modules-center": ["sway/window"],
-    "modules-right": ["pulseaudio", "network", "clock", "tray"],
+    "modules-center": ["clock"],
+    "modules-right": ["pulseaudio", "network", "tray"],
 
     "sway/workspaces": {
         "disable-scroll": true,
-        "all-outputs": true
-    },
-
-    "sway/window": {
-        "max-length": 60
+        "all-outputs": true,
+        "persistent-workspaces": {
+            "1": [],
+            "2": [],
+            "3": [],
+            "4": [],
+            "5": [],
+            "6": [],
+            "7": [],
+            "8": [],
+            "9": []
+        }
     },
 
     "clock": {
         "format": "{:%Y-%m-%d %H:%M}",
-        "tooltip-format": "{:%A, %d %B %Y}"
+        "tooltip-format": "<big><b>{:%B %Y}</b></big>\n\n<tt>{calendar}</tt>\n\n{tz_list}",
+        "timezones": ["", "America/New_York", "Europe/London", "Asia/Tokyo"],
+        "timezone-tooltip-format": "{:%H:%M %Z}",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "format": {
+                "months": "<span color='#e0e0e0'><b>{}</b></span>",
+                "days": "<span color='#999999'>{}</span>",
+                "weeks": "<span color='#555555'>W{}</span>",
+                "weekdays": "<span color='#777777'><b>{}</b></span>",
+                "today": "<span color='#141414' background='#ffffff'><b>{}</b></span>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-click-forward": "tz_up",
+            "on-click-backward": "tz_down",
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
     },
 
     "pulseaudio": {

@@ -12,10 +12,10 @@ configuration {
 @theme "/dev/null"
 
 * {
-    bg: #1e1e2eee;
-    bg-alt: #313244;
-    fg: #cdd6f4;
-    accent: #89b4fa;
+    bg: #141414ee;
+    bg-alt: #262626;
+    fg: #e0e0e0;
+    accent: #ffffff;
 
     background-color: transparent;
     text-color: @fg;
@@ -23,8 +23,8 @@ configuration {
 
 window {
     background-color: @bg;
-    border: 2px;
-    border-color: @accent;
+    border: 1px;
+    border-color: #3a3a3a;
     border-radius: 12px;
     width: 600px;
     padding: 12px;
@@ -63,5 +63,5 @@ element {
 
 element selected {
     background-color: @accent;
-    text-color: @bg;
+    text-color: #141414;
 }
