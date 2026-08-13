@@ -15,7 +15,7 @@ configuration {
     bg: #141414ee;
     bg-alt: #262626;
     fg: #e0e0e0;
-    accent: #ffffff;
+    accent: #d4d4d4;
 
     background-color: transparent;
     text-color: @fg;
@@ -25,7 +25,7 @@ window {
     background-color: @bg;
     border: 1px;
     border-color: #3a3a3a;
-    border-radius: 12px;
+    border-radius: 0px;
     width: 600px;
     padding: 12px;
 }
@@ -37,7 +37,7 @@ mainbox {
 
 inputbar {
     background-color: @bg-alt;
-    border-radius: 8px;
+    border-radius: 0px;
     padding: 10px 12px;
     children: [prompt, entry];
 }
@@ -58,10 +58,12 @@ listview {
 
 element {
     padding: 8px;
-    border-radius: 8px;
+    border-radius: 0px;
 }
 
 element selected {
-    background-color: @accent;
-    text-color: #141414;
+    background-color: @bg-alt;
+    text-color: @accent;
+    border: 0px 0px 0px 3px;
+    border-color: @accent;
 }

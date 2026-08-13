@@ -6,14 +6,14 @@ include /etc/sway/config-vars.d/*
 # output * bg <path> fill
 
 ### Gaps
-gaps inner 8
-gaps outer 8
+gaps inner 2
+gaps outer 2
 
 ### Borders
-default_border pixel 1
+default_border pixel 2
 default_floating_border pixel 1
 
-client.focused          #ffffff #ffffff #ffffff #ffffff #ffffff
+client.focused          #d4d4d4 #d4d4d4 #d4d4d4 #d4d4d4 #d4d4d4
 client.focused_inactive #4c4c4c #4c4c4c #ffffff #4c4c4c #4c4c4c
 client.unfocused        #333333 #333333 #888888 #333333 #333333
 client.urgent           #900000 #900000 #ffffff #900000 #900000
@@ -30,13 +30,12 @@ input type:touchpad {
 
 ### Key bindings
 bindsym $mod+Return exec $term
-bindsym $mod+Shift+w kill
+bindsym $mod+w kill
 bindsym $mod+space exec $menu
 bindsym $mod+b exec $browser
 
 floating_modifier $mod normal
 bindsym $mod+Shift+b reload
-bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
 
 # Focus
 bindsym $mod+$left focus left
@@ -118,6 +117,7 @@ bindsym Print exec grim
 ### Autostart
 exec_always pkill -x waybar; waybar
 exec_always pkill -x autotiling; ~/.local/bin/autotiling
+exec ~/.local/bin/waypaper --restore
 
 ### Status Bar
 # Built-in swaybar disabled in favor of waybar (exec'd above)
