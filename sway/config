@@ -1,30 +1,33 @@
 ### Variables
-set $mod Mod4
-set $left h
-set $down j
-set $up k
-set $right l
-set $term ghostty
-set $menu rofi -show drun
-
+include vars
 include /etc/sway/config-vars.d/*
 
 ### Output
 # output * bg <path> fill
 
+### Gaps
+gaps inner 8
+smart_gaps on
+
 ### Input
-# input type:touchpad {
-#     tap enabled
-#     natural_scroll enabled
-# }
+input type:keyboard {
+    xkb_layout "dk"
+}
+
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+}
 
 ### Key bindings
 bindsym $mod+Return exec $term
-bindsym $mod+Shift+q kill
-bindsym $mod+d exec $menu
+bindsym $mod+Shift+w kill
+bindsym $mod+space exec $menu
+bindsym $mod+b exec $browser
 
 floating_modifier $mod normal
 bindsym $mod+Shift+c reload
+bindsym $mod+Shift+b reload
 bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit sway?' -B 'Yes, exit sway' 'swaymsg exit'
 
 # Focus
@@ -53,11 +56,12 @@ bindsym $mod+2 workspace number 2
 bindsym $mod+3 workspace number 3
 bindsym $mod+4 workspace number 4
 bindsym $mod+5 workspace number 5
-bindsym $mod+6 workspace number 6
-bindsym $mod+7 workspace number 7
+bindsym $mod+6 workspace number 6 
+bindsym $mod+7 workspace number 7 
 bindsym $mod+8 workspace number 8
 bindsym $mod+9 workspace number 9
 bindsym $mod+0 workspace number 10
+
 bindsym $mod+Shift+1 move container to workspace number 1
 bindsym $mod+Shift+2 move container to workspace number 2
 bindsym $mod+Shift+3 move container to workspace number 3
@@ -70,14 +74,13 @@ bindsym $mod+Shift+9 move container to workspace number 9
 bindsym $mod+Shift+0 move container to workspace number 10
 
 # Layout
-bindsym $mod+b splith
 bindsym $mod+v splitv
 bindsym $mod+s layout stacking
 bindsym $mod+w layout tabbed
 bindsym $mod+e layout toggle split
 bindsym $mod+f fullscreen
 bindsym $mod+Shift+space floating toggle
-bindsym $mod+space focus mode_toggle
+bindsym $mod+Tab focus mode_toggle
 bindsym $mod+a focus parent
 
 # Scratchpad
@@ -109,7 +112,7 @@ bindsym --locked XF86MonBrightnessUp exec brightnessctl set 5%+
 bindsym Print exec grim
 
 ### Autostart
-exec waybar
+exec_always pkill -x waybar; waybar
 
 ### Status Bar
 # Built-in swaybar disabled in favor of waybar (exec'd above)
