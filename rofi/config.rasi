@@ -2,7 +2,7 @@ configuration {
     modi: "drun,run,window";
     show-icons: true;
     icon-theme: "Yaru";
-    display-drun: "Apps";
+    display-drun: "";
     display-run: "Run";
     display-window: "Windows";
     drun-display-format: "{icon} {name}";
@@ -26,7 +26,7 @@ window {
     border: 1px;
     border-color: #3a3a3a;
     border-radius: 0px;
-    width: 600px;
+    width: 720px;
     padding: 12px;
 }
 
@@ -51,7 +51,7 @@ entry {
 }
 
 listview {
-    lines: 8;
+    lines: 9;
     scrollbar: false;
     spacing: 4px;
 }
