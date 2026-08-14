@@ -29,7 +29,7 @@ fi
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 
 
-# go (official tarball install, per https://go.dev/doc/install — keeps ubuntu/arch on the same, newest version)
+# go (official tarball install, per https://go.dev/doc/install) 
 GO_ARCH="$(uname -m)"
 case "$GO_ARCH" in
     x86_64) GO_ARCH="amd64" ;;
@@ -52,11 +52,11 @@ fi
 
 export PATH="$HOME/opt/go/bin:$HOME/go/bin:$PATH"
 
-# kubectl (official static binary — k8s.io/kubectl is a library module, not go-installable)
+# kubectl (official static binary — k8s.io/kubectl)
 KUBECTL_LATEST="$(curl -sSfL https://dl.k8s.io/release/stable.txt)"
 curl -sSfL "https://dl.k8s.io/release/${KUBECTL_LATEST}/bin/linux/${GO_ARCH}/kubectl" -o "$HOME/.local/bin/kubectl"
 chmod +x "$HOME/.local/bin/kubectl"
 
-# dendrite
+# dendrite (markdown note engine)
 curl -fsSL https://raw.githubusercontent.com/KristianJBorgwarth/dendrite.daemon/master/install.sh | sh
 
