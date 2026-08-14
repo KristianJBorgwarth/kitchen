@@ -60,3 +60,8 @@ chmod +x "$HOME/.local/bin/kubectl"
 # dendrite (markdown note engine)
 curl -fsSL https://raw.githubusercontent.com/KristianJBorgwarth/dendrite.daemon/master/install.sh | sh
 
+# oh-my-posh
+curl -s https://ohmyposh.dev/install.sh | bash -s
+
+# nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash
