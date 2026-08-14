@@ -7,5 +7,8 @@ alias ubu='sudo apt update & upgrade'
 alias lg='lazygit'
 
 #git aliases
-alias ga= 'git add .'
-alias gp= 'git push .'
+alias ga='git add .'
+alias gp='git push .'
+
+#utility
+alias get_monitors='swaymsg -t get_outputs'
