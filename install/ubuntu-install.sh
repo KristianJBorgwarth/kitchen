@@ -4,6 +4,7 @@ sudo apt install waybar
 sudo apt install rofi
 sudo apt-get install -y network-manager-gnome
 sudo apt install xdg-desktop-portal-wlr
+sudo apt install -y mako-notifier
 
 # pkg manager
 sudo apt install -y pipx
