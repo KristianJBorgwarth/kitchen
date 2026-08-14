@@ -21,6 +21,3 @@ bindkey '^F' complete-word
 # zsh-autosuggestions
 ZSH_AUTOSUGGESTIONS="$HOME/source/zsh-autosuggestions/zsh-autosuggestions.zsh"
 [ -f "$ZSH_AUTOSUGGESTIONS" ] && source "$ZSH_AUTOSUGGESTIONS"
-
-
-
