@@ -5,3 +5,5 @@ for file in "$zsh_config_dir"/*.zsh; do
     source "$file"
 done
 unset zsh_config_dir file
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

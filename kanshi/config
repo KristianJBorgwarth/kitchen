@@ -4,6 +4,6 @@ profile laptop {
 
 profile docked {
     output eDP-1 disable
-    output DP-1 enable position 0,0
-    output DP-2 enable position 1920,0
+    output "Lenovo Group Limited G27q-30 UMB5TWAZ" enable position 0,0 mode 2560x1440@165Hz transform normal
+    output "Microstep MSI MP271 PA2T191107364" enable position 2560,-240 mode 1920x1080@60Hz transform 270
 }

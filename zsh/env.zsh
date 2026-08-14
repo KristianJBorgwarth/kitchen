@@ -1,1 +1,2 @@
 # Environment variables / exports
+export PATH="$HOME/.local/bin:$HOME/opt/go/bin:$HOME/go/bin:$PATH"

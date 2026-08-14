@@ -5,6 +5,21 @@ include /etc/sway/config-vars.d/*
 ### Output
 # output * bg <path> fill
 
+set $lenovo "Lenovo Group Limited G27q-30 UMB5TWAZ"
+set $msi "Microstep MSI MP271 PA2T191107364"
+
+### Workspace assignments (docked layout)
+workspace 1 output $lenovo
+workspace 2 output $lenovo
+workspace 3 output $lenovo
+workspace 4 output $lenovo
+workspace 5 output $lenovo
+workspace 6 output $msi
+workspace 7 output $msi
+workspace 8 output $msi
+workspace 9 output $msi
+workspace 10 output $msi
+
 ### Gaps
 gaps inner 2
 gaps outer 2
@@ -21,6 +36,7 @@ client.urgent           #900000 #900000 #ffffff #900000 #900000
 ### Input
 input type:keyboard {
     xkb_layout "dk"
+    xkb_options "lv3:caps_switch"
 }
 
 input type:touchpad {
