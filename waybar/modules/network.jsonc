@@ -1,0 +1,8 @@
+{
+    "network": {
+        "format-wifi": "{essid} ({signalStrength}%)",
+        "format-ethernet": "{ifname} connected",
+        "format-disconnected": "disconnected",
+        "tooltip-format": "{ipaddr}/{cidr}"
+    }
+}

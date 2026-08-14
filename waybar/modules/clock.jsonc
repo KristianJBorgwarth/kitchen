@@ -1,0 +1,29 @@
+{
+    "clock": {
+        "format": "{:%H:%M}",
+        "format-alt": "{:%A, %d %B %Y}",
+        "tooltip-format": "<big><b>{:%A, %d %B %Y}</b></big>\n\n<tt>{calendar}</tt>\n\n{tz_list}",
+        "timezones": ["", "America/New_York", "Europe/London", "Asia/Tokyo"],
+        "timezone-tooltip-format": "{:%a %d %b, %H:%M %Z}",
+        "calendar": {
+            "mode": "month",
+            "mode-mon-col": 3,
+            "weeks-pos": "right",
+            "on-scroll": 1,
+            "format": {
+                "months": "<span color='#e0e0e0'><b>{}</b></span>",
+                "days": "<span color='#999999'>{}</span>",
+                "weeks": "<span color='#555555'>W{}</span>",
+                "weekdays": "<span color='#777777'><b>{}</b></span>",
+                "today": "<span color='#141414' background='#ffffff'><b>{}</b></span>"
+            }
+        },
+        "actions": {
+            "on-click-right": "mode",
+            "on-click-forward": "tz_up",
+            "on-click-backward": "tz_down",
+            "on-scroll-up": "shift_up",
+            "on-scroll-down": "shift_down"
+        }
+    }
+}
