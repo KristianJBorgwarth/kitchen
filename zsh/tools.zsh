@@ -7,7 +7,13 @@ eval "$(zoxide init zsh)"
 export OMP_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/oh-my-posh"
 eval "$(oh-my-posh init zsh --config "$HOME/kitchen/assets/omp/monochrome.omp.json")"
 
-# nvm 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# fnm (fast node manager, drop-in replacement for nvm)
+FNM_PATH="$HOME/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+    export PATH="$FNM_PATH:$PATH"
+    eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+
+# zsh-autosuggestions
+ZSH_AUTOSUGGESTIONS="$HOME/source/zsh-autosuggestions/zsh-autosuggestions.zsh"
+[ -f "$ZSH_AUTOSUGGESTIONS" ] && source "$ZSH_AUTOSUGGESTIONS"

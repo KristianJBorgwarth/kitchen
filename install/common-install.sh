@@ -25,6 +25,14 @@ fi
 ~/.fzf/install --all --no-update-rc
 
 
+# zsh-autosuggestions
+if [ -d "$SOURCE_DIR/zsh-autosuggestions" ]; then
+    git -C "$SOURCE_DIR/zsh-autosuggestions" pull
+else
+    git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions.git "$SOURCE_DIR/zsh-autosuggestions"
+fi
+
+
 # zoxide
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 
@@ -63,5 +71,5 @@ curl -fsSL https://raw.githubusercontent.com/KristianJBorgwarth/dendrite.daemon/
 # oh-my-posh
 curl -s https://ohmyposh.dev/install.sh | bash -s
 
-# nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.6/install.sh | bash
+# fnm (fast node manager, drop-in replacement for nvm)
+curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
