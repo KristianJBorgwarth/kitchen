@@ -5,14 +5,14 @@
 # -----------------------------------------------------------------------------
 
 # Styles...
-fg: &fg "#f2f4f8"
-bright: &bright "#ffffff"
-dim: &dim "#a0a0a0"
-muted: &muted "#808080"
-faint: &faint "#404040"
+fg: &fg "#c6c8cd"
+bright: &bright "#dcdcdc"
+dim: &dim "#868686"
+muted: &muted "#686868"
+faint: &faint "#333333"
 dark: &dark "#161616"
-green: &green "#5fd75f"
-red: &red "#ff5f5f"
+green: &green "#6b9b6b"
+red: &red "#b06060"
 
 # Skin...
 k9s:
