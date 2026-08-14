@@ -33,6 +33,28 @@ else
 fi
 
 
+# neovim (apt lags upstream — build a pinned stable release into ~/.local
+# so it never collides with the distro package; requires cmake + ninja-build,
+# see ubuntu-install.sh / arch-install.sh)
+NVIM_VERSION="v0.12.4"
+NVIM_BIN="$HOME/.local/bin/nvim"
+NVIM_INSTALLED=""
+if [ -x "$NVIM_BIN" ]; then
+    NVIM_INSTALLED="$("$NVIM_BIN" --version | head -n1 | awk '{print $2}')"
+fi
+
+if [ "$NVIM_INSTALLED" != "$NVIM_VERSION" ]; then
+    if [ -d "$SOURCE_DIR/neovim" ]; then
+        git -C "$SOURCE_DIR/neovim" fetch --depth 1 origin tag "$NVIM_VERSION"
+    else
+        git clone --depth 1 --branch "$NVIM_VERSION" https://github.com/neovim/neovim.git "$SOURCE_DIR/neovim"
+    fi
+    git -C "$SOURCE_DIR/neovim" checkout "$NVIM_VERSION"
+    make -C "$SOURCE_DIR/neovim" CMAKE_BUILD_TYPE=Release CMAKE_INSTALL_PREFIX="$HOME/.local"
+    make -C "$SOURCE_DIR/neovim" install
+fi
+
+
 # zoxide
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
 

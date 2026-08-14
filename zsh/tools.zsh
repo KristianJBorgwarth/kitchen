@@ -14,6 +14,13 @@ if [ -d "$FNM_PATH" ]; then
     eval "$(fnm env --use-on-cd --shell zsh)"
 fi
 
+# zsh keybindings
+bindkey '^I' autosuggest-accept
+bindkey '^F' complete-word
+
 # zsh-autosuggestions
 ZSH_AUTOSUGGESTIONS="$HOME/source/zsh-autosuggestions/zsh-autosuggestions.zsh"
 [ -f "$ZSH_AUTOSUGGESTIONS" ] && source "$ZSH_AUTOSUGGESTIONS"
+
+
+
