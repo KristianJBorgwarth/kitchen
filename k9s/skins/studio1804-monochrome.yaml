@@ -1,0 +1,107 @@
+# -----------------------------------------------------------------------------
+# studio1804 Monochrome skin
+# Mostly grayscale, background inherits the terminal's (transparent / ghostty
+# bg #161616), with green/red reserved for status signal only.
+# -----------------------------------------------------------------------------
+
+# Styles...
+fg: &fg "#f2f4f8"
+bright: &bright "#ffffff"
+dim: &dim "#a0a0a0"
+muted: &muted "#808080"
+faint: &faint "#404040"
+dark: &dark "#161616"
+green: &green "#5fd75f"
+red: &red "#ff5f5f"
+
+# Skin...
+k9s:
+  body:
+    fgColor: *fg
+    bgColor: default
+    logoColor: *fg
+  prompt:
+    fgColor: *fg
+    bgColor: default
+    suggestColor: *dim
+  info:
+    fgColor: *dim
+    sectionColor: *fg
+  dialog:
+    fgColor: *fg
+    bgColor: default
+    buttonFgColor: *dark
+    buttonBgColor: *bright
+    buttonFocusFgColor: *dark
+    buttonFocusBgColor: *green
+    labelFgColor: *dim
+    fieldFgColor: *fg
+  frame:
+    border:
+      fgColor: *faint
+      focusColor: *bright
+    menu:
+      fgColor: *fg
+      keyColor: *green
+      numKeyColor: *green
+    crumbs:
+      fgColor: *fg
+      bgColor: *faint
+      activeColor: *green
+    status:
+      newColor: *bright
+      modifyColor: *dim
+      addColor: *green
+      errorColor: *red
+      highlightColor: *bright
+      killColor: *red
+      completedColor: *muted
+    title:
+      fgColor: *fg
+      bgColor: default
+      highlightColor: *green
+      counterColor: *dim
+      filterColor: *green
+  views:
+    charts:
+      bgColor: default
+      defaultDialColors:
+        - *green
+        - *red
+      defaultChartColors:
+        - *green
+        - *red
+    table:
+      fgColor: *fg
+      bgColor: default
+      cursorFgColor: *dark
+      cursorBgColor: *fg
+      markColor: *green
+      header:
+        fgColor: *dim
+        bgColor: default
+        sorterColor: *green
+    xray:
+      fgColor: *fg
+      bgColor: default
+      cursorColor: *faint
+      graphicColor: *green
+      showIcons: false
+    yaml:
+      keyColor: *dim
+      colonColor: *faint
+      valueColor: *fg
+    logs:
+      fgColor: *fg
+      bgColor: default
+      indicator:
+        fgColor: *fg
+        bgColor: default
+        toggleOnColor: *green
+        toggleOffColor: *faint
+    help:
+      fgColor: *fg
+      bgColor: default
+      keyColor: *green
+      numKeyColor: *green
+      sectionColor: *dim
