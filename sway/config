@@ -44,6 +44,21 @@ input type:touchpad {
     natural_scroll enabled
 }
 
+### Floating windows
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+for_window [window_type="notification"] floating enable
+for_window [window_type="splash"] floating enable
+for_window [window_type="toolbar"] floating enable
+for_window [window_type="utility"] floating enable
+for_window [app_id="^jetbrains-.*"] floating enable
+for_window [class="^jetbrains-.*"] floating enable
+for_window [title="Preferences"] floating enable
+for_window [title="win.*"] floating enable
+
 ### Key bindings
 bindsym $mod+Return exec $term
 bindsym $mod+w kill
