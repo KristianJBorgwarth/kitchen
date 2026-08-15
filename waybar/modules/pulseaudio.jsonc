@@ -1,8 +1,0 @@
-{
-    "pulseaudio": {
-        "format": "{volume}% {icon}",
-        "format-muted": "muted",
-        "format-icons": ["", "", ""],
-        "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle"
-    }
-}

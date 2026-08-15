@@ -108,6 +108,18 @@ chmod +x "$HOME/.local/bin/kubectl"
 # dendrite (markdown note engine)
 curl -fsSL https://raw.githubusercontent.com/KristianJBorgwarth/dendrite.daemon/master/install.sh | sh
 
+# JetBrains Mono Nerd Font (waybar/ghostty rely on its PUA glyphs)
+NERD_FONT_VERSION="v3.5.0"
+NERD_FONT_DIR="$HOME/.local/share/fonts/JetBrainsMonoNerdFont"
+if [ ! -f "$NERD_FONT_DIR/.version" ] || [ "$(cat "$NERD_FONT_DIR/.version")" != "$NERD_FONT_VERSION" ]; then
+    mkdir -p "$NERD_FONT_DIR"
+    curl -sSfL "https://github.com/ryanoasis/nerd-fonts/releases/download/${NERD_FONT_VERSION}/JetBrainsMono.zip" -o "/tmp/JetBrainsMonoNerdFont.zip"
+    unzip -o -q "/tmp/JetBrainsMonoNerdFont.zip" -d "$NERD_FONT_DIR" -x "*Windows Compatible*"
+    rm "/tmp/JetBrainsMonoNerdFont.zip"
+    echo "$NERD_FONT_VERSION" > "$NERD_FONT_DIR/.version"
+    fc-cache -f "$NERD_FONT_DIR"
+fi
+
 # oh-my-posh
 curl -s https://ohmyposh.dev/install.sh | bash -s
 

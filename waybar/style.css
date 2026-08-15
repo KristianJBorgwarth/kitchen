@@ -18,8 +18,10 @@ window#waybar {
 #mode,
 #window,
 #pulseaudio,
+#battery,
 #network,
 #clock,
+#temperature,
 #tray {
     background-color: #1e1e1e;
     border-radius: 2px;
