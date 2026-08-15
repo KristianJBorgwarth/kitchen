@@ -1,5 +1,13 @@
 
+# shell
+echo "==> Installing zsh"
+sudo apt install -y zsh
+echo "==> Installing git"
+sudo apt install -y git
+
 # tiling applications
+echo "==> Installing sway"
+sudo apt install -y sway
 echo "==> Installing waybar"
 sudo apt install -y waybar
 echo "==> Installing rofi"
