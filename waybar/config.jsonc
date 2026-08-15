@@ -6,6 +6,7 @@
     "spacing": 0,
     "include": [
         "modules/workspaces.json",
+        "modules/window.json",
         "modules/clock.json",
         "modules/pulseaudio.json",
         "modules/tray.json",

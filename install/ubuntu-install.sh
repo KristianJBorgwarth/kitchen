@@ -10,6 +10,8 @@ echo "==> Installing xdg-desktop-portal-wlr"
 sudo apt install -y xdg-desktop-portal-wlr
 echo "==> Installing mako-notifier"
 sudo apt install -y mako-notifier
+echo "==> Installing swaylock"
+sudo apt install -y swaylock
 
 # pkg manager
 echo "==> Installing pipx"

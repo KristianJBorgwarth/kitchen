@@ -9,6 +9,8 @@ echo "==> Installing rofi"
 sudo pacman -S rofi
 echo "==> Installing mako-notifier"
 sudo pacman -S mako-notifier
+echo "==> Installing swaylock"
+sudo pacman -S swaylock
 
 ## audio/video
 echo "==> Installing pipewire"
