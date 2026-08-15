@@ -1,6 +1,6 @@
 {
     "layer": "top",
-    "output": ["DP-10", "eDP-1"],
+    "output": ["DP-2", "DP-10", "eDP-1"],
     "position": "top",
     "height": 36,
     "spacing": 0,

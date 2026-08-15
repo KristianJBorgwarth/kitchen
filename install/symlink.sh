@@ -20,3 +20,4 @@ for app in fastfetch ghostty k9s kanshi mako rofi sway swaylock waybar; do
 done
 
 link "$REPO_DIR/zsh/.zshrc" "$HOME/.zshrc"
+link "$HOME/nvim" "$HOME/.config/nvim"

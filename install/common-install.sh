@@ -125,3 +125,4 @@ curl -s https://ohmyposh.dev/install.sh | bash -s
 
 # fnm (fast node manager, drop-in replacement for nvm)
 curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell
+fnm install --latest
