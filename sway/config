@@ -54,10 +54,14 @@ for_window [window_type="notification"] floating enable
 for_window [window_type="splash"] floating enable
 for_window [window_type="toolbar"] floating enable
 for_window [window_type="utility"] floating enable
-for_window [app_id="^jetbrains-.*"] floating enable
-for_window [class="^jetbrains-.*"] floating enable
 for_window [title="Preferences"] floating enable
 for_window [title="win.*"] floating enable
+
+# JetBrains project/welcome pickers report the same app_id as a real
+# project window and set no window_type/role hint at all, so title is
+# the only thing that tells them apart.
+for_window [app_id="jetbrains-rider" title="Welcome to JetBrains Rider"] floating enable
+for_window [app_id="jetbrains-datagrip" title="Welcome to DataGrip"] floating enable
 
 ### Key bindings
 bindsym $mod+Return exec $term
