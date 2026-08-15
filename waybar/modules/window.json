@@ -2,6 +2,7 @@
   "sway/window": {
     "format": "{app_id}: {title}",
     "max-length": 60,
+    "all-outputs": true,
     "rewrite": {
       "^com\\.mitchellh\\.ghostty: nvim$": " nvim",
       "^com\\.mitchellh\\.ghostty: nvim (.*)$": " $1",
@@ -10,7 +11,9 @@
       "^brave: (.*)$": "󰖟 $1",
       "^org\\.gnome\\.Nautilus: (.*)$": "󰉋 $1",
       "^discord: (.*)$": "󰙯 $1",
-      "^steam: (.*)$": "󰓓 $1"
+      "^steam: (.*)$": "󰓓 $1",
+      "^jetbrains-rider: (.*?)(?: – .*)?$": " $1",
+      "^jetbrains-datagrip: (.*?)(?: – .*)?$": " $1"
     }
   }
 }
