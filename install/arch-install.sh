@@ -7,3 +7,4 @@ sudo pacman -S python-pipx
 sudo pacman -S mako-notifier
 sudo pacman -S cmake
 sudo pacman -S ninja-build
+sudo pacman -S dotnet-sdk-10.0
