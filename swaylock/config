@@ -1,10 +1,9 @@
 # studio1804 Monochrome — matches ghostty/waybar/k9s/mako theme
-# Mostly grayscale; blue = inputting, green = correct keypress, red = wrong.
+# Mostly grayscale; green = correct keypress, red = wrong.
 
-color=161616
+color=000000
 
-indicator=true
-indicator-idle-visible=true
+indicator-idle-visible
 indicator-radius=100
 indicator-thickness=10
 
@@ -14,37 +13,37 @@ font-size=22
 ignore-empty-password
 
 # Idle / inputting
-ring-color=6b6b9b
-inside-color=161616
-line-color=161616
+ring-color=868686
+inside-color=000000
+line-color=000000
 text-color=c6c8cd
 separator-color=333333
 
 # Verifying (Enter pressed, waiting on PAM)
-ring-ver-color=6b6b9b
-inside-ver-color=161616
+ring-ver-color=868686
+inside-ver-color=000000
 text-ver-color=c6c8cd
 
 # Cleared (backspaced to empty)
 ring-clear-color=686868
-inside-clear-color=161616
+inside-clear-color=000000
 text-clear-color=c6c8cd
 
 # Wrong password
-ring-wrong-color=b06060
-inside-wrong-color=161616
-line-wrong-color=161616
+ring-wrong-color=704d4d
+inside-wrong-color=000000
+line-wrong-color=000000
 text-wrong-color=f2f4f8
 
 # Per-keystroke feedback
-key-hl-color=6b9b6b
+key-hl-color=4d704d
 bs-hl-color=686868
 
 # Caps lock
-ring-caps-lock-color=b06060
+ring-caps-lock-color=704d4d
 text-caps-lock-color=f2f4f8
 
 # On-screen keyboard layout indicator
-layout-bg-color=161616
+layout-bg-color=000000
 layout-border-color=333333
 layout-text-color=c6c8cd

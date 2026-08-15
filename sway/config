@@ -129,6 +129,7 @@ bindsym --locked XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
 bindsym --locked XF86MonBrightnessDown exec swayosd-client --brightness lower
 bindsym --locked XF86MonBrightnessUp exec swayosd-client --brightness raise
 bindsym Print exec grim
+bindsym $mod+ctrl+l exec swaylock
 
 ### Autostart
 exec_always pkill -x swayosd-server; swayosd-server
