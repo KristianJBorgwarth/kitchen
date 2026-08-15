@@ -12,3 +12,6 @@ alias gp='git push .'
 
 #utility
 alias get_monitors='swaymsg -t get_outputs'
+
+# misc
+alias ff='fastfetch'
