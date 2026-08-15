@@ -33,6 +33,8 @@ echo "==> Installing unzip"
 sudo pacman -S unzip
 echo "==> Installing brightnessctl"
 sudo pacman -S brightnessctl
+echo "==> Installing swayosd"
+sudo pacman -S swayosd
 
 # dotnet
 echo "==> Installing dotnet-sdk-10.0"

@@ -24,8 +24,10 @@ echo "==> Installing unzip"
 sudo apt install -y unzip
 echo "==> Installing brightnessctl"
 sudo apt install -y brightnessctl
-echo "==> Installing ddcutil"
-sudo apt install -y ddcutil
+echo "==> Installing swayosd"
+sudo apt install -y swayosd
+echo "==> Disabling swayosd-libinput-backend.service"
+sudo systemctl disable --now swayosd-libinput-backend.service
 
 # dotnet
 echo "==> Installing dotnet-sdk-10.0"
