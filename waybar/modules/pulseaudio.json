@@ -8,9 +8,9 @@
       "default": ["󰕿", "󰖀", "󰕾"]
     },
     "tooltip-format": "{desc} — {volume}%",
-    "on-click": "pactl set-sink-mute @DEFAULT_SINK@ toggle",
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
     "on-click-right": "pavucontrol",
-    "on-scroll-up": "pactl set-sink-volume @DEFAULT_SINK@ +2%",
-    "on-scroll-down": "pactl set-sink-volume @DEFAULT_SINK@ -2%"
+    "scroll-step": 2,
+    "smooth-scrolling-threshold": 1
   }
 }

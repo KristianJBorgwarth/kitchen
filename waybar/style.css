@@ -24,6 +24,7 @@ window#waybar {
 #temperature,
 #cpu,
 #memory,
+#custom-brightness,
 #tray {
     background-color: #1e1e1e;
     border-radius: 2px;
@@ -82,6 +83,21 @@ tooltip label {
 
 #network.disconnected {
     color: #808080;
+}
+
+#temperature,
+#battery {
+    color: #93ab93; /* muted green */
+}
+
+#temperature.warning,
+#battery.warning {
+    color: #b8a86a; /* muted yellow */
+}
+
+#temperature.critical,
+#battery.critical {
+    color: #b57272; /* muted red */
 }
 
 #tray {

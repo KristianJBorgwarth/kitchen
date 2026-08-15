@@ -1,6 +1,7 @@
 {
   "temperature": {
     "thermal-zone": 0,
+    "warning-threshold": 70,
     "critical-threshold": 85,
     "format": "󰔏 {temperatureC}°",
     "format-critical": "󰸁 {temperatureC}°",

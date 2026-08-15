@@ -7,6 +7,7 @@
     "include": [
         "modules/workspaces.json",
         "modules/clock.json",
+        "modules/brightness.json",
         "modules/pulseaudio.json",
         "modules/tray.json",
         "modules/battery.json",
@@ -16,5 +17,5 @@
     ],
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["pulseaudio", "memory", "cpu", "temperature", "battery", "tray"]
+    "modules-right": ["custom/brightness", "pulseaudio", "memory", "cpu", "temperature", "battery", "tray"]
 }
