@@ -15,7 +15,7 @@ link() {
     echo "linked $dest -> $src"
 }
 
-for app in fastfetch ghostty k9s kanshi mako rofi sway waybar; do
+for app in fastfetch ghostty k9s kanshi mako rofi sway swaylock waybar; do
     link "$REPO_DIR/$app" "$CONFIG_DIR/$app"
 done
 
