@@ -10,9 +10,11 @@
         "modules/pulseaudio.json",
         "modules/tray.json",
         "modules/battery.json",
-        "modules/temperature.json"
+        "modules/temperature.json",
+        "modules/cpu.json",
+        "modules/memory.json"
     ],
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["pulseaudio", "temperature", "battery", "tray"]
+    "modules-right": ["pulseaudio", "memory", "cpu", "temperature", "battery", "tray"]
 }

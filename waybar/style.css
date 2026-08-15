@@ -22,6 +22,8 @@ window#waybar {
 #network,
 #clock,
 #temperature,
+#cpu,
+#memory,
 #tray {
     background-color: #1e1e1e;
     border-radius: 2px;
