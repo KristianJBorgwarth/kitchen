@@ -30,7 +30,6 @@ git
 
 #general tools
 ghostty
-flameshot
 
 # misc 
 fastfetch
