@@ -1,5 +1,5 @@
 ### Variables
-include vars
+include config.d/vars
 include /etc/sway/config-vars.d/*
 
 ### Output
@@ -158,7 +158,7 @@ exec_always pkill -x waybar; waybar
 exec_always pkill -x mako; mako
 exec_always pkill -x autotiling; ~/.local/bin/autotiling
 exec_always pkill -x kanshi; kanshi
-exec pkill -x nm-applet; nm-applet --indicator
+exec_always pkill -x nm-applet; nm-applet --indicator
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
 exec ~/.local/bin/waypaper --restore
