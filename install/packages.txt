@@ -6,7 +6,7 @@ swaybg
 kanshi
 waybar
 rofi
-mako-notifier
+mako
 xdg-desktop-portal-wlr
 
 #audio
