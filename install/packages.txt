@@ -34,8 +34,7 @@ grim
 slurp
 swappy
 thunar
+wl-clipboard
 
 # misc 
 fastfetch
-
-

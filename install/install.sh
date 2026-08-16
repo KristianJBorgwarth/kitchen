@@ -1,4 +1,4 @@
-!#/bin/bash
+#!/bin/bash
 
 source /etc/os-release
 case "$ID" in
