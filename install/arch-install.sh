@@ -14,6 +14,9 @@ sudo pacman -S --needed base-devel
 sudo pacman -S openssh
 sudo pacman -S network-manager-applet
 
+# gtk/qt theming
+sudo pacman -S --needed papirus-icon-theme nwg-look qt5ct qt6ct
+
 if [ -d "$SOURCE_DIR/yay" ]; then
     git -C "$SOURCE_DIR/yay" pull
 else
@@ -23,4 +26,3 @@ fi
 (cd makepkg -C -si "$SOURCE_DIR/yay" -si --noconfirm)
 
 yay -Sy waypaper
-
