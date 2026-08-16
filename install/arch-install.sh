@@ -20,5 +20,7 @@ else
     git clone https://aur.archlinux.org/yay.git "$SOURCE_DIR/yay"
 fi
 
-makepkg -C -si "$SOURCE_DIR/yay"
+(cd makepkg -C -si "$SOURCE_DIR/yay" -si --noconfirm)
+
+yay -Sy waypaper
 
