@@ -30,6 +30,11 @@ git
 
 #general tools
 ghostty
+grim
+slurp
+swappy
 
 # misc 
 fastfetch
+
+
