@@ -1,6 +1,7 @@
 ### Input
 input type:keyboard {
     xkb_layout "dk"
+    xkb_variant "nodeadkeys"
     xkb_options "lv3:caps_switch"
 }
 
