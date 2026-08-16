@@ -1,0 +1,36 @@
+#tiling
+sway
+sway-lock
+swayosd
+swaybg
+kanshi
+waybar
+rofi
+mako-notifier
+xdg-desktop-portal-wlr
+
+#audio
+pipewire
+pipewire-pulse
+pipewire-alsa
+wireplumber
+
+# build tools and dependencies
+python-pipx
+cmake
+ninja-build
+unzip
+make
+
+# dev tools 
+dotnet-sdk-10.0
+github-cli
+lazygit
+git
+
+#general tools
+ghostty
+flameshot
+
+# misc 
+fastfetch

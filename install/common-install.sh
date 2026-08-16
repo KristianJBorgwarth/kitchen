@@ -15,7 +15,6 @@ else
 fi
 pipx install --force "$SOURCE_DIR/autotiling"
 
-
 # fzf
 if [ -d "$HOME/.fzf" ]; then
     git -C "$HOME/.fzf" pull
@@ -35,7 +34,7 @@ fi
 
 # neovim (apt lags upstream — build a pinned stable release into ~/.local
 # requires cmake + ninja-build,
-# see ubuntu-install.sh / arch-install.sh)
+# see packages.txt #build tools -> ubuntu-install.sh / arch-install.sh)
 NVIM_VERSION="v0.12.4"
 NVIM_BIN="$HOME/.local/bin/nvim"
 NVIM_INSTALLED=""
@@ -54,9 +53,15 @@ if [ "$NVIM_INSTALLED" != "$NVIM_VERSION" ]; then
     make -C "$SOURCE_DIR/neovim" install
 fi
 
+# clone nvim config 
+if [ -d "$HOME/nvim" ]; then
+    git -C "$HOME/nvim" pull
+else
+    git clone --depth 1 https://github.com/KristianJBorgwarth/nvim.git "$HOME/nvim"
+fi
+
 # zoxide
 curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
-
 
 # go (official tarball install, per https://go.dev/doc/install) 
 GO_ARCH="$(uname -m)"

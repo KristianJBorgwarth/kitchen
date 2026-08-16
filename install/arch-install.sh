@@ -1,49 +1,24 @@
 #!/bin/bash
+PKGFILE="packages.txt"
+SOURCE_DIR="$HOME/source"
+mkdir -p "$SOURCE_DIR"
 
-# shell
-echo "==> Installing zsh"
-sudo pacman -Sy zsh
-echo "==> Installing git"
-sudo pacman -Sy git
+while IFS= read -r pkg; do 
+  [ -z "$pkg" ] && continue # skip blank lines
+  case "$pkg" in \#*) continue ;; esac  # skip comment lines starting with # 
+  echo "==> Installing $pkg"
+  sudo pacman -Sy "$pkg"
+done < "$PKGFILE"
 
-# tiling applications
-echo "==> Installing sway"
-sudo pacman -Sy sway
-echo "==> Installing waybar"
-sudo pacman -Sy waybar
-echo "==> Installing rofi"
-sudo pacman -Sy rofi
-echo "==> Installing mako-notifier"
-sudo pacman -Sy mako-notifier
-echo "==> Installing swaylock"
-sudo pacman -Sy swaylock
+sudo pacman -S --needed base-devel
+sudo pacman -S openssh
+sudo pacman -S network-manager-applet
 
-## audio/video
-echo "==> Installing pipewire"
-sudo pacman -Sy pipewire
-echo "==> Installing pipewire-pulse"
-sudo pacman -Sy pipewire-pulse
-echo "==> Installing pipewire-alsa"
-sudo pacman -Sy pipewire-alsa
-echo "==> Installing wireplumber"
-sudo pacman -Sy wireplumber
+if [ -d "$SOURCE_DIR/yay" ]; then
+    git -C "$SOURCE_DIR/yay" pull
+else
+    git clone https://aur.archlinux.org/yay.git "$SOURCE_DIR/yay"
+fi
 
-# pkg manager
-echo "==> Installing python-pipx"
-sudo pacman -Sy python-pipx
+makepkg -C -si "$SOURCE_DIR/yay"
 
-# tools
-echo "==> Installing cmake"
-sudo pacman -Sy cmake
-echo "==> Installing ninja-build"
-sudo pacman -Sy ninja-build
-echo "==> Installing unzip"
-sudo pacman -Sy unzip
-echo "==> Installing brightnessctl"
-sudo pacman -Sy brightnessctl
-echo "==> Installing swayosd"
-sudo pacman -Sy swayosd
-
-# dotnet
-echo "==> Installing dotnet-sdk-10.0"
-sudo pacman -Sy dotnet-sdk-10.0
