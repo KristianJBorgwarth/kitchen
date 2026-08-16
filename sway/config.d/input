@@ -1,0 +1,10 @@
+### Input
+input type:keyboard {
+    xkb_layout "dk"
+    xkb_options "lv3:caps_switch"
+}
+
+input type:touchpad {
+    tap enabled
+    natural_scroll enabled
+}
