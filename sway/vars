@@ -7,3 +7,4 @@ set $term ghostty
 set $browser brave
 set $menu rofi -show drun
 set $screenshot grim -g "$(slurp)" - | swappy -f -
+set $filemanager thunar

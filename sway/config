@@ -69,6 +69,7 @@ bindsym $mod+w kill
 bindsym $mod+space exec $menu
 bindsym $mod+b exec $browser
 bindsym $mod+Shift+s exec $screenshot
+bindsym $mod+Shift+Return exec $filemanager
 
 floating_modifier $mod normal
 bindsym $mod+Shift+b reload

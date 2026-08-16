@@ -33,6 +33,7 @@ ghostty
 grim
 slurp
 swappy
+thunar
 
 # misc 
 fastfetch
