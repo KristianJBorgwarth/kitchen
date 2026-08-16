@@ -17,8 +17,6 @@ sudo pacman -S --needed --noconfirm base-devel
 sudo pacman -S --needed --noconfirm openssh
 sudo pacman -S --needed --noconfirm network-manager-applet
 sudo pacman -S --needed --noconfirm papirus-icon-theme nwg-look qt5ct qt6ct
-sudo pacman -S --needed --noconfirm greetd
-
 
 if [ -d "$SOURCE_DIR/yay" ]; then
     git -C "$SOURCE_DIR/yay" pull
@@ -27,11 +25,5 @@ else
 fi
 (cd "$SOURCE_DIR/yay" && makepkg -si --noconfirm)
 
-
 yay -Sy
-yay -S --needed --noconfirm waypaper greetd-tuigreet
-
-# login manager
-sudo systemctl enable greetd
-sudo mkdir -p /etc/greetd
-sudo ln -sf ${REPO_DIR}/greetd/config.toml /etc/greetd/config.toml
+yay -S --needed --noconfirm waypaper
