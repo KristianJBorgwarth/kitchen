@@ -8,3 +8,4 @@ set $browser brave
 set $menu rofi -show drun
 set $screenshot grim -g "$(slurp)" - | swappy -f -
 set $filemanager thunar
+set $clipboard-history cliphist list | rofi -dmenu -p "" | cliphist decode | wl-copy
