@@ -34,6 +34,7 @@ grim
 slurp
 swappy
 thunar
+blueman
 wl-clipboard
 
 # misc 
