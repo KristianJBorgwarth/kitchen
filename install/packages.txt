@@ -36,6 +36,7 @@ swappy
 thunar
 blueman
 wl-clipboard
+btop
 
 # misc 
 fastfetch
