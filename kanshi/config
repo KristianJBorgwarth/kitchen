@@ -8,6 +8,12 @@ profile docked {
     output "Microstep MSI MP271 PA2T191107364" enable position 2560,-240 mode 1920x1080@60Hz transform 270
 }
 
+profile docked_office {
+    output eDP-1 disable
+    output "HP Inc. HP 527pu CNC51706GJ" enable position 0,0 mode 2560x1440@60Hz transform normal
+    output "HP Inc. HP 527pu CNC5170681" enable position 2560,0 mode 2560x1440@60Hz transform normal
+}
+
 profile desktop {
     output "Lenovo Group Limited G27q-30 UMB5TWAZ" enable position 0,0 mode 2560x1440@165Hz transform normal
     output "Microstep MSI MP271 PA2T191107364" enable position 2560,-240 mode 1920x1080@60Hz transform 270

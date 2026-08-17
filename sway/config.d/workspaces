@@ -1,14 +1,21 @@
+set $laptop "eDP-1"
 set $lenovo "Lenovo Group Limited G27q-30 UMB5TWAZ"
 set $msi "Microstep MSI MP271 PA2T191107364"
+set $hp_right "HP Inc. HP 527pu CNC5170681"
+set $hp_left "HP Inc. HP 527pu CNC51706GJ"
 
-### Workspace assignments (docked layout)
-workspace 1 output $lenovo
-workspace 2 output $lenovo
-workspace 3 output $lenovo
-workspace 4 output $lenovo
-workspace 5 output $lenovo
-workspace 6 output $msi
-workspace 7 output $msi
-workspace 8 output $msi
-workspace 9 output $msi
-workspace 10 output $msi
+### Workspace assignments
+### Each line lists outputs in priority order: sway picks the first
+### one that's actually connected, so this covers docked/desktop
+### (lenovo + msi), docked_office (hp pair), and laptop-only (eDP-1)
+### from one config.
+workspace 1 output $lenovo $hp_left $laptop
+workspace 2 output $lenovo $hp_left $laptop
+workspace 3 output $lenovo $hp_left $laptop
+workspace 4 output $lenovo $hp_left $laptop
+workspace 5 output $lenovo $hp_left $laptop
+workspace 6 output $msi $hp_right $laptop
+workspace 7 output $msi $hp_right $laptop
+workspace 8 output $msi $hp_right $laptop
+workspace 9 output $msi $hp_right $laptop
+workspace 10 output $msi $hp_right $laptop
