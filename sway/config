@@ -7,6 +7,9 @@ include config.d/keybinds
 include config.d/waybar
 
 ### Autostart
+exec systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP
+
 exec_always pkill -x swayosd-server; swayosd-server
 exec_always pkill -x waybar; waybar
 exec_always pkill -x mako; mako
