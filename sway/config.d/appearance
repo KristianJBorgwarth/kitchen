@@ -27,6 +27,11 @@ for_window [title="win.*"] floating enable
 # JetBrains project/welcome pickers report the same app_id as a real
 # project window and set no window_type/role hint at all, so title is
 # the only thing that tells them apart.
+#
+# DataGrip reuses the *same* window surface for its welcome picker and
+# the opened project (the title just changes from "Welcome to DataGrip"
+# to the project name in place), so floating it here would stick for
+# the whole session. Rider opens a separate window per project, so its
+# picker can be floated safely.
 for_window [app_id="jetbrains-rider" title="Welcome to JetBrains Rider"] floating enable
-for_window [app_id="jetbrains-datagrip" title="Welcome to DataGrip"] floating enable
 
