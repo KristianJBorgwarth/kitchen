@@ -37,6 +37,7 @@ thunar
 blueman
 wl-clipboard
 btop
+ripgrep
 
 # misc 
 fastfetch
