@@ -1,17 +1,22 @@
 * {
-    font-family: "JetBrains Mono Nerd Font", sans-serif;
-    font-size: 14px;
+    font-family: "JetBrainsMono Nerd Font Propo", sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
     min-height: 0;
 }
 
 window#waybar {
-    background: transparent;
+    background: rgba(18, 18, 20, 0.78);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+    color: #e8e8ea;
 }
 
 #waybar {
-    background-color: #161616;
-    border-radius: 4px;
-    margin: 6px 10px 0 10px;
+    background: transparent;
+    margin: 0;
+    border-radius: 0;
 }
 
 #workspaces,
@@ -25,86 +30,96 @@ window#waybar {
 #cpu,
 #memory,
 #tray {
-    background-color: #1e1e1e;
-    border-radius: 2px;
-    margin: 3px 4px;
-    padding: 0 14px;
-    color: #f2f4f8;
+    background: transparent;
+    padding: 0 10px;
+    color: #e8e8ea;
 }
 
 #workspaces {
-    padding: 0 5px;
+    padding: 0 6px;
 }
 
 #workspaces button {
-    padding: 0 9px;
-    margin: 0 2px;
-    border-radius: 2px;
-    color: #f2f4f8;
-    background-color: transparent;
+    padding: 0 7px;
+    margin: 0;
+    border-radius: 0;
+    color: #85858c;
+    background: transparent;
+    border-bottom: 2px solid transparent;
 }
 
 #workspaces button.empty {
-    color: #808080;
+    color: #4c4c52;
 }
 
 #workspaces button.focused,
 #workspaces button.active {
-    background-color: #ffffff;
-    color: #161616;
+    color: #ffffff;
+    border-bottom: 2px solid #ffffff;
 }
 
 #workspaces button.urgent {
-    background-color: #f2f4f8;
-    color: #161616;
+    color: #d98c8c;
+    border-bottom: 2px solid #d98c8c;
+}
+
+#workspaces button:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+#window {
+    color: #9a9aa2;
+    font-weight: 500;
 }
 
 tooltip {
-    background: #161616;
-    color: #f2f4f8;
-    border-radius: 4px;
+    background: rgba(18, 18, 20, 0.92);
+    color: #e8e8ea;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 tooltip label {
-    font-family: "JetBrains Mono Nerd Font", monospace;
-    font-size: 17px;
-    padding: 13px;
+    font-family: "JetBrainsMono Nerd Font Propo", sans-serif;
+    font-size: 13px;
+    padding: 10px;
 }
 
 #clock {
     color: #ffffff;
-    font-weight: bold;
+    font-weight: 600;
 }
 
 #pulseaudio.muted {
-    color: #808080;
+    color: #6a6a70;
 }
 
 #network.disconnected {
-    color: #808080;
+    color: #6a6a70;
 }
 
 #temperature,
 #battery {
-    color: #93ab93; /* muted green */
+    color: #93ab93;
 }
 
 #temperature.warning,
 #battery.warning {
-    color: #b8a86a; /* muted yellow */
+    color: #b8a86a;
 }
 
 #temperature.critical,
 #battery.critical {
-    color: #b57272; /* muted red */
+    color: #b57272;
 }
 
 #tray {
-    padding: 0 11px;
+    padding: 0 12px;
 }
 
 window#waybar.empty #window {
-    background-color: transparent;
+    background: transparent;
     color: transparent;
     padding: 0;
     margin: 0;
