@@ -29,6 +29,7 @@ lazygit
 git
 
 #general tools
+librewolf
 ghostty
 grim
 slurp

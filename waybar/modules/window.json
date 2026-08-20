@@ -8,7 +8,7 @@
       "^com\\.mitchellh\\.ghostty: nvim (.*)$": " $1",
       "^com\\.mitchellh\\.ghostty: (?!nvim($| ))(.*)$": "󰆍 $1",
       "^code: (.*)$": "󰨞 $1",
-      "^brave: (.*)$": "󰖟 $1",
+      "^librewolf: (.*)$": " $1",
       "^org\\.gnome\\.Nautilus: (.*)$": "󰉋 $1",
       "^discord: (.*)$": "󰙯 $1",
       "^steam: (.*)$": "󰓓 $1",
