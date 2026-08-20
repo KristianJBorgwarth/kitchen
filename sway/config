@@ -10,6 +10,10 @@ include config.d/waybar
 exec systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP
 
+# GTK4/libadwaita and portal-aware apps (Firefox, etc.) ignore settings.ini's
+# gtk-application-prefer-dark-theme; they read color-scheme from GSettings.
+exec gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+
 exec_always pkill -x swayosd-server; swayosd-server
 exec_always pkill -x waybar; waybar
 exec_always pkill -x mako; mako

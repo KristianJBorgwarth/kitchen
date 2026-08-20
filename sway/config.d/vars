@@ -4,7 +4,7 @@ set $down j
 set $up k
 set $right l
 set $term ghostty
-set $browser brave
+set $browser librewolf
 set $menu rofi -show drun
 set $screenshot grim -g "$(slurp)" - | swappy -f -
 set $filemanager thunar
