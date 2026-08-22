@@ -6,4 +6,3 @@ for file in "$zsh_config_dir"/*.zsh; do
 done
 unset zsh_config_dir file
 
-export PATH="$PATH:$HOME/.dotnet/tools"
