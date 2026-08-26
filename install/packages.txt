@@ -1,6 +1,6 @@
 #tiling
 sway
-sway-lock
+swaylock
 swayosd
 swaybg
 kanshi
