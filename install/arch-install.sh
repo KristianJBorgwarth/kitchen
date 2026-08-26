@@ -33,6 +33,6 @@ yay -S --needed --noconfirm proton-mail-bin
 
 # display manager
 sudo pacman -S --needed --noconfirm sddm
-sudo pacman -S --needed --noconfirm sddm-silent-theme
+yay -S --needed --noconfirm sddm-silent-theme
 sudo ln -sf "$REPO_DIR/sddm/sddm.conf" /etc/sddm.conf
 sudo systemctl enable sddm
