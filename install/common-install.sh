@@ -137,11 +137,14 @@ go install go.senan.xyz/cliphist@latest
 
 # JetBrains Toolbox (only bootstrap it if missing)
 TOOLBOX_DIR="$HOME/.local/share/JetBrains/Toolbox"
-TOOLBOX_BIN="$TOOLBOX_DIR/jetbrains-toolbox"
+TOOLBOX_BIN="$TOOLBOX_DIR/bin/jetbrains-toolbox"
 if [ ! -x "$TOOLBOX_BIN" ]; then
     TOOLBOX_TMP="$(mktemp -d)"
     curl -sSfL "https://data.services.jetbrains.com/products/download?platform=linux&code=TBA" -o "$TOOLBOX_TMP/toolbox.tar.gz"
     mkdir -p "$TOOLBOX_DIR"
     tar -xzf "$TOOLBOX_TMP/toolbox.tar.gz" -C "$TOOLBOX_DIR" --strip-components=1
     rm -rf "$TOOLBOX_TMP"
+    # first launch is what creates ~/.local/share/applications/jetbrains-toolbox.desktop (per JetBrains' own install docs)
+    "$TOOLBOX_BIN" >/dev/null 2>&1 &
+    disown
 fi
