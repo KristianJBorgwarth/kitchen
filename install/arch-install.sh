@@ -29,7 +29,7 @@ fi
 
 yay -Sy
 yay -S --needed --noconfirm waypaper
-yay -S --needed --noconfirm proton-mail
+yay -S --needed --noconfirm proton-mail-bin
 
 # display manager
 sudo pacman -S --needed --noconfirm sddm
