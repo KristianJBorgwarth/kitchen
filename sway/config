@@ -22,4 +22,4 @@ exec_always pkill -x kanshi; kanshi
 exec_always pkill -x nm-applet; nm-applet --indicator
 exec wl-paste --type text --watch cliphist store
 exec wl-paste --type image --watch cliphist store
-exec ~/usr/bin/waypaper --restore
+exec /usr/bin/waypaper --restore
