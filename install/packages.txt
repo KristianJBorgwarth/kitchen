@@ -15,17 +15,16 @@ pipewire-pulse
 pipewire-alsa
 wireplumber
 
-# build tools and dependencies
+#dev tools
 python-pipx
 cmake
 ninja-build
 unzip
 make
-
-# dev tools 
 dotnet-sdk-10.0
 github-cli
 lazygit
+tree-sitter-cli
 git
 
 #general tools
