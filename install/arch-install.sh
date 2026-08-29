@@ -21,6 +21,10 @@ sudo pacman -S --needed --noconfirm xorg-xwayland
 sudo pacman -S --needed --noconfirm librewolf
 sudo pacman -S --needed --noconfirm aspnet-targeting-pack
 
+# media tools
+sudo pacman -S --needed --noconfirm picard
+sudo pacman -S --needed --noconfirm feishin
+
 if [ -d "$SOURCE_DIR/yay" ]; then
     git -C "$SOURCE_DIR/yay" pull
 else
