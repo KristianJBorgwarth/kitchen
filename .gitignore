@@ -1,2 +1,3 @@
 local.zsh
 azure-install.sh
+environment.d/50-nuget.conf
