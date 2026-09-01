@@ -17,6 +17,3 @@ esac
 # run common install and setup
 ./common-install.sh
 ./symlink.sh
-
-
-# finalize
