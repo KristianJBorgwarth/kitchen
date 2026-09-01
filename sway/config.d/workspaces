@@ -13,7 +13,8 @@ workspace 1 output $lenovo $hp_left $laptop
 workspace 2 output $lenovo $hp_left $laptop
 workspace 3 output $lenovo $hp_left $laptop
 workspace 4 output $lenovo $hp_left $laptop
-workspace 5 output $lenovo $hp_left $laptop
+workspace 5 output $lenovo $hp_left $laptop 
+workspace x output $lenovo $hp_left $laptop 
 workspace 6 output $msi $hp_right $laptop
 workspace 7 output $msi $hp_right $laptop
 workspace 8 output $msi $hp_right $laptop

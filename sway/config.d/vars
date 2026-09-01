@@ -9,3 +9,4 @@ set $menu rofi -show drun
 set $screenshot grim -g "$(slurp)" - | swappy -f -
 set $filemanager thunar
 set $clipboard-history PATH="$PATH:$HOME/go/bin" sh -c 'cliphist list | rofi -dmenu -p "" | cliphist decode | wl-copy'
+set $monitor "music"

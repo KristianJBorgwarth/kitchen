@@ -9,6 +9,10 @@ floating_modifier $mod normal
 bindsym $mod+Shift+b reload
 bindsym $mod+Shift+v exec $clipboard-history
 
+# Hidden monitor workspace
+workspace_auto_back_and_forth yes
+bindsym $mod+m workspace $monitor
+
 # Focus
 bindsym $mod+$left focus left
 bindsym $mod+$down focus down
