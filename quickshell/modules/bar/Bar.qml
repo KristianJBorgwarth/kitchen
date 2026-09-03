@@ -35,6 +35,8 @@ Scope {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
             spacing: 8
+            rightPadding: 8
+            Resources {}
         }
     }
 }

@@ -4,7 +4,7 @@ import qs.core
 
 Row {
     id: root
-    spacing: 11
+    spacing: 15
     Repeater {
         model: 9
         Text {
@@ -16,7 +16,7 @@ Row {
             color: ws?.focused ? Main.theme.colFg : (ws ? Main.theme.colAccentLight : Main.theme.colMuted)
 
             font {
-                family: "Jetbrains Mono Nerd Font"
+                family: Main.fontFamily
                 pixelSize: 14
             }
 
