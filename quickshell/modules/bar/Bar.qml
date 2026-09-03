@@ -13,12 +13,28 @@ Scope {
         implicitHeight: 30
         color: Main.theme.colBg
 
-        Workspaces {
-            anchors.fill: parent
-            anchors.leftMargin: 8
+        Row {
+            id: leftRow
+            anchors.left: parent.left
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 4
+            leftPadding: 4
+            Workspaces {}
         }
-        Clock {
-            anchors.centerIn: parent
+
+        Row {
+            id: centerRow
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
+            Clock {}
+        }
+
+        Row {
+            id: rightRow
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 8
         }
     }
 }
