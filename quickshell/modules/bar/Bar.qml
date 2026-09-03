@@ -2,7 +2,7 @@ import Quickshell // for PanelWindow
 import Quickshell.I3
 import QtQuick // for Text
 import qs.core
-import "modules"
+import "components"
 
 Scope {
     id: root
@@ -10,7 +10,7 @@ Scope {
         anchors.top: true
         anchors.left: true
         anchors.right: true
-        implicitHeight: 20
+        implicitHeight: 30
         color: Main.theme.colBg
 
         Workspaces {
