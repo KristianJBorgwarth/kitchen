@@ -12,8 +12,14 @@ Row {
             required property int index
 
             property var ws: I3.workspaces.values.find(w => w.number === index + 1)
-            text: index + 1
-            color: ws?.focused ? Main.theme.colFg : (ws ? Main.theme.colAccentLight : Main.theme.colMuted)
+
+            property bool hasContent: {
+                const rep = ws?.lastIpcObject?.representation;
+                return !!rep && !/\[\s*\]$/.test(rep);
+            }
+
+            text: ws?.focused ? "" : index + 1
+            color: ws?.focused ? Main.theme.colFg : (hasContent ? Main.theme.colAccentLight : Main.theme.colMuted)
 
             font {
                 family: Main.fontFamily
