@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Mem
+// Storage — root filesystem usage
 Singleton {
     id: root
     property real usedPercent: 0
@@ -12,16 +12,15 @@ Singleton {
     property real totalGiB: 0
 
     Process {
-        id: memProc
-        command: ["sh", "-c", "awk '/^MemTotal:/{t=$2} /^MemAvailable:/{a=$2} END{print t, a}' /proc/meminfo"]
+        id: dfProc
+        command: ["sh", "-c", "df -k --output=used,size / | tail -1"]
         stdout: SplitParser {
             onRead: data => {
                 if (!data)
                     return;
                 var p = data.trim().split(/\s+/);
-                var totalKb = parseInt(p[0]);
-                var availKb = parseInt(p[1]);
-                var usedKb = totalKb - availKb;
+                var usedKb = parseInt(p[0]);
+                var totalKb = parseInt(p[1]);
                 root.usedPercent = Math.round(100 * usedKb / totalKb);
                 root.totalGiB = totalKb / 1048576;
                 root.usedGiB = usedKb / 1048576;
@@ -31,9 +30,9 @@ Singleton {
     }
 
     Timer {
-        interval: 2000
+        interval: 10000
         running: true
         repeat: true
-        onTriggered: memProc.running = true
+        onTriggered: dfProc.running = true
     }
 }
