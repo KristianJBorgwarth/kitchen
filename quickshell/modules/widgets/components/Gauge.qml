@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Shapes
+import Quickshell
 import QtQuick.Shapes.DesignHelpers
 import qs.core
 

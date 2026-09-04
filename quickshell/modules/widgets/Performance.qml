@@ -14,7 +14,7 @@ PanelWindow {
     anchors.right: true
 
     implicitWidth: 320
-    implicitHeight: 220
+    implicitHeight: 110
 
     margins {
         top: 4
@@ -93,38 +93,6 @@ PanelWindow {
                 Gauge {
                     value: Storage.usedPercent
                     label: "DISK"
-                }
-            }
-
-            Row {
-                spacing: 28
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Row {
-                    spacing: 6
-                    Text {
-                        text: "" // nf-fa-arrow_down
-                        color: Main.theme.colAccentLight
-                        font: Main.barFont
-                    }
-                    Text {
-                        text: Network.rxLabel
-                        color: Main.theme.colFg
-                        font: Main.barFont
-                    }
-                }
-                Row {
-                    spacing: 6
-                    Text {
-                        text: "" // nf-fa-arrow_up
-                        color: Main.theme.colAccentLight
-                        font: Main.barFont
-                    }
-                    Text {
-                        text: Network.txLabel
-                        color: Main.theme.colFg
-                        font: Main.barFont
-                    }
                 }
             }
         }
