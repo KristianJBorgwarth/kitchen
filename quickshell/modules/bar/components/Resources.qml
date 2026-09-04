@@ -1,15 +1,20 @@
 import Quickshell
 import QtQuick
 import qs.core
-import qs.services
+import qs.modules.widgets
 
 Row {
+    id: root
+    anchors.verticalCenter: parent.verticalCenter
     Text {
-        text: " " + Cpu.cpuUsage + "%"
+        id: memIcon
+        text: "󰓅" // nf-mdi-memory
         color: Main.theme.colFg
         font: Main.barFont
-    }
-    Text {
 
+        MouseArea {
+            anchors.fill: parent
+            onClicked: Performance.toggle()
+        }
     }
 }

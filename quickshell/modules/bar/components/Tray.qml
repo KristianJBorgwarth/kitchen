@@ -12,7 +12,7 @@ Row {
 
     Text {
         anchors.verticalCenter: parent.verticalCenter
-        text: root.showTray ? "" : "" // nf-fa-chevron_down / nf-fa-chevron_right
+        text: root.showTray ? "" : "" 
         color: Main.theme.colFg
         font: Main.barFont
 
