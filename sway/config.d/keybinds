@@ -81,6 +81,9 @@ mode "resize" {
 }
 bindsym $mod+r mode "resize"
 
+# qs
+bindsym $mod+shift+p exec qs ipc call performance toggle
+
 # Utilities
 bindsym --locked XF86AudioMute exec swayosd-client --output-volume mute-toggle
 bindsym --locked XF86AudioLowerVolume exec swayosd-client --output-volume lower
