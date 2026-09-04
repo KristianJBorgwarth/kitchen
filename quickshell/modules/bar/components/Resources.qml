@@ -9,4 +9,7 @@ Row {
         color: Main.theme.colFg
         font: Main.barFont
     }
+    Text {
+
+    }
 }

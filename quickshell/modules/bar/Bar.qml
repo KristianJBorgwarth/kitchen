@@ -10,7 +10,7 @@ Scope {
         anchors.top: true
         anchors.left: true
         anchors.right: true
-        implicitHeight: 30
+        implicitHeight: 25
         color: Main.theme.colBg
 
         Row {
