@@ -55,7 +55,7 @@ PanelWindow {
     Rectangle {
         id: blob
         anchors.fill: parent
-        radius: 14
+        radius: 4
         color: Main.theme.colBg
         border.color: Main.theme.colMuted
         border.width: 1

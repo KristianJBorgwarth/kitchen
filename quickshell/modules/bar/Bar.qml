@@ -10,34 +10,61 @@ Scope {
         anchors.top: true
         anchors.left: true
         anchors.right: true
-        implicitHeight: 25
-        color: Main.theme.colBg
+        implicitHeight: 38
+        color: "transparent"
 
-        Row {
-            id: leftRow
+        Rectangle {
+            id: leftPill
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 4
-            leftPadding: 4
-            Workspaces {}
+            anchors.leftMargin: 6
+            radius: 4
+            color: Main.theme.colBg
+            height: 25
+            width: leftRow.implicitWidth + 16
+
+            Row {
+                id: leftRow
+                anchors.centerIn: parent
+                spacing: 4
+                Workspaces {}
+            }
         }
 
-        Row {
-            id: centerRow
+        Rectangle {
+            id: centerPill
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 8
-            Clock {}
+            radius: 4
+            color: Main.theme.colBg
+            height: 25
+            width: centerRow.implicitWidth + 16
+
+            Row {
+                id: centerRow
+                anchors.centerIn: parent
+                spacing: 8
+                Clock {}
+            }
         }
 
-        Row {
-            id: rightRow
+        Rectangle {
+            id: rightPill
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 20
-            rightPadding: 8
-            Resources {}
-            Tray {}
+            anchors.rightMargin: 6
+            radius: 4
+            color: Main.theme.colBg
+            height: 25
+            width: rightRow.implicitWidth + 16
+
+            Row {
+                id: rightRow
+                anchors.centerIn: parent
+                spacing: 20
+                Resources {}
+                Tray {}
+            }
         }
     }
 }
