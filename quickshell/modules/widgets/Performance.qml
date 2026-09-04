@@ -26,6 +26,7 @@ PanelWindow {
     property bool opened: false
 
     function show() {
+        unmapTimer.stop();
         root.visible = true;
         opened = true;
     }
@@ -45,7 +46,10 @@ PanelWindow {
     Timer {
         id: unmapTimer
         interval: 220 // matches the scale Behavior duration below
-        onTriggered: root.visible = false
+        onTriggered: {
+            if (!root.opened)
+                root.visible = false;
+        }
     }
 
     Rectangle {

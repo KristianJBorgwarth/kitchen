@@ -8,7 +8,7 @@ Row {
     anchors.verticalCenter: parent.verticalCenter
     Text {
         id: memIcon
-        text: "󰓅" // nf-mdi-memory
+        text: "󰓅" 
         color: Main.theme.colFg
         font: Main.barFont
 

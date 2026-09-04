@@ -36,3 +36,6 @@ for_window [title="System Performance"] floating enable
 # picker can be floated safely.
 for_window [app_id="jetbrains-rider" title="Welcome to JetBrains Rider"] floating enable
 
+### Window opacity
+for_window [app_id="code-oss"] opacity 0.85
+
