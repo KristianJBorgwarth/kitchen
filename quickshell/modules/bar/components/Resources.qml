@@ -7,12 +7,6 @@ Row {
     Text {
         text: " " + Cpu.cpuUsage + "%"
         color: Main.theme.colFg
-        font {
-            family: Main.fontFamily
-            pixelSize: 14
-        }
-    }
-    Text {
-
+        font: Main.barFont
     }
 }

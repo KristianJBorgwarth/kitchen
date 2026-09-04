@@ -34,9 +34,10 @@ Scope {
             id: rightRow
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 8
+            spacing: 20
             rightPadding: 8
             Resources {}
+            Tray {}
         }
     }
 }
