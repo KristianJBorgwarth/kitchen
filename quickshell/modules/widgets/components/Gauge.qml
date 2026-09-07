@@ -10,7 +10,9 @@ Column {
     property real value: 0
     property real max: 100
     property string unit: "%"
+    property string displayText: ""
     property string label: ""
+    property string sublabel: ""
     property real diameter: 64
 
     spacing: 4
@@ -51,7 +53,7 @@ Column {
 
         Text {
             anchors.centerIn: parent
-            text: Math.round(root.value) + root.unit
+            text: root.displayText.length > 0 ? root.displayText : Math.round(root.value) + root.unit
             color: Main.theme.colFg
             font: Main.barFont
         }
@@ -61,6 +63,14 @@ Column {
         anchors.horizontalCenter: parent.horizontalCenter
         text: root.label
         color: Main.theme.colFg
+        font: Main.barFont
+    }
+
+    Text {
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: root.sublabel.length > 0
+        text: root.sublabel
+        color: Main.theme.colMuted
         font: Main.barFont
     }
 }

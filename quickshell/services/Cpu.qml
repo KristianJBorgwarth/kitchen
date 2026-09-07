@@ -10,6 +10,7 @@ Singleton {
     property string cpuUsage: "0"
     property real lastCpuIdle: 0
     property real lastCpuTotal: 0
+    property real tempC: 0
 
     Process {
         id: cpuProc
@@ -31,10 +32,26 @@ Singleton {
         Component.onCompleted: running = true
     }
 
+    Process {
+        id: cpuTempProc
+        command: ["sh", "-c", "~/.config/quickshell/scripts/hwmon_temp.sh k10temp Tctl"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data)
+                    return;
+                root.tempC = parseInt(data.trim());
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
     Timer {
         interval: 2000
         running: true
         repeat: true
-        onTriggered: cpuProc.running = true
+        onTriggered: {
+            cpuProc.running = true;
+            cpuTempProc.running = true;
+        }
     }
 }

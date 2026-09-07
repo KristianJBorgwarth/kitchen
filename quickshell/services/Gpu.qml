@@ -4,35 +4,28 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Storage — root filesystem usage
+// Gpu — AMD integrated GPU usage + temp
 Singleton {
     id: root
     property real usedPercent: 0
-    property real usedGiB: 0
-    property real totalGiB: 0
     property real tempC: 0
 
     Process {
-        id: dfProc
-        command: ["sh", "-c", "df -k --output=used,size / | tail -1"]
+        id: gpuUsageProc
+        command: ["sh", "-c", "cat /sys/class/drm/card*/device/gpu_busy_percent 2>/dev/null | head -1"]
         stdout: SplitParser {
             onRead: data => {
                 if (!data)
                     return;
-                var p = data.trim().split(/\s+/);
-                var usedKb = parseInt(p[0]);
-                var totalKb = parseInt(p[1]);
-                root.usedPercent = Math.round(100 * usedKb / totalKb);
-                root.totalGiB = totalKb / 1048576;
-                root.usedGiB = usedKb / 1048576;
+                root.usedPercent = parseInt(data.trim());
             }
         }
         Component.onCompleted: running = true
     }
 
     Process {
-        id: ssdTempProc
-        command: ["sh", "-c", "~/.config/quickshell/scripts/hwmon_temp.sh nvme Composite"]
+        id: gpuTempProc
+        command: ["sh", "-c", "~/.config/quickshell/scripts/hwmon_temp.sh amdgpu edge"]
         stdout: SplitParser {
             onRead: data => {
                 if (!data)
@@ -44,12 +37,12 @@ Singleton {
     }
 
     Timer {
-        interval: 10000
+        interval: 2000
         running: true
         repeat: true
         onTriggered: {
-            dfProc.running = true;
-            ssdTempProc.running = true;
+            gpuUsageProc.running = true;
+            gpuTempProc.running = true;
         }
     }
 }

@@ -10,6 +10,7 @@ Singleton {
     property real usedPercent: 0
     property real usedGiB: 0
     property real totalGiB: 0
+    property real tempC: 0
 
     Process {
         id: memProc
@@ -30,10 +31,26 @@ Singleton {
         Component.onCompleted: running = true
     }
 
+    Process {
+        id: memTempProc
+        command: ["sh", "-c", "~/.config/quickshell/scripts/hwmon_temp.sh spd5118"]
+        stdout: SplitParser {
+            onRead: data => {
+                if (!data)
+                    return;
+                root.tempC = parseInt(data.trim());
+            }
+        }
+        Component.onCompleted: running = true
+    }
+
     Timer {
         interval: 2000
         running: true
         repeat: true
-        onTriggered: memProc.running = true
+        onTriggered: {
+            memProc.running = true;
+            memTempProc.running = true;
+        }
     }
 }

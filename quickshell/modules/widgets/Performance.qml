@@ -13,9 +13,8 @@ PanelWindow {
     anchors.top: true
     anchors.right: true
 
-    implicitWidth: 320
-    implicitHeight: 204
-    margins.bottom: 4
+    implicitWidth: 340
+    implicitHeight: 260
 
     property bool opened: false
 
@@ -83,14 +82,17 @@ PanelWindow {
                 Gauge {
                     value: Number(Cpu.cpuUsage)
                     label: "CPU"
+                    sublabel: Cpu.tempC + "°C"
+                }
+                Gauge {
+                    value: Gpu.usedPercent
+                    label: "GPU"
+                    sublabel: Gpu.tempC + "°C"
                 }
                 Gauge {
                     value: Mem.usedPercent
                     label: "RAM"
-                }
-                Gauge {
-                    value: Storage.usedPercent
-                    label: "DISK"
+                    sublabel: Mem.tempC + "°C"
                 }
             }
 
@@ -98,6 +100,12 @@ PanelWindow {
                 spacing: 20
                 anchors.horizontalCenter: parent.horizontalCenter
 
+                Gauge {
+                    value: Storage.usedPercent
+                    displayText: Storage.usedGiB.toFixed(0) + "/" + Storage.totalGiB.toFixed(0) + "G"
+                    label: "DISK"
+                    sublabel: Storage.tempC + "°C"
+                }
                 Gauge {
                     value: QsMem.usedMiB
                     max: 1024
