@@ -2,6 +2,10 @@
     "sway/workspaces": {
         "disable-scroll": true,
         "all-outputs": true,
+        "format": "{icon}",
+        "format-icons": {
+            "focused": ""
+        },
         "persistent-workspaces": {
             "1": [],
             "2": [],

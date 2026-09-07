@@ -52,7 +52,11 @@ window#waybar {
     color: #4c4c52;
 }
 
-#workspaces button.focused,
+#workspaces button.focused {
+    color: #ffffff;
+    border-bottom: 2px solid transparent;
+}
+
 #workspaces button.active {
     color: #ffffff;
     border-bottom: 2px solid #ffffff;

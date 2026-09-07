@@ -10,7 +10,7 @@ Scope {
         anchors.top: true
         anchors.left: true
         anchors.right: true
-        implicitHeight: 38
+        implicitHeight: 30
         color: "transparent"
 
         Rectangle {
