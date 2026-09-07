@@ -14,14 +14,8 @@ PanelWindow {
     anchors.right: true
 
     implicitWidth: 320
-    implicitHeight: 110
-
-    margins {
-        top: 4
-        left: 4
-        bottom: 4
-        right: 4
-    }
+    implicitHeight: 204
+    margins.bottom: 4
 
     property bool opened: false
 
@@ -45,7 +39,7 @@ PanelWindow {
 
     Timer {
         id: unmapTimer
-        interval: 220 // matches the scale Behavior duration below
+        interval: 220
         onTriggered: {
             if (!root.opened)
                 root.visible = false;
@@ -97,6 +91,24 @@ PanelWindow {
                 Gauge {
                     value: Storage.usedPercent
                     label: "DISK"
+                }
+            }
+
+            Row {
+                spacing: 20
+                anchors.horizontalCenter: parent.horizontalCenter
+
+                Gauge {
+                    value: QsMem.usedMiB
+                    max: 1024
+                    unit: " MB"
+                    label: "Quickshell"
+                }
+                Gauge {
+                    value: SwayMem.usedMiB
+                    max: 1024
+                    unit: " MB"
+                    label: "Sway"
                 }
             }
         }

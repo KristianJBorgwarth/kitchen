@@ -7,7 +7,9 @@ import qs.core
 // Radial speedometer-style gauge: a 270° arc track with a value arc on top.
 Column {
     id: root
-    property real value: 0 // 0-100
+    property real value: 0
+    property real max: 100
+    property string unit: "%"
     property string label: ""
     property real diameter: 64
 
@@ -31,7 +33,7 @@ Column {
 
         EllipseShape {
             startAngle: -225
-            sweepAngle: 270 * Math.max(0, Math.min(100, root.value)) / 100
+            sweepAngle: 270 * Math.max(0, Math.min(root.max, root.value)) / root.max
             anchors.fill: parent
             innerArcRatio: 0.75
             strokeWidth: 6
@@ -49,7 +51,7 @@ Column {
 
         Text {
             anchors.centerIn: parent
-            text: Math.round(root.value) + "%"
+            text: Math.round(root.value) + root.unit
             color: Main.theme.colFg
             font: Main.barFont
         }
