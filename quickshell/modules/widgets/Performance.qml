@@ -10,11 +10,11 @@ PanelWindow {
     id: root
     visible: false
     color: "transparent"
-    anchors.top: true
-    anchors.right: true
+    anchors.bottom: true
+    exclusiveZone: 0
 
-    implicitWidth: 340
-    implicitHeight: 260
+    implicitWidth: 540
+    implicitHeight: 140
 
     property bool opened: false
 
@@ -53,7 +53,7 @@ PanelWindow {
         border.color: Main.theme.colMuted
         border.width: 1
 
-        transformOrigin: Item.TopRight
+        transformOrigin: Item.Bottom
         scale: root.opened ? 1 : 0
         opacity: root.opened ? 1 : 0
 
@@ -70,54 +70,42 @@ PanelWindow {
             }
         }
 
-        Column {
-            anchors.fill: parent
-            anchors.margins: 16
-            spacing: 16
+        Row {
+            anchors.centerIn: parent
+            spacing: 20
 
-            Row {
-                spacing: 20
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Gauge {
-                    value: Number(Cpu.cpuUsage)
-                    label: "CPU"
-                    sublabel: Cpu.tempC + "°C"
-                }
-                Gauge {
-                    value: Gpu.usedPercent
-                    label: "GPU"
-                    sublabel: Gpu.tempC + "°C"
-                }
-                Gauge {
-                    value: Mem.usedPercent
-                    label: "RAM"
-                    sublabel: Mem.tempC + "°C"
-                }
+            Gauge {
+                value: Number(Cpu.cpuUsage)
+                label: "CPU"
+                sublabel: Cpu.tempC + "°C"
             }
-
-            Row {
-                spacing: 20
-                anchors.horizontalCenter: parent.horizontalCenter
-
-                Gauge {
-                    value: Storage.usedPercent
-                    displayText: Storage.usedGiB.toFixed(0) + "/" + Storage.totalGiB.toFixed(0) + "G"
-                    label: "DISK"
-                    sublabel: Storage.tempC + "°C"
-                }
-                Gauge {
-                    value: QsMem.usedMiB
-                    max: 1024
-                    unit: " MB"
-                    label: "Quickshell"
-                }
-                Gauge {
-                    value: SwayMem.usedMiB
-                    max: 1024
-                    unit: " MB"
-                    label: "Sway"
-                }
+            Gauge {
+                value: Gpu.usedPercent
+                label: "GPU"
+                sublabel: Gpu.tempC + "°C"
+            }
+            Gauge {
+                value: Mem.usedPercent
+                label: "RAM"
+                sublabel: Mem.tempC + "°C"
+            }
+            Gauge {
+                value: Storage.usedPercent
+                displayText: Storage.usedGiB.toFixed(0) + "/" + Storage.totalGiB.toFixed(0) + "G"
+                label: "DISK"
+                sublabel: Storage.tempC + "°C"
+            }
+            Gauge {
+                value: QsMem.usedMiB
+                max: 1024
+                unit: " MB"
+                label: "Quickshell"
+            }
+            Gauge {
+                value: SwayMem.usedMiB
+                max: 1024
+                unit: " MB"
+                label: "Sway"
             }
         }
     }

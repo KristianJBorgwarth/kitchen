@@ -14,7 +14,7 @@ Singleton {
 
     Process {
         id: dfProc
-        command: ["sh", "-c", "df -k --output=used,size / | tail -1"]
+        command: ["sh", "-c", "df -k --output=used,size /home | tail -1"]
         stdout: SplitParser {
             onRead: data => {
                 if (!data)
