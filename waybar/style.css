@@ -36,11 +36,11 @@ window#waybar {
 }
 
 #workspaces {
-    padding: 0 6px;
+    padding: 0 4px;
 }
 
 #workspaces button {
-    padding: 0 7px;
+    padding: 0 4px;
     margin: 0;
     border-radius: 0;
     color: #e8e8ea;
@@ -75,6 +75,11 @@ window#waybar {
 #window {
     color: #9a9aa2;
     font-weight: 500;
+}
+
+#custom-separator {
+    color: #4c4c52;
+    padding: 0 4px;
 }
 
 tooltip {

@@ -5,8 +5,8 @@
         "format": "{icon}",
         "format-icons": {
             "focused": "",
-            "m": "music",
-            "d": "log"
+            "m": "",
+            "d": ""
         },
         "persistent-workspaces": {
             "1": [],

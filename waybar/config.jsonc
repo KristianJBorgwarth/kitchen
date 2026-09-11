@@ -6,6 +6,7 @@
     "spacing": 0,
     "include": [
         "modules/workspaces.json",
+        "modules/separator.json",
         "modules/window.json",
         "modules/clock.json",
         "modules/pulseaudio.json",
@@ -15,7 +16,7 @@
         "modules/cpu.json",
         "modules/memory.json"
     ],
-    "modules-left": ["sway/workspaces", "sway/mode", "sway/window"],
+    "modules-left": ["sway/workspaces", "custom/separator", "sway/mode", "sway/window"],
     "modules-center": ["clock"],
     "modules-right": ["pulseaudio", "memory", "cpu", "temperature", "battery", "tray"]
 }
