@@ -16,5 +16,4 @@ sudo systemctl disable --now swayosd-libinput-backend.service
 
 sudo apt install flatpak -y
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-flatpak install --user -y flathub io.gitlab.librewolf-community
 

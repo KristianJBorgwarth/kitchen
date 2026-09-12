@@ -18,7 +18,6 @@ sudo pacman -S --needed --noconfirm openssh
 sudo pacman -S --needed --noconfirm network-manager-applet
 sudo pacman -S --needed --noconfirm papirus-icon-theme nwg-look qt5ct qt6ct
 sudo pacman -S --needed --noconfirm xorg-xwayland
-sudo pacman -S --needed --noconfirm librewolf
 sudo pacman -S --needed --noconfirm aspnet-targeting-pack
 
 # media tools
@@ -35,6 +34,7 @@ fi
 yay -Sy
 yay -S --needed --noconfirm waypaper
 yay -S --needed --noconfirm proton-mail-bin
+yay -S --needed --noconfirm brave-bin
 
 # display manager
 sudo pacman -S --needed --noconfirm sddm
