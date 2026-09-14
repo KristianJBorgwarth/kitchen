@@ -1,0 +1,22 @@
+# Systems & PL
+https://research.swtch.com/feed.atom "systems" "go"
+https://fasterthanli.me/index.xml "rust" "systems"
+
+# .NET
+https://devblogs.microsoft.com/dotnet/feed "dotnet"
+https://codeblog.jonskeet.uk/feed "dotnet"
+https://ayende.com/blog/rss "dotnet" "event-sourcing"
+
+# General good writing
+https://mitchellh.com/feed.xml "general"
+
+# Aggregators
+https://lobste.rs/rss "lobsters"
+https://lobste.rs/t/plt.rss "lobsters" "plt"
+
+# Lua
+https://www.lua.org/recent.html
+
+
+# GO
+https://go.dev/blog/feed.atom

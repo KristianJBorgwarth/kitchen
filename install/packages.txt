@@ -38,6 +38,7 @@ blueman
 wl-clipboard
 btop
 ripgrep
+newsboat
 
 # misc 
 fastfetch

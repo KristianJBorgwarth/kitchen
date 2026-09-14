@@ -1,0 +1,22 @@
+browser "xdg-open %u"
+datetime-format "%Y-%m-%d %H:%M"
+auto-reload yes
+reload-time 60
+max-items 100
+show-read-feeds yes
+
+bind-key j next feedlist
+bind-key k prev feedlist
+bind-key l open feedlist
+bind-key h quit feedlist
+
+bind-key j next articlelist
+bind-key k prev articlelist
+bind-key J next-feed articlelist
+bind-key K prev-feed articlelist
+bind-key l open articlelist
+bind-key h quit articlelist
+
+bind-key j down article
+bind-key k up article
+bind-key h quit article
