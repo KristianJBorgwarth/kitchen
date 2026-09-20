@@ -16,4 +16,5 @@ esac
 
 # run common install and setup
 ./common-install.sh
+./docker-setup.sh
 ./symlink.sh

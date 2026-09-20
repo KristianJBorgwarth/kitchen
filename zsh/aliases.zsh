@@ -9,6 +9,7 @@ alias lg='lazygit'
 #git aliases
 alias ga='git add .'
 alias gp='git push .'
+alias gsm='git switch master'
 
 #utility
 alias get_monitors='swaymsg -t get_outputs'
