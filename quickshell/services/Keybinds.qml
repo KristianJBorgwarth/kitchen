@@ -110,8 +110,6 @@ Singleton {
         }
         if ((m = cmd.match(/swayosd-client\s+--brightness\s+(\S+)/)))
             return { desc: "Brightness " + (m[1] === "raise" ? "up" : "down"), glyph: "󰃠" };
-        if (/^exec\s+swaylock/.test(cmd))
-            return { desc: "Lock screen", glyph: "󰌾" };
         if (cmd.startsWith("exec")) {
             const progs = programs(cmd);
             const entry = progs.map(p => Apps.findEntry(p)).find(e => e) ?? null;
