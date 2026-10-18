@@ -6,10 +6,7 @@ gaps outer 2
 default_border pixel 2
 default_floating_border pixel 1
 
-client.focused          #d4d4d4 #d4d4d4 #d4d4d4 #d4d4d4 #d4d4d4
-client.focused_inactive #4c4c4c #4c4c4c #ffffff #4c4c4c #4c4c4c
-client.unfocused        #333333 #333333 #888888 #333333 #333333
-client.urgent           #900000 #900000 #ffffff #900000 #900000
+# window colors come from the quickshell palette: config.d/colors (generated)
 
 ### Floating windows
 for_window [window_role="pop-up"] floating enable

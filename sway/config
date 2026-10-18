@@ -2,6 +2,7 @@
 include config.d/vars
 include config.d/input
 include config.d/appearance
+include config.d/colors
 include config.d/workspaces
 include config.d/keybinds
 include config.d/waybar

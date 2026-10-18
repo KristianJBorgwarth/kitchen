@@ -19,7 +19,7 @@ k9s:
     invert: false
     defaultsToFullScreen: false
     useFullGVRTitle: false
-    skin: studio1804-monochrome
+    skin: kitchen
   skipLatestRevCheck: false
   disablePodCounting: false
   shellPod:

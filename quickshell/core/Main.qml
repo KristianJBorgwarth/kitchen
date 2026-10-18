@@ -6,7 +6,7 @@ import qs.core.themes
 
 Singleton {
     id: root
-    property Monochrome theme: Monochrome{}
+    property Theme theme: Theme {}
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
     // how long UI motion takes (open/close, dim, hovers); data smoothing has its own timings
     readonly property int anim: 50

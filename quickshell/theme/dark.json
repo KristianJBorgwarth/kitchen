@@ -1,0 +1,29 @@
+{
+    "name": "kitchen-dark",
+
+    "bg": "#141414",
+    "surface": "#1e1e1e",
+    "fg": "#e8e8e8",
+
+    "muted": "#3a3a3a",
+    "dim": "#5a5a5a",
+    "mid": "#808080",
+    "light": "#aaaaaa",
+
+    "blue": "#5f87af",
+    "violet": "#8787af",
+    "amber": "#d7af5f",
+    "green": "#87af5f",
+    "red": "#d75f5f",
+    "teal": "#5f9f9f",
+
+    "terminal": {
+        "background": "@bg",
+        "foreground": "@fg",
+        "cursor": "#ffffff",
+        "ansi": [
+            "#000000", "#ffffff", "#808080", "#ffffff", "#82a082", "#808080", "#a0a0a0", "#f0f0f0",
+            "#404040", "#ffffff", "#a0a0a0", "#ffffff", "#82a082", "#a0a0a0", "#e0e0e0", "#ffffff"
+        ]
+    }
+}
