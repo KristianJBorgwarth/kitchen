@@ -19,9 +19,11 @@ Item {
             color: Main.theme.colFg
             font: Main.barFont
         }
+        // silent shows the crossed bell; otherwise a bell with the count while there's history
         Text {
-            visible: Dnd.enabled
-            text: "󰂛"
+            id: bell
+            visible: Dnd.enabled || Notifs.count > 0
+            text: (Dnd.enabled ? "󰂛" : "󰂚") + (Notifs.count > 0 ? " " + Notifs.count : "")
             color: Main.theme.colFg
             font: Main.barFont
         }
@@ -37,5 +39,18 @@ Item {
         cursorShape: Qt.PointingHandCursor
         onClicked: ControlCenter.toggle()
         onWheel: wheel => Audio.setVolume(Audio.sink, (Audio.sink?.audio?.volume ?? 0) + (wheel.angleDelta.y > 0 ? 0.05 : -0.05))
+    }
+
+    // the bell opens straight on the notifications tab
+    MouseArea {
+        x: bell.x
+        width: bell.visible ? bell.width : 0
+        height: parent.height
+        cursorShape: Qt.PointingHandCursor
+        onClicked: {
+            ControlCenter.openTab("notifications");
+            if (!ControlCenter.opened)
+                ControlCenter.show();
+        }
     }
 }

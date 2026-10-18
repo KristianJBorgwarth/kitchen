@@ -9,6 +9,7 @@ Scope {
     readonly property var modalHost: ModalHost
     readonly property var switcher: Switcher
     Bar {}
+    NotificationPopups {}
     Ipc {}
     MusicIpc {}
 }

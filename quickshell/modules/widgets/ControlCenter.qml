@@ -14,8 +14,10 @@ import "components"
 Scope {
     id: root
     readonly property alias opened: modal.opened
-    property string tab: "sound" // "sound", "network", "bluetooth"
-    readonly property var tabs: ["sound", "network", "bluetooth"]
+    property string tab: "sound" // "sound", "network", "bluetooth", "notifications"
+    readonly property var tabs: ["sound", "network", "bluetooth", "notifications"]
+    // ticks the "2m ago" labels in the notifications tab
+    property real now: Date.now()
 
     property string pskFor: ""
     property string pskText: ""
@@ -98,6 +100,8 @@ Scope {
             { keys: "1", desc: "sound tab", run: () => root.openTab("sound") },
             { keys: "2", desc: "network tab", run: () => root.openTab("network") },
             { keys: "3", desc: "bluetooth tab", run: () => root.openTab("bluetooth") },
+            { keys: "4", desc: "notifications tab", run: () => root.openTab("notifications") },
+            { keys: "X", desc: "clear notifications", run: () => Notifs.clearAll() },
             { keys: "gt", desc: "next tab", run: () => root.cycleTab(1) },
             { keys: "gT", desc: "previous tab", run: () => root.cycleTab(-1) },
             { keys: "[", desc: "previous month", run: () => calendar.shift(-1) },
@@ -359,7 +363,7 @@ Scope {
                         id: tabTrack
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        width: 380
+                        width: 540
                         height: 40
                         radius: 12
                         color: Main.theme.colSurface
@@ -367,14 +371,15 @@ Scope {
                         readonly property var defs: [
                             { id: "sound", icon: "󰕾", label: "Sound", tint: Main.theme.colGreen },
                             { id: "network", icon: "󰛳", label: "Network", tint: Main.theme.colBlue },
-                            { id: "bluetooth", icon: "󰂯", label: "Bluetooth", tint: Main.theme.colViolet }
+                            { id: "bluetooth", icon: "󰂯", label: "Bluetooth", tint: Main.theme.colViolet },
+                            { id: "notifications", icon: "󰂚", label: "Notifications", tint: Main.theme.colAmber }
                         ]
                         readonly property int index: root.tabs.indexOf(root.tab)
 
                         Rectangle {
-                            x: 4 + tabTrack.index * (tabTrack.width - 8) / 3
+                            x: 4 + tabTrack.index * (tabTrack.width - 8) / tabTrack.defs.length
                             y: 4
-                            width: (tabTrack.width - 8) / 3
+                            width: (tabTrack.width - 8) / tabTrack.defs.length
                             height: tabTrack.height - 8
                             radius: 9
                             readonly property color tint: tabTrack.defs[tabTrack.index].tint
@@ -403,7 +408,7 @@ Scope {
                                 Item {
                                     id: tabItem
                                     required property var modelData
-                                    width: parent.width / 3
+                                    width: parent.width / tabTrack.defs.length
                                     height: parent.height
                                     Text {
                                         anchors.centerIn: parent
@@ -1022,6 +1027,83 @@ Scope {
                                     }
                                 }
                             }
+                        }
+                    }
+
+                    Item {
+                        anchors.fill: parent
+                        anchors.margins: 20
+                        visible: root.tab === "notifications"
+
+                        Item {
+                            id: notifHead
+                            width: parent.width
+                            height: 28
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: Notifs.count === 0 ? "󰂚  No notifications" : "󰂚  " + Notifs.count + (Notifs.count === 1 ? " notification" : " notifications")
+                                color: Main.theme.colFg
+                                font: Main.barFont
+                            }
+                            Row {
+                                anchors.right: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                spacing: 12
+                                Text {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: "Silent"
+                                    color: Main.theme.colAccentLight
+                                    font: Main.smallFont
+                                }
+                                Switch {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    checked: Dnd.enabled
+                                    accent: Main.theme.colRed
+                                    onToggled: Dnd.toggle()
+                                }
+                                Chip {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: Notifs.count > 0
+                                    text: "Clear all"
+                                    clickable: true
+                                    onClicked: Notifs.clearAll()
+                                }
+                            }
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            visible: Notifs.count === 0
+                            text: "You're all caught up"
+                            color: Main.theme.colAccentDark
+                            font: Main.barFont
+                        }
+
+                        ListView {
+                            anchors.top: notifHead.bottom
+                            anchors.topMargin: 12
+                            anchors.bottom: parent.bottom
+                            width: parent.width
+                            clip: true
+                            spacing: 8
+                            boundsBehavior: Flickable.StopAtBounds
+                            model: ScriptModel {
+                                values: root.opened && root.tab === "notifications" ? Notifs.list : []
+                            }
+                            delegate: NotificationCard {
+                                required property var modelData
+                                width: ListView.view.width
+                                notification: modelData
+                                now: root.now
+                            }
+                        }
+
+                        Timer {
+                            interval: 30000
+                            running: root.opened && root.tab === "notifications"
+                            repeat: true
+                            triggeredOnStart: true
+                            onTriggered: root.now = Date.now()
                         }
                     }
                 }

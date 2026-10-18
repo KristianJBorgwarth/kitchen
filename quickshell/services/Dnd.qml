@@ -4,27 +4,25 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Dnd — mako "do-not-disturb" mode (defined in mako/config)
+// Silent mode: notification popups are held back (critical ones still show) but
+// everything still lands in the history. Remembered across restarts.
 Singleton {
     id: root
-    property bool enabled: false
-
-    Process {
-        id: getProc
-        command: ["sh", "-c", "makoctl mode 2>/dev/null"]
-        stdout: StdioCollector {
-            onStreamFinished: root.enabled = this.text.split("\n").includes("do-not-disturb")
-        }
-        Component.onCompleted: running = true
-    }
-
-    Process {
-        id: toggleProc
-        command: ["makoctl", "mode", "-t", "do-not-disturb"]
-        onExited: getProc.running = true
-    }
+    readonly property bool enabled: settings.silent
 
     function toggle(): void {
-        toggleProc.running = true;
+        settings.silent = !settings.silent;
+    }
+
+    FileView {
+        // the file only exists once a setting has been changed
+        printErrors: false
+        path: Quickshell.statePath("notifications.json")
+        onAdapterUpdated: writeAdapter()
+
+        JsonAdapter {
+            id: settings
+            property bool silent: false
+        }
     }
 }
