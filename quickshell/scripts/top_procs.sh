@@ -1,27 +1,45 @@
-#!/bin/bash
+#!/bin/sh
 # top_procs.sh [n] — top n processes by CPU over a 0.5s window,
 # one per line: "pid cpu% rssMiB name" (cpu% is per core, like top)
+# Two `cat`s and one awk pass, picking the top n itself: few processes and little CPU,
+# since process starts are costly under EDR/AV. cat (not awk) reads /proc because
+# mawk, ubuntu's awk, gives up on pids that exit mid-read.
 n=${1:-8}
-hz=$(getconf CLK_TCK)
 page=$(getconf PAGESIZE)
 
-sample() {
-    for f in /proc/[0-9]*/stat; do
-        IFS= read -r l <"$f" 2>/dev/null || continue
-        # comm may contain spaces and parens, so split around the last ")"
-        comm=${l#*(}
-        comm=${comm%)*}
-        read -r -a a <<<"${l##*) }"
-        # a[0] is field 3 (state): utime=14 stime=15 rss=24
-        echo "${l%% *} $((a[11] + a[12])) ${a[21]} ${comm// /_}"
-    done
-}
-
-before=$(sample)
+before=$(cat /proc/[0-9]*/stat 2>/dev/null)
 sleep 0.5
-after=$(sample)
+after=$(cat /proc/[0-9]*/stat 2>/dev/null)
 
-awk -v hz="$hz" -v page="$page" '
-    NR == FNR { t[$1] = $2; next }
-    ($1 in t) { printf "%s %.1f %d %s\n", $1, ($2 - t[$1]) * 200 / hz, $3 * page / 1048576, $4 }
-' <(echo "$before") <(echo "$after") | sort -k2,2nr -k3,3nr | head -n "$n"
+printf '%s\n@@\n%s\n' "$before" "$after" | awk -v n="$n" -v page="$page" '
+    # "pid (comm) state …": comm may hold spaces and parens, so cut at the last ") "
+    function parse(line) {
+        rest = line
+        sub(/^[0-9]+ \(.*\) /, "", rest)
+        open = index(line, "(")
+        comm = substr(line, open + 1, length(line) - length(rest) - open - 2)
+        gsub(/ /, "_", comm)
+        split(rest, f, " ")
+        ticks = f[12] + f[13]
+        rss = f[22]
+    }
+    $0 == "@@" { second = 1; next }
+    !second { parse($0); t[$1] = ticks; next }
+    ($1 in t) {
+        parse($0)
+        cpu = (ticks - t[$1]) * 200 / 100   # USER_HZ is 100 on linux
+        # insertion into a top-n list (mawk has no asort)
+        for (i = 1; i <= n; i++) {
+            if (!(i in best) || cpu > bcpu[i] || (cpu == bcpu[i] && rss > brss[i])) {
+                for (j = n; j > i; j--) if ((j - 1) in best) { best[j] = best[j - 1]; bcpu[j] = bcpu[j - 1]; brss[j] = brss[j - 1] }
+                best[i] = $1 " " comm; bcpu[i] = cpu; brss[i] = rss
+                break
+            }
+        }
+    }
+    END {
+        for (i = 1; i <= n && (i in best); i++) {
+            split(best[i], b, " ")
+            printf "%s %.1f %d %s\n", b[1], bcpu[i], brss[i] * page / 1048576, b[2]
+        }
+    }'

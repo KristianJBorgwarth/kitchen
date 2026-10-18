@@ -233,8 +233,8 @@ Singleton {
         sampleSystem();
         if (gpuVendor === "amd")
             sampleAmdGpu();
-        // nvidia-smi is a process spawn; once a second is plenty
-        else if (gpuVendor === "nvidia" && now - _lastNvidia >= 1000 && !nvidiaProc.running) {
+        // nvidia-smi is a process start: every second while open, every 5s for history otherwise
+        else if (gpuVendor === "nvidia" && now - _lastNvidia >= (detailed ? 1000 : 5000) && !nvidiaProc.running) {
             _lastNvidia = now;
             nvidiaProc.running = true;
         }
@@ -315,7 +315,7 @@ Singleton {
         }
     }
 
-    // sensors: run always (slowly) so the cpu/gpu temps are there; full list is shown when detailed
+    // sensors: only while the monitor is open, nothing else shows temperatures
     Process {
         id: sensorsProc
         command: [Quickshell.shellPath("scripts/sensors.sh")]
@@ -355,8 +355,8 @@ Singleton {
     }
 
     Timer {
-        interval: root.detailed ? 2000 : 10000
-        running: true
+        interval: 2000
+        running: root.detailed
         repeat: true
         triggeredOnStart: true
         onTriggered: sensorsProc.running = true
@@ -400,10 +400,13 @@ Singleton {
         running: root.detailed
         repeat: true
         triggeredOnStart: true
+        property int ticks: 0
         onTriggered: {
             procsProc.running = true;
-            if (!dfProc.running)
+            // disk usage barely moves: refresh on open, then every 10s
+            if (ticks++ % 5 === 0 && !dfProc.running)
                 dfProc.running = true;
         }
+        onRunningChanged: ticks = 0
     }
 }
