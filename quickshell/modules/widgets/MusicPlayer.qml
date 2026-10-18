@@ -191,30 +191,40 @@ Scope {
                 anchors.fill: parent
             }
 
-            // blurred cover wash over the whole card
+            // blurred cover wash over the whole card. The blur runs on a 1/8-size copy that
+            // is scaled up: same look, a fraction of the GPU work (matters on laptop iGPUs)
             Item {
                 anchors.fill: parent
 
-                Image {
-                    id: wash
-                    anchors.fill: parent
-                    source: root.artUrl
-                    fillMode: Image.PreserveAspectCrop
-                    asynchronous: true
-                    sourceSize.width: 160
-                    sourceSize.height: 160
-                    visible: false
-                }
-                MultiEffect {
-                    anchors.fill: parent
-                    source: wash
-                    visible: wash.status === Image.Ready
-                    opacity: 0.45
-                    blurEnabled: true
-                    blur: 1
-                    blurMax: 64
-                    saturation: -0.3
-                    brightness: -0.2
+                Item {
+                    width: parent.width / 8
+                    height: parent.height / 8
+                    scale: 8
+                    transformOrigin: Item.TopLeft
+                    layer.enabled: true
+                    layer.smooth: true
+
+                    Image {
+                        id: wash
+                        anchors.fill: parent
+                        source: root.artUrl
+                        fillMode: Image.PreserveAspectCrop
+                        asynchronous: true
+                        sourceSize.width: 64
+                        sourceSize.height: 64
+                        visible: false
+                    }
+                    MultiEffect {
+                        anchors.fill: parent
+                        source: wash
+                        visible: wash.status === Image.Ready
+                        opacity: 0.45
+                        blurEnabled: true
+                        blur: 1
+                        blurMax: 8
+                        saturation: -0.3
+                        brightness: -0.2
+                    }
                 }
                 Rectangle {
                     anchors.fill: parent
