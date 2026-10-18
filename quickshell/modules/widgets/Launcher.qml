@@ -196,8 +196,8 @@ Scope {
 
     Modal {
         id: modal
-        maxWidth: 760
-        maxHeight: Math.min(520, 70 + list.contentHeight + padding * 2)
+        maxWidth: 700
+        maxHeight: Math.min(480, 66 + list.contentHeight + padding * 2)
         padding: 16
         // typing goes to the search box, so navigation sticks to keys it doesn't use
         bindings: [
@@ -215,7 +215,7 @@ Scope {
         Rectangle {
             id: field
             width: parent.width
-            height: 50
+            height: 46
             radius: Main.radius
             color: Main.theme.colSurface
             border.color: Main.theme.colMuted
@@ -242,7 +242,7 @@ Scope {
                 color: Main.theme.colFg
                 selectionColor: Main.theme.colAccentDark
                 font.family: Main.fontFamily
-                font.pixelSize: 16
+                font.pixelSize: 15
                 clip: true
                 Keys.onReturnPressed: root.launch(root.selected)
 
@@ -286,7 +286,7 @@ Scope {
                 required property int index
                 readonly property bool current: index === root.selected
                 width: ListView.view.width
-                height: 50
+                height: 46
                 radius: Main.radius
                 color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.04) : "transparent")
 
@@ -305,11 +305,11 @@ Scope {
                     anchors.left: parent.left
                     anchors.leftMargin: 12
                     anchors.verticalCenter: parent.verticalCenter
-                    width: 28
-                    height: 28
+                    width: 26
+                    height: 26
                     IconImage {
                         anchors.centerIn: parent
-                        implicitSize: 28
+                        implicitSize: 26
                         visible: !!row.modelData.icon
                         source: row.modelData.icon ? Quickshell.iconPath(row.modelData.icon, true) : ""
                     }
@@ -334,7 +334,7 @@ Scope {
                         text: row.modelData.name
                         color: Main.theme.colFg
                         font.family: Main.fontFamily
-                        font.pixelSize: 15
+                        font.pixelSize: 14
                         font.weight: row.modelData.kind === "calc" ? Font.DemiBold : Font.Normal
                         elide: Text.ElideRight
                     }

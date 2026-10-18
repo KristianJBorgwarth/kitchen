@@ -50,8 +50,8 @@ Scope {
 
     Modal {
         id: modal
-        maxWidth: 760
-        maxHeight: Math.min(520, 70 + list.contentHeight + padding * 2)
+        maxWidth: 700
+        maxHeight: Math.min(480, 66 + list.contentHeight + padding * 2)
         padding: 16
         bindings: [
             { keys: "<Down>", desc: "next", run: () => root.move(1) },
@@ -67,7 +67,7 @@ Scope {
         Rectangle {
             id: field
             width: parent.width
-            height: 50
+            height: 46
             radius: Main.radius
             color: Main.theme.colSurface
             border.color: Main.theme.colMuted
@@ -94,7 +94,7 @@ Scope {
                 color: Main.theme.colFg
                 selectionColor: Main.theme.colAccentDark
                 font.family: Main.fontFamily
-                font.pixelSize: 16
+                font.pixelSize: 15
                 clip: true
                 // shift+enter only copies
                 Keys.onReturnPressed: event => root.pick(event.modifiers & Qt.ShiftModifier)
@@ -149,7 +149,7 @@ Scope {
                 required property int index
                 readonly property bool current: index === root.selected
                 width: ListView.view.width
-                height: 44
+                height: 46
                 radius: Main.radius
                 color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.04) : "transparent")
 
