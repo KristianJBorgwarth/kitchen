@@ -7,4 +7,5 @@ import qs.modules.bar
 Scope {
     Bar {}
     Ipc {}
+    MusicIpc {}
 }

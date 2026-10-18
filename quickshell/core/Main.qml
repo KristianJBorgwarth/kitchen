@@ -13,4 +13,14 @@ Singleton {
         family: root.fontFamily,
         pixelSize: 13
     })
+
+    property font iconFont: Qt.font({
+        family: root.fontFamily,
+        pixelSize: 18
+    })
+
+    property font smallFont: Qt.font({
+        family: root.fontFamily,
+        pixelSize: 11
+    })
 }

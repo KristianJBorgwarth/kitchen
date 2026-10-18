@@ -1,50 +1,33 @@
 import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
-import Quickshell.Widgets
 import qs.core
+import qs.modules.widgets
 
-Row {
+// Tray button: opens the TrayPanel drawer under itself. Hidden with no tray items.
+Text {
     id: root
-    spacing: 8
+    anchors.verticalCenter: parent.verticalCenter
+    visible: SystemTray.items.values.length > 0
+    text: "\u{f003b}"
+    color: TrayPanel.opened ? Main.theme.colAccentLight : Main.theme.colFg
+    font: Main.barFont
+    scale: TrayPanel.opened ? 0.85 : 1
 
-    property bool showTray: false
-
-    Text {
-        anchors.verticalCenter: parent.verticalCenter
-        text: root.showTray ? "" : "" 
-        color: Main.theme.colFg
-        font: Main.barFont
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: root.showTray = !root.showTray
+    Behavior on scale {
+        NumberAnimation {
+            duration: 180
+            easing.type: Easing.OutBack
         }
     }
 
-    Repeater {
-        model: root.showTray ? SystemTray.items : []
-
-        delegate: IconImage {
-            id: icon
-            required property var modelData
-            implicitSize: 16
-            source: modelData.icon
-
-            MouseArea {
-                anchors.fill: parent
-                acceptedButtons: Qt.LeftButton | Qt.RightButton
-                onClicked: mouse => {
-                    if (icon.modelData.hasMenu) {
-                        const pos = QsWindow.itemPosition(icon);
-                        icon.modelData.display(QsWindow.window, pos.x, pos.y + icon.height);
-                    } else if (mouse.button === Qt.LeftButton) {
-                        icon.modelData.activate();
-                    } else {
-                        icon.modelData.secondaryActivate();
-                    }
-                }
-            }
-        }
+    MouseArea {
+        anchors.fill: parent
+        anchors.margins: -4
+        cursorShape: Qt.PointingHandCursor
+        onClicked: TrayPanel.toggle()
     }
+
+    // the drawer drops down centered under this button
+    Component.onCompleted: TrayPanel.anchorItem = root
 }
