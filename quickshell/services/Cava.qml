@@ -8,7 +8,7 @@ import Quickshell.Io
 // Only runs while something is playing; available is false when cava isn't installed.
 Singleton {
     id: root
-    readonly property int count: 14
+    readonly property int count: 48
     property bool available: false
     readonly property bool active: Media.player?.isPlaying ?? false
     property var bars: new Array(count).fill(0)

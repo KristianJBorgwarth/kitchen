@@ -2,19 +2,20 @@ import QtQuick
 import qs.core
 import qs.services
 
-// Mirrored spectrum bars fed by Cava. Without cava installed it fakes a
-// gentle wave while playing; when paused the bars settle into dots.
+// Mirrored spectrum bars fed by Cava, resampled down to `count` bars. Without cava
+// installed it fakes a gentle wave while playing; when paused the bars settle into dots.
 Item {
     id: root
+    property int count: 14
     property bool playing: false
     property real barWidth: 3
     property real gap: 2
     property real maxHeight: 16
 
-    implicitWidth: Cava.count * barWidth + (Cava.count - 1) * gap
+    implicitWidth: count * barWidth + (count - 1) * gap
     implicitHeight: maxHeight
 
-    property var fake: new Array(Cava.count).fill(0)
+    property var fake: new Array(count).fill(0)
     property real phase: 0
 
     Timer {
@@ -23,21 +24,35 @@ Item {
         repeat: true
         onTriggered: {
             root.phase += 0.35;
-            const out = new Array(Cava.count);
-            for (let i = 0; i < Cava.count; i++)
+            const out = new Array(root.count);
+            for (let i = 0; i < root.count; i++)
                 out[i] = 0.35 + 0.3 * Math.sin(root.phase + i * 0.7) + 0.25 * Math.sin(root.phase * 1.7 - i * 1.3) * Math.random();
             root.fake = out;
         }
     }
 
-    readonly property var levels: !root.playing ? new Array(Cava.count).fill(0) : Cava.available ? Cava.bars : fake
+    // average Cava's bars into `count` buckets
+    function resample(src) {
+        const out = new Array(count);
+        for (let i = 0; i < count; i++) {
+            const a = Math.floor(i * src.length / count);
+            const b = Math.max(a + 1, Math.floor((i + 1) * src.length / count));
+            let sum = 0;
+            for (let j = a; j < b; j++)
+                sum += src[j] ?? 0;
+            out[i] = sum / (b - a);
+        }
+        return out;
+    }
+
+    readonly property var levels: !playing ? new Array(count).fill(0) : Cava.available ? resample(Cava.bars) : fake
 
     Row {
         anchors.centerIn: parent
         spacing: root.gap
 
         Repeater {
-            model: Cava.count
+            model: root.count
 
             Rectangle {
                 required property int index

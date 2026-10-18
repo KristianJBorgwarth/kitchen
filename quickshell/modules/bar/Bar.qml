@@ -97,12 +97,6 @@ Scope {
                 id: nowPlaying
                 anchors.centerIn: parent
             }
-
-            // the player panel drops down centered under this island
-            Component.onCompleted: {
-                MusicPlayer.anchorX = Qt.binding(() => musicPill.x + musicPill.width / 2);
-                MusicPlayer.screen = Qt.binding(() => barWindow.screen);
-            }
         }
 
         Rectangle {

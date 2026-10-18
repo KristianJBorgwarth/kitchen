@@ -5,6 +5,7 @@ import Quickshell
 import Quickshell.I3
 import Quickshell.Wayland
 import qs.core
+import qs.core.components
 import qs.services
 import "components"
 
@@ -105,7 +106,26 @@ Scope {
             border.width: 1
 
             focus: true
-            Keys.onEscapePressed: root.hide()
+            Keys.onPressed: event => vimKeys.handle(event)
+
+            VimKeys {
+                id: vimKeys
+                readonly property var choices: Monitor.intervalChoices
+                function step(d) {
+                    const i = choices.indexOf(Monitor.openInterval);
+                    Monitor.setOpenInterval(choices[Math.max(0, Math.min(choices.length - 1, i + d))]);
+                }
+                bindings: [
+                    { keys: "+", desc: "update faster", run: () => step(-1) },
+                    { keys: "-", desc: "update slower", run: () => step(1) },
+                    { keys: "1", desc: "every 100ms", run: () => Monitor.setOpenInterval(100) },
+                    { keys: "2", desc: "every 200ms", run: () => Monitor.setOpenInterval(200) },
+                    { keys: "3", desc: "every 500ms", run: () => Monitor.setOpenInterval(500) },
+                    { keys: "4", desc: "every second", run: () => Monitor.setOpenInterval(1000) },
+                    { keys: "q", desc: "close", run: () => root.hide() },
+                    { keys: "<Esc>", desc: "", run: () => root.hide() }
+                ]
+            }
 
             scale: root.opened ? 1 : 0.94
             opacity: root.opened ? 1 : 0
@@ -770,6 +790,10 @@ Scope {
                         }
                     }
                 }
+            }
+
+            KeyHelp {
+                vimKeys: vimKeys
             }
         }
     }

@@ -82,6 +82,8 @@ Singleton {
     }
 
     FileView {
+        // the file only exists once a setting has been changed
+        printErrors: false
         path: Quickshell.statePath("monitor.json")
         onAdapterUpdated: writeAdapter()
 

@@ -4,6 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Wayland
 import qs.core
+import qs.core.components
 import qs.services
 import "components"
 
@@ -73,7 +74,7 @@ Scope {
         margins.right: 6
         WlrLayershell.layer: WlrLayer.Overlay
         WlrLayershell.namespace: "quickshell-controlcenter"
-        WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+        WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
         implicitWidth: 360
         implicitHeight: content.implicitHeight + 28
@@ -86,7 +87,34 @@ Scope {
             border.color: Main.theme.colMuted
             border.width: 1
             focus: true
-            Keys.onEscapePressed: root.hide()
+            Keys.onPressed: event => vimKeys.handle(event)
+
+            VimKeys {
+                id: vimKeys
+                function profileBy(d) {
+                    if (!PowerProfile.available)
+                        return;
+                    const p = PowerProfile.profiles;
+                    PowerProfile.set(p[Math.max(0, Math.min(p.length - 1, p.indexOf(PowerProfile.current) + d))]);
+                }
+                bindings: [
+                    { keys: "k", desc: "volume up", run: () => Audio.setVolume(Audio.sink, (Audio.sink?.audio?.volume ?? 0) + 0.05) },
+                    { keys: "j", desc: "volume down", run: () => Audio.setVolume(Audio.sink, (Audio.sink?.audio?.volume ?? 0) - 0.05) },
+                    { keys: "m", desc: "mute", run: () => Audio.toggleMute(Audio.sink) },
+                    { keys: "K", desc: "mic up", run: () => Audio.setVolume(Audio.source, (Audio.source?.audio?.volume ?? 0) + 0.05) },
+                    { keys: "J", desc: "mic down", run: () => Audio.setVolume(Audio.source, (Audio.source?.audio?.volume ?? 0) - 0.05) },
+                    { keys: "M", desc: "mute mic", run: () => Audio.toggleMute(Audio.source) },
+                    { keys: "w", desc: "wi-fi", run: () => { if (Network.hasWifi) Network.toggleWifi(); } },
+                    { keys: "b", desc: "bluetooth", run: () => Bt.toggle() },
+                    { keys: "s", desc: "silent", run: () => Dnd.toggle() },
+                    { keys: "c", desc: "caffeine", run: () => Caffeine.enabled = !Caffeine.enabled },
+                    { keys: "h", desc: "power: save more", run: () => profileBy(-1) },
+                    { keys: "l", desc: "power: perform more", run: () => profileBy(1) },
+                    { keys: "L", desc: "lock", run: () => { root.hide(); Session.lock(); } },
+                    { keys: "q", desc: "close", run: () => root.hide() },
+                    { keys: "<Esc>", desc: "", run: () => root.hide() }
+                ]
+            }
 
             transformOrigin: Item.TopRight
             scale: root.opened ? 1 : 0
@@ -306,6 +334,10 @@ Scope {
                         onClicked: MusicPlayer.show()
                     }
                 }
+            }
+
+            KeyHelp {
+                vimKeys: vimKeys
             }
         }
     }
