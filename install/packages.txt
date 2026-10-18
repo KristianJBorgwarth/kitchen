@@ -2,7 +2,6 @@
 sway
 swaylock
 swayidle
-swayosd
 swaybg
 kanshi
 waybar

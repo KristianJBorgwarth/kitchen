@@ -53,7 +53,6 @@ if [ "$QS_INSTALLED" != "$QS_VERSION" ]; then
     cmake --build "$SOURCE_DIR/quickshell/build"
     cmake --install "$SOURCE_DIR/quickshell/build"
 fi
-sudo systemctl disable --now swayosd-libinput-backend.service
 
 
 sudo apt install flatpak -y

@@ -14,7 +14,6 @@ exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CU
 # gtk-application-prefer-dark-theme; they read color-scheme from GSettings.
 exec gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 
-exec_always pkill -x swayosd-server; swayosd-server
 exec_always pkill -x quickshell; quickshell
 # lock before any sleep (lid, systemctl); -w holds the sleep until the lock is up
 exec_always pkill -x swayidle; swayidle -w before-sleep 'qs ipc call lock lock; sleep 0.5'

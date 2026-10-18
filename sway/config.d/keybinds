@@ -92,12 +92,12 @@ bindsym $mod+Alt_L exec qs ipc call switcher toggle
 bindsym Mod1+Super_L exec qs ipc call switcher toggle
 
 # Utilities
-bindsym --locked XF86AudioMute exec swayosd-client --output-volume mute-toggle
-bindsym --locked XF86AudioLowerVolume exec swayosd-client --output-volume lower
-bindsym --locked XF86AudioRaiseVolume exec swayosd-client --output-volume raise
-bindsym --locked XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
-bindsym --locked XF86MonBrightnessDown exec swayosd-client --brightness lower
-bindsym --locked XF86MonBrightnessUp exec swayosd-client --brightness raise
+bindsym --locked XF86AudioMute exec qs ipc call osd volumeMute
+bindsym --locked XF86AudioLowerVolume exec qs ipc call osd volumeDown
+bindsym --locked XF86AudioRaiseVolume exec qs ipc call osd volumeUp
+bindsym --locked XF86AudioMicMute exec qs ipc call osd micMute
+bindsym --locked XF86MonBrightnessDown exec qs ipc call osd brightnessDown
+bindsym --locked XF86MonBrightnessUp exec qs ipc call osd brightnessUp
 bindsym $mod+ctrl+l exec qs ipc call lock lock
 
 

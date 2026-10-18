@@ -83,4 +83,28 @@ Scope {
             Lock.preview();
         }
     }
+
+    // media keys
+    IpcHandler {
+        target: "osd"
+
+        function volumeUp(): void {
+            Osd.volume(0.05);
+        }
+        function volumeDown(): void {
+            Osd.volume(-0.05);
+        }
+        function volumeMute(): void {
+            Osd.toggleMute();
+        }
+        function micMute(): void {
+            Osd.toggleMicMute();
+        }
+        function brightnessUp(): void {
+            Osd.brightness(0.05);
+        }
+        function brightnessDown(): void {
+            Osd.brightness(-0.05);
+        }
+    }
 }

@@ -54,7 +54,7 @@ Singleton {
         setProc.running = true;
     }
 
-    // picks up changes from media keys / swayosd; sysfs has no change notifications
+    // picks up changes made outside the shell; sysfs has no change notifications
     Timer {
         interval: 3000
         running: root.available

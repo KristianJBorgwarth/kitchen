@@ -102,14 +102,17 @@ Singleton {
     function describe(cmd, varName) {
         let m;
         const dir = s => ({ left: "left", right: "right", up: "up", down: "down" })[s];
+        if ((m = cmd.match(/^exec\s+qs\s+ipc\s+call\s+osd\s+(\S+)/)))
+            return ({
+                    volumeUp: { desc: "Volume up", glyph: "󰕾" },
+                    volumeDown: { desc: "Volume down", glyph: "󰕾" },
+                    volumeMute: { desc: "Volume mute", glyph: "󰝟" },
+                    micMute: { desc: "Mic mute", glyph: "󰍭" },
+                    brightnessUp: { desc: "Brightness up", glyph: "󰃠" },
+                    brightnessDown: { desc: "Brightness down", glyph: "󰃠" }
+                })[m[1]] ?? { desc: m[1], glyph: "󰕾" };
         if ((m = cmd.match(/^exec\s+qs\s+ipc\s+call\s+(\S+)\s+\S+/)))
             return { desc: qsLabels[m[1]] ?? titleCase(m[1]), glyph: "󰣆" };
-        if ((m = cmd.match(/swayosd-client\s+--(output|input)-volume\s+(\S+)/))) {
-            const what = m[1] === "output" ? "Volume" : "Mic";
-            return { desc: what + " " + ({ raise: "up", lower: "down", "mute-toggle": "mute" })[m[2]], glyph: m[1] === "output" ? "󰕾" : "󰍬" };
-        }
-        if ((m = cmd.match(/swayosd-client\s+--brightness\s+(\S+)/)))
-            return { desc: "Brightness " + (m[1] === "raise" ? "up" : "down"), glyph: "󰃠" };
         if (cmd.startsWith("exec")) {
             const progs = programs(cmd);
             const entry = progs.map(p => Apps.findEntry(p)).find(e => e) ?? null;
