@@ -89,8 +89,8 @@ Scope {
         { name: "System monitor", glyph: "󰓅", keys: "performance cpu memory processes", run: () => SystemMonitor.show() },
         { name: "Keybinds", glyph: "󰌌", keys: "shortcuts cheatsheet help", run: () => Cheatsheet.show() },
         { name: "Workspaces", glyph: "󰕰", keys: "switcher overview", run: () => Switcher.toggle() },
-        { name: "Lock screen", glyph: "󰌾", keys: "lock", run: () => Session.lock() },
-        { name: "Suspend", glyph: "󰤄", keys: "sleep", run: () => Session.suspend() },
+        { name: "Lock screen", glyph: "󰌾", keys: "lock", run: () => Lock.lock() },
+        { name: "Suspend", glyph: "󰤄", keys: "sleep", run: () => Lock.suspend() },
         { name: "Log out", glyph: "󰍃", keys: "logout exit sway", run: () => Session.logout() },
         { name: "Reboot", glyph: "󰜉", keys: "restart", run: () => Session.reboot() },
         { name: "Power off", glyph: "󰐥", keys: "shutdown poweroff", run: () => Session.poweroff() }

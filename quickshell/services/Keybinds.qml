@@ -77,6 +77,7 @@ Singleton {
             keybinds: "Keybinds",
             launcher: "App launcher",
             clipboard: "Clipboard history",
+            lock: "Lock screen",
             switcher: "Workspace switcher"
         })
 
@@ -101,7 +102,7 @@ Singleton {
     function describe(cmd, varName) {
         let m;
         const dir = s => ({ left: "left", right: "right", up: "up", down: "down" })[s];
-        if ((m = cmd.match(/^exec\s+qs\s+ipc\s+call\s+(\S+)\s+toggle/)))
+        if ((m = cmd.match(/^exec\s+qs\s+ipc\s+call\s+(\S+)\s+\S+/)))
             return { desc: qsLabels[m[1]] ?? titleCase(m[1]), glyph: "󰣆" };
         if ((m = cmd.match(/swayosd-client\s+--(output|input)-volume\s+(\S+)/))) {
             const what = m[1] === "output" ? "Volume" : "Mic";

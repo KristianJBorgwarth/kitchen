@@ -106,7 +106,7 @@ Scope {
             { keys: "gT", desc: "previous tab", run: () => root.cycleTab(-1) },
             { keys: "[", desc: "previous month", run: () => calendar.shift(-1) },
             { keys: "]", desc: "next month", run: () => calendar.shift(1) },
-            { keys: "L", desc: "lock", run: () => { root.hide(); Session.lock(); } },
+            { keys: "L", desc: "lock", run: () => { root.hide(); Lock.lock(); } },
             { keys: "<Esc>", desc: "", run: () => root.pskFor ? root.pskFor = "" : root.hide() }
         ]
 
@@ -191,8 +191,8 @@ Scope {
                         anchors.margins: 6
                         Repeater {
                             model: [
-                                { icon: "󰌾", confirm: false, danger: false, run: () => { root.hide(); Session.lock(); } },
-                                { icon: "󰤄", confirm: false, danger: false, run: () => { root.hide(); Session.suspend(); } },
+                                { icon: "󰌾", confirm: false, danger: false, run: () => { root.hide(); Lock.lock(); } },
+                                { icon: "󰤄", confirm: false, danger: false, run: () => { root.hide(); Lock.suspend(); } },
                                 { icon: "󰍃", confirm: true, danger: true, run: () => Session.logout() },
                                 { icon: "󰜉", confirm: true, danger: true, run: () => Session.reboot() },
                                 { icon: "󰐥", confirm: true, danger: true, run: () => Session.poweroff() }

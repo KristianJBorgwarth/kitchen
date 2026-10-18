@@ -35,9 +35,6 @@ Singleton {
         onTriggered: uptimeFile.reload()
     }
 
-    function lock(): void {
-        Quickshell.execDetached(["swaylock"]);
-    }
     function logout(): void {
         Quickshell.execDetached(["swaymsg", "exit"]);
     }

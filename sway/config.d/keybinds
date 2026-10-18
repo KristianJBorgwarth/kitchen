@@ -98,6 +98,6 @@ bindsym --locked XF86AudioRaiseVolume exec swayosd-client --output-volume raise
 bindsym --locked XF86AudioMicMute exec swayosd-client --input-volume mute-toggle
 bindsym --locked XF86MonBrightnessDown exec swayosd-client --brightness lower
 bindsym --locked XF86MonBrightnessUp exec swayosd-client --brightness raise
-bindsym $mod+ctrl+l exec swaylock
+bindsym $mod+ctrl+l exec qs ipc call lock lock
 
 

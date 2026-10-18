@@ -71,4 +71,16 @@ Scope {
             ClipboardPicker.toggle();
         }
     }
+
+    IpcHandler {
+        target: "lock"
+
+        function lock(): void {
+            Lock.lock();
+        }
+        // the lock screen without locking, to look at it
+        function preview(): void {
+            Lock.preview();
+        }
+    }
 }
