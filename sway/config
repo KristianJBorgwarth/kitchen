@@ -21,4 +21,3 @@ exec_always pkill -x kanshi; kanshi
 exec_always pkill -x nm-applet; nm-applet --indicator
 exec env PATH="$PATH:$HOME/go/bin" wl-paste --type text --watch cliphist store
 exec env PATH="$PATH:$HOME/go/bin" wl-paste --type image --watch cliphist store
-exec /usr/bin/waypaper --restore

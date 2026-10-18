@@ -35,7 +35,6 @@ fi
 (cd "$SOURCE_DIR/yay" && makepkg -si --noconfirm)
 
 yay -Sy
-yay -S --needed --noconfirm waypaper
 yay -S --needed --noconfirm proton-mail-bin
 yay -S --needed --noconfirm brave-bin
 

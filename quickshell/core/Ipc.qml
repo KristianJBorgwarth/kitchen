@@ -58,6 +58,18 @@ Scope {
     }
 
     IpcHandler {
+        target: "wallpaper"
+
+        function toggle(): void {
+            WallpaperPicker.toggle();
+        }
+
+        function random(): void {
+            Wallpaper.random();
+        }
+    }
+
+    IpcHandler {
         target: "theme"
 
         // dark ↔ light

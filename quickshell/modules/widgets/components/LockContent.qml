@@ -37,16 +37,7 @@ Item {
         precision: SystemClock.Minutes
     }
 
-    // the wallpaper waypaper set, found through its config ("wallpaper = ~/…")
-    FileView {
-        id: waypaper
-        path: Quickshell.env("HOME") + "/.config/waypaper/config.ini"
-        printErrors: false
-    }
-    readonly property string wallpaper: {
-        const m = waypaper.text().match(/^wallpaper\s*=\s*(.+)$/m);
-        return m ? "file://" + m[1].trim().replace(/^~/, Quickshell.env("HOME")) : "";
-    }
+    readonly property string wallpaper: Wallpaper.url
 
     Rectangle {
         anchors.fill: parent

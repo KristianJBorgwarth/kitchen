@@ -79,7 +79,8 @@ Singleton {
             clipboard: "Clipboard history",
             lock: "Lock screen",
             theme: "Dark / light mode",
-            switcher: "Workspace switcher"
+            switcher: "Workspace switcher",
+            wallpaper: "Wallpaper picker"
         })
 
     function titleCase(s) {

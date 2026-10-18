@@ -134,6 +134,7 @@ Scope {
         { name: "Music player", glyph: "󰎈", keys: "now playing song", run: () => MusicPlayer.show() },
         { name: "System monitor", glyph: "󰓅", keys: "performance cpu memory processes", run: () => SystemMonitor.show() },
         { name: "Keybinds", glyph: "󰌌", keys: "shortcuts cheatsheet help", run: () => Cheatsheet.show() },
+        { name: "Wallpaper", glyph: "󰸉", keys: "background picker image", run: () => WallpaperPicker.toggle() },
         { name: "Workspaces", glyph: "󰕰", keys: "switcher overview", run: () => Switcher.toggle() },
         { name: "Toggle dark / light mode", glyph: "󰔎", keys: "theme dark light mode", run: () => Main.theme.toggle() },
         { name: "Lock screen", glyph: "󰌾", keys: "lock", run: () => Lock.lock() },

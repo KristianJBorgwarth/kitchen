@@ -90,6 +90,7 @@ bindsym $mod+i exec qs ipc call keybinds toggle
 bindsym $mod+c exec qs ipc call controlcenter toggle
 bindsym $mod+Shift+t exec qs ipc call theme toggle
 bindsym $mod+Tab exec qs ipc call switcher toggle
+bindsym $mod+Shift+w exec qs ipc call wallpaper toggle
 
 # Utilities
 bindsym --locked XF86AudioMute exec qs ipc call osd volumeMute

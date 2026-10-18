@@ -9,6 +9,7 @@ import qs.modules.widgets
 Scope {
     readonly property var modalHost: ModalHost
     readonly property var switcher: Switcher
+    readonly property var wallpaper: Wallpaper
     // writes ghostty / sway / k9s colors from the palette
     readonly property var themeExport: ThemeExport
     Bar {}
