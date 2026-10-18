@@ -25,9 +25,14 @@ Scope {
             property string mode: "dark"
         }
     }
-    readonly property var palette: {
+    // both loaded up front: re-pointing one file at the other palette lagged a switch behind
+    readonly property var palette: dark ? darkPalette : lightPalette
+    readonly property var darkPalette: parse(darkFile.text())
+    readonly property var lightPalette: parse(lightFile.text())
+
+    function parse(text) {
         try {
-            return JSON.parse(file.text());
+            return JSON.parse(text);
         } catch (e) {
             return {};
         }
@@ -35,8 +40,15 @@ Scope {
 
     // loaded before first paint, so nothing flashes in fallback colors
     FileView {
-        id: file
-        path: Quickshell.shellPath("theme/" + root.name + ".json")
+        id: darkFile
+        path: Quickshell.shellPath("theme/dark.json")
+        blockLoading: true
+        watchChanges: true
+        onFileChanged: reload()
+    }
+    FileView {
+        id: lightFile
+        path: Quickshell.shellPath("theme/light.json")
         blockLoading: true
         watchChanges: true
         onFileChanged: reload()
