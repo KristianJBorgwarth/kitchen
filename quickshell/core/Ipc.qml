@@ -1,13 +1,19 @@
 import Quickshell
 import Quickshell.Io
 import qs.modules.widgets
+import qs.services
 
 Scope {
     IpcHandler {
         target: "performance"
 
         function toggle(): void {
-            Performance.toggle();
+            SystemMonitor.toggle();
+        }
+
+        // sample interval (ms) used while the monitor is open
+        function setInterval(ms: int): void {
+            Monitor.setOpenInterval(ms);
         }
     }
 
