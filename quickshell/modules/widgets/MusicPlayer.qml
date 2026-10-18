@@ -473,7 +473,7 @@ Scope {
                                     width: parent.width
                                     height: seekMouse.containsMouse ? 6 : 4
                                     radius: height / 2
-                                    color: Qt.rgba(1, 1, 1, 0.12)
+                                    color: Main.theme.overlay(0.12)
 
                                     Behavior on height {
                                         NumberAnimation {

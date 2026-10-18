@@ -11,9 +11,7 @@ include config.d/waybar
 exec systemctl --user import-environment WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CURRENT_DESKTOP
 
-# GTK4/libadwaita and portal-aware apps (Firefox, etc.) ignore settings.ini's
-# gtk-application-prefer-dark-theme; they read color-scheme from GSettings.
-exec gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+# light/dark (color-scheme, GTK and icon themes) is set by quickshell's theme switch
 
 exec_always pkill -x quickshell; quickshell
 # lock before any sleep (lid, systemctl); -w holds the sleep until the lock is up

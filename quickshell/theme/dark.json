@@ -10,6 +10,8 @@
     "mid": "#808080",
     "light": "#aaaaaa",
 
+    "overlay": "#ffffff",
+
     "blue": "#5f87af",
     "violet": "#8787af",
     "amber": "#d7af5f",

@@ -78,6 +78,7 @@ Singleton {
             launcher: "App launcher",
             clipboard: "Clipboard history",
             lock: "Lock screen",
+            theme: "Dark / light mode",
             switcher: "Workspace switcher"
         })
 

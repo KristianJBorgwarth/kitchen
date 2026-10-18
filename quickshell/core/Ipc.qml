@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Io
+import qs.core
 import qs.modules.widgets
 import qs.services
 
@@ -53,6 +54,15 @@ Scope {
 
         function toggle(): void {
             Switcher.toggle();
+        }
+    }
+
+    IpcHandler {
+        target: "theme"
+
+        // dark ↔ light
+        function toggle(): void {
+            Main.theme.toggle();
         }
     }
 

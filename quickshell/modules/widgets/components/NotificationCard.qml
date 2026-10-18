@@ -20,7 +20,7 @@ Rectangle {
     implicitHeight: body.implicitHeight + 28
     radius: Main.radius
     color: popup ? Main.theme.colBg : (hovered ? Qt.lighter(Main.theme.colSurface, 1.2) : Main.theme.colSurface)
-    border.color: popup ? Main.theme.colMuted : Qt.rgba(1, 1, 1, 0.05)
+    border.color: popup ? Main.theme.colMuted : Main.theme.overlay(0.05)
     border.width: 1
 
     MouseArea {

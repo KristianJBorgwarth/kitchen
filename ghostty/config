@@ -14,4 +14,4 @@ background-opacity = 0.90
 confirm-close-surface = false
 window-inherit-working-directory = false
 
-theme = kitchen-dark.conf
+theme = light:kitchen-light.conf,dark:kitchen-dark.conf

@@ -40,7 +40,7 @@ Item {
         y: root.baseY
         width: parent.width
         height: 1
-        color: Qt.rgba(1, 1, 1, 0.06)
+        color: Main.theme.overlay(0.06)
     }
 
     Repeater {
@@ -87,7 +87,7 @@ Item {
                 gradient: Gradient {
                     GradientStop {
                         position: 0
-                        color: Qt.rgba(1, 1, 1, 0.14)
+                        color: Main.theme.overlay(0.14)
                     }
                     GradientStop {
                         position: 1

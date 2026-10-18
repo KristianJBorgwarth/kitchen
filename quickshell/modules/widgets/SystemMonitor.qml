@@ -217,7 +217,7 @@ Scope {
                                 width: cores.barW
                                 height: cores.height
                                 radius: 2
-                                color: Qt.rgba(1, 1, 1, 0.04)
+                                color: Main.theme.overlay(0.04)
 
                                 Rectangle {
                                     anchors.bottom: parent.bottom
@@ -526,7 +526,7 @@ Scope {
                                     height: parent.height - 4
                                     width: parent.width * Math.min(1, parent.modelData.cpu / 100)
                                     radius: 4
-                                    color: Qt.rgba(1, 1, 1, 0.05)
+                                    color: Main.theme.overlay(0.05)
 
                                     Behavior on width {
                                         NumberAnimation {

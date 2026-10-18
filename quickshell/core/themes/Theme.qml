@@ -6,7 +6,25 @@ import Quickshell.Io
 // writes the other apps' colors (ghostty, sway, k9s) from the same file.
 Scope {
     id: root
-    property string name: "dark"
+    // fixed: always that palette (the lock screen stays dark). Otherwise the saved mode.
+    property string fixed: ""
+    readonly property string name: fixed || settings.mode
+    readonly property bool dark: name === "dark"
+
+    function toggle(): void {
+        settings.mode = dark ? "light" : "dark";
+    }
+
+    FileView {
+        printErrors: false
+        path: Quickshell.statePath("theme.json")
+        onAdapterUpdated: writeAdapter()
+
+        JsonAdapter {
+            id: settings
+            property string mode: "dark"
+        }
+    }
     readonly property var palette: {
         try {
             return JSON.parse(file.text());
@@ -37,4 +55,10 @@ Scope {
     readonly property color colGreen: palette.green ?? "#87af5f"
     readonly property color colRed: palette.red ?? "#d75f5f"
     readonly property color colTeal: palette.teal ?? "#5f9f9f"
+    // the tint for hovers, borders and tracks: white on dark, black on light
+    readonly property color colOverlay: palette.overlay ?? "#ffffff"
+
+    function overlay(alpha) {
+        return Qt.rgba(colOverlay.r, colOverlay.g, colOverlay.b, alpha);
+    }
 }

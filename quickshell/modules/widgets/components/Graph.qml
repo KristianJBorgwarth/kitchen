@@ -61,7 +61,7 @@ Canvas {
         const ctx = getContext("2d");
         ctx.reset();
 
-        ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.05);
+        ctx.strokeStyle = Main.theme.overlay(0.05);
         ctx.lineWidth = 1;
         for (const f of [0.25, 0.5, 0.75]) {
             const gy = Math.round(height * f) + 0.5;

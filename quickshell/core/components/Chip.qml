@@ -17,8 +17,8 @@ Rectangle {
     implicitHeight: 24
     implicitWidth: Math.min(maxWidth, label.implicitWidth + padding * 2)
     radius: Main.radius
-    color: active ? (filled ? tint : Qt.rgba(tint.r, tint.g, tint.b, 0.18)) : (hovered && clickable ? Qt.rgba(1, 1, 1, 0.1) : Qt.rgba(1, 1, 1, 0.04))
-    border.color: active && !filled ? tint : Qt.rgba(1, 1, 1, 0.08)
+    color: active ? (filled ? tint : Qt.rgba(tint.r, tint.g, tint.b, 0.18)) : (hovered && clickable ? Main.theme.overlay(0.1) : Main.theme.overlay(0.04))
+    border.color: active && !filled ? tint : Main.theme.overlay(0.08)
     border.width: 1
 
     Behavior on color {

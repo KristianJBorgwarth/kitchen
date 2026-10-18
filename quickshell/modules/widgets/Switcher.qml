@@ -347,7 +347,7 @@ Scope {
                     width: height * slot.aspect
                     radius: Main.radius
                     color: Main.theme.colSurface
-                    border.color: slot.current ? Main.theme.colBlue : Qt.rgba(1, 1, 1, 0.14)
+                    border.color: slot.current ? Main.theme.colBlue : Main.theme.overlay(0.14)
                     border.width: slot.current ? 2 : 1
 
                     ClippingRectangle {
@@ -380,7 +380,7 @@ Scope {
                                 height: modelData.rect.height * s
                                 radius: Main.radius
                                 color: Main.theme.colSurface
-                                border.color: Qt.rgba(1, 1, 1, 0.08)
+                                border.color: Main.theme.overlay(0.08)
                                 IconImage {
                                     anchors.centerIn: parent
                                     implicitSize: Math.min(48, parent.height / 3)

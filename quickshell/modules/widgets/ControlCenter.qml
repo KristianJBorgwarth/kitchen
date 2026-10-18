@@ -100,6 +100,7 @@ Scope {
             { keys: "b", desc: "bluetooth", run: () => Bt.toggle() },
             { keys: "s", desc: "silent", run: () => Dnd.toggle() },
             { keys: "n", desc: "night light", run: () => NightLight.toggle() },
+            { keys: "d", desc: "dark / light mode", run: () => Main.theme.toggle() },
             { keys: "a", desc: "stay awake", run: () => Awake.enabled = !Awake.enabled },
             { keys: "h", desc: "power: save more", run: () => root.profileBy(-1) },
             { keys: "l", desc: "power: perform more", run: () => root.profileBy(1) },
@@ -129,7 +130,7 @@ Scope {
                     height: 138
                     radius: Main.radius
                     color: Main.theme.colSurface
-                    border.color: Qt.rgba(1, 1, 1, 0.05)
+                    border.color: Main.theme.overlay(0.05)
                     border.width: 1
 
                     Column {
@@ -186,7 +187,7 @@ Scope {
                     height: 56
                     radius: Main.radius
                     color: Main.theme.colSurface
-                    border.color: Qt.rgba(1, 1, 1, 0.05)
+                    border.color: Main.theme.overlay(0.05)
                     border.width: 1
 
                     Row {
@@ -278,6 +279,15 @@ Scope {
                     }
                     ToggleTile {
                         width: tiles.tileW
+                        accent: Main.theme.colViolet
+                        icon: Main.theme.dark ? "󰖔" : "󰖙"
+                        label: "Dark mode"
+                        sublabel: Main.theme.dark ? "On" : "Off  ·  light"
+                        active: Main.theme.dark
+                        onClicked: Main.theme.toggle()
+                    }
+                    ToggleTile {
+                        width: tiles.tileW
                         readonly property bool muted: Audio.source?.audio?.muted ?? false
                         accent: Main.theme.colTeal
                         icon: muted ? "󰍭" : "󰍬"
@@ -330,7 +340,7 @@ Scope {
                                 width: parent.width / 3
                                 height: parent.height
                                 radius: Main.radius
-                                color: selected ? Qt.rgba(modelData.tint.r, modelData.tint.g, modelData.tint.b, 0.2) : (segMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.06) : "transparent")
+                                color: selected ? Qt.rgba(modelData.tint.r, modelData.tint.g, modelData.tint.b, 0.2) : (segMouse.containsMouse ? Main.theme.overlay(0.06) : "transparent")
                                 border.color: selected ? Qt.rgba(modelData.tint.r, modelData.tint.g, modelData.tint.b, 0.5) : "transparent"
                                 border.width: 1
 
@@ -381,7 +391,7 @@ Scope {
                     height: stats.implicitHeight + 28
                     radius: Main.radius
                     color: statsMouse.containsMouse ? Qt.lighter(Main.theme.colSurface, 1.2) : Main.theme.colSurface
-                    border.color: Qt.rgba(1, 1, 1, 0.05)
+                    border.color: Main.theme.overlay(0.05)
                     border.width: 1
 
                     MouseArea {
@@ -579,7 +589,7 @@ Scope {
                     width: parent.width
                     radius: Main.radius
                     color: Main.theme.colSurface
-                    border.color: Qt.rgba(1, 1, 1, 0.05)
+                    border.color: Main.theme.overlay(0.05)
                     border.width: 1
                     clip: true
 
@@ -813,7 +823,7 @@ Scope {
                                 width: ListView.view.width
                                 height: expanded ? 88 : 44
                                 radius: Main.radius
-                                color: modelData.connected ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.12) : (netMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.05) : "transparent")
+                                color: modelData.connected ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.12) : (netMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent")
                                 border.color: modelData.connected ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.35) : "transparent"
                                 border.width: 1
 
@@ -1000,8 +1010,8 @@ Scope {
                                     height: 26
                                     width: scanRow.implicitWidth + 20
                                     radius: Main.radius
-                                    color: Bt.scanning ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.18) : (scanMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(1, 1, 1, 0.03))
-                                    border.color: Bt.scanning ? Main.theme.colViolet : Qt.rgba(1, 1, 1, 0.08)
+                                    color: Bt.scanning ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.18) : (scanMouse.containsMouse ? Main.theme.overlay(0.08) : Main.theme.overlay(0.03))
+                                    border.color: Bt.scanning ? Main.theme.colViolet : Main.theme.overlay(0.08)
                                     border.width: 1
                                     Row {
                                         id: scanRow
@@ -1070,7 +1080,7 @@ Scope {
                                 width: ListView.view.width
                                 height: 48
                                 radius: Main.radius
-                                color: modelData.connected ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.12) : (devMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.05) : "transparent")
+                                color: modelData.connected ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.12) : (devMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent")
                                 border.color: modelData.connected ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.35) : "transparent"
                                 border.width: 1
 

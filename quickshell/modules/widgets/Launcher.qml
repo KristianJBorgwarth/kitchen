@@ -89,6 +89,7 @@ Scope {
         { name: "System monitor", glyph: "󰓅", keys: "performance cpu memory processes", run: () => SystemMonitor.show() },
         { name: "Keybinds", glyph: "󰌌", keys: "shortcuts cheatsheet help", run: () => Cheatsheet.show() },
         { name: "Workspaces", glyph: "󰕰", keys: "switcher overview", run: () => Switcher.toggle() },
+        { name: "Toggle dark / light mode", glyph: "󰔎", keys: "theme dark light mode", run: () => Main.theme.toggle() },
         { name: "Lock screen", glyph: "󰌾", keys: "lock", run: () => Lock.lock() },
         { name: "Suspend", glyph: "󰤄", keys: "sleep", run: () => Lock.suspend() },
         { name: "Log out", glyph: "󰍃", keys: "logout exit sway", run: () => Session.logout() },
@@ -288,7 +289,7 @@ Scope {
                 width: ListView.view.width
                 height: 46
                 radius: Main.radius
-                color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.04) : "transparent")
+                color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Main.theme.overlay(0.04) : "transparent")
 
                 Rectangle {
                     visible: row.current

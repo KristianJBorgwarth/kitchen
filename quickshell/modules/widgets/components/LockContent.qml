@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.UPower as QsPower
 import qs.core
+import qs.core.themes
 import qs.core.components
 import qs.services
 
@@ -17,6 +18,12 @@ Item {
     // preview: same look, but Enter just closes it instead of checking a password
     property bool preview: false
     signal closePreview
+
+    // the lock screen sits on a darkened wallpaper, so it keeps the dark palette in light mode
+    Theme {
+        id: dark
+        fixed: "dark"
+    }
 
     function submit() {
         if (preview)
@@ -43,7 +50,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Main.theme.colBg
+        color: dark.colBg
     }
 
     // blurred on a 1/8-size copy, then scaled up: same look for a fraction of the work
@@ -106,7 +113,7 @@ Item {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: Qt.formatTime(clock.date, "HH:mm")
-            color: Main.theme.colFg
+            color: dark.colFg
             font.family: Main.fontFamily
             font.pixelSize: 132
             font.weight: Font.Light
@@ -114,7 +121,7 @@ Item {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: clock.date.toLocaleDateString(Qt.locale(), "dddd, d MMMM")
-            color: Main.theme.colAccentLight
+            color: dark.colAccentLight
             font.family: Main.fontFamily
             font.pixelSize: 22
         }
@@ -134,7 +141,7 @@ Item {
             height: 48
             radius: Main.radius
             color: Qt.rgba(0, 0, 0, 0.45)
-            border.color: root.lock.failed ? Main.theme.colRed : input.activeFocus ? Main.theme.colAccentMid : Qt.rgba(1, 1, 1, 0.12)
+            border.color: root.lock.failed ? dark.colRed : input.activeFocus ? dark.colAccentMid : dark.overlay(0.12)
             border.width: 1
 
             // shake on a wrong password
@@ -162,7 +169,7 @@ Item {
                 anchors.leftMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.lock.busy ? "󰔟" : "󰌾"
-                color: root.lock.failed ? Main.theme.colRed : Main.theme.colAccentMid
+                color: root.lock.failed ? dark.colRed : dark.colAccentMid
                 font: Main.barFont
             }
 
@@ -193,7 +200,7 @@ Item {
                 Text {
                     visible: root.lock.password.length === 0
                     text: root.lock.busy ? "Checking…" : "Type your password"
-                    color: Main.theme.colAccentDark
+                    color: dark.colAccentDark
                     font: Main.barFont
                 }
                 Repeater {
@@ -203,7 +210,7 @@ Item {
                         width: 8
                         height: 8
                         radius: 4
-                        color: Main.theme.colFg
+                        color: dark.colFg
                     }
                 }
             }
@@ -213,7 +220,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.lock.failed ? "Wrong password" : root.lock.message
             visible: text !== ""
-            color: root.lock.failed ? Main.theme.colRed : Main.theme.colAccentMid
+            color: root.lock.failed ? dark.colRed : dark.colAccentMid
             font: Main.smallFont
         }
     }
@@ -231,7 +238,7 @@ Item {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             text: "󰀄  " + Session.user + "@" + Session.host
-            color: Main.theme.colAccentLight
+            color: dark.colAccentLight
             font: Main.barFont
         }
 
@@ -255,7 +262,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             visible: battery?.isLaptopBattery ?? false
             text: "󰁹  " + Math.round(level * 100) + "%"
-            color: level < 0.15 ? Main.theme.colRed : Main.theme.colAccentLight
+            color: level < 0.15 ? dark.colRed : dark.colAccentLight
             font: Main.barFont
         }
     }

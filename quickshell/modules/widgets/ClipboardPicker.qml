@@ -151,7 +151,7 @@ Scope {
                 width: ListView.view.width
                 height: 46
                 radius: Main.radius
-                color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.04) : "transparent")
+                color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Main.theme.overlay(0.04) : "transparent")
 
                 Rectangle {
                     visible: row.current

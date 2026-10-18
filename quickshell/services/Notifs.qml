@@ -40,7 +40,7 @@ Singleton {
                 a[n.id] = Date.now();
                 persist.arrived = JSON.stringify(a);
             }
-            // closed objects are destroyed, so never keep one in the popup list
+           // closed objects are destroyed, so never keep one in the popup list
             n.closed.connect(() => root.hidePopup(n));
             // after a reload the old notifications are handed over again; they're history, not news
             if (n.lastGeneration)

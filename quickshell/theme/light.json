@@ -1,0 +1,31 @@
+{
+    "name": "kitchen-light",
+
+    "bg": "#f4f1ea",
+    "surface": "#ebe7de",
+    "fg": "#26241f",
+
+    "muted": "#d6d1c6",
+    "dim": "#a8a296",
+    "mid": "#7c766b",
+    "light": "#4f4a42",
+
+    "overlay": "#000000",
+
+    "blue": "#3f6a94",
+    "violet": "#6a60a0",
+    "amber": "#a57a1e",
+    "green": "#5a7f2f",
+    "red": "#b8463f",
+    "teal": "#3c7f7f",
+
+    "terminal": {
+        "background": "@bg",
+        "foreground": "@fg",
+        "cursor": "#26241f",
+        "ansi": [
+            "#26241f", "#26241f", "#7c766b", "#26241f", "#4f7a4f", "#7c766b", "#5f5a52", "#e2ddd2",
+            "#a8a296", "#26241f", "#5f5a52", "#26241f", "#4f7a4f", "#5f5a52", "#3a3630", "#26241f"
+        ]
+    }
+}
