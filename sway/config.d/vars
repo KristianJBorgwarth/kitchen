@@ -8,4 +8,4 @@ set $browser brave
 set $menu qs ipc call launcher toggle
 set $screenshot grim -g "$(slurp)" - | swappy -f -
 set $filemanager thunar
-set $clipboard-history PATH="$PATH:$HOME/go/bin" sh -c 'cliphist list | rofi -dmenu -p "" | cliphist decode | wl-copy'
+set $clipboard-history qs ipc call clipboard toggle

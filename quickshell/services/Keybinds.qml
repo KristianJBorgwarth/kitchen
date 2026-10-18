@@ -76,6 +76,7 @@ Singleton {
             tray: "Tray",
             keybinds: "Keybinds",
             launcher: "App launcher",
+            clipboard: "Clipboard history",
             switcher: "Workspace switcher"
         })
 

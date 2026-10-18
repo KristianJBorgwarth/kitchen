@@ -187,38 +187,11 @@ Scope {
         printErrors: false
         path: Quickshell.statePath("launcher.json")
         onAdapterUpdated: writeAdapter()
-        // import only once the stats are in, or the load would overwrite the import
-        onLoaded: root.importRofi()
-        onLoadFailed: root.importRofi()
 
         JsonAdapter {
             id: stats
             property var launches: ({})
-            property bool importedRofi: false
         }
-    }
-
-    // one-time head start from rofi's launch counts ("count id.desktop" per line), dated a
-    // few days back so fresh launches here soon outrank them
-    FileView {
-        id: rofiCache
-        path: Quickshell.env("HOME") + "/.cache/rofi3.druncache"
-        printErrors: false
-        blockLoading: true
-    }
-
-    function importRofi() {
-        if (stats.importedRofi)
-            return;
-        const all = Object.assign({}, stats.launches);
-        const when = Date.now() - 3 * 86400000;
-        for (const line of rofiCache.text().split("\n")) {
-            const m = line.match(/^(\d+)\s+(.+)\.desktop$/);
-            if (m && Number(m[1]) > 0 && !all[m[2]])
-                all[m[2]] = { n: Number(m[1]), last: when };
-        }
-        stats.launches = all;
-        stats.importedRofi = true;
     }
 
     Modal {

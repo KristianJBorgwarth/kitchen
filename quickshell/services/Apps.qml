@@ -13,7 +13,7 @@ Singleton {
         const apps = DesktopEntries.applications.values;
         const id = e => e.id.toLowerCase();
         const exec = e => (e.execString ?? "").split(/\s+/)[0].split("/").pop();
-        // strictest match wins, so rofi beats rofi-theme-selector
+        // strictest match wins, so thunar beats thunar-settings
         return apps.find(e => id(e) === p) ?? apps.find(e => id(e).endsWith("." + p)) ?? apps.find(e => exec(e) === prog && !e.noDisplay) ?? apps.find(e => id(e).startsWith(p + "-")) ?? DesktopEntries.heuristicLookup(prog);
     }
 

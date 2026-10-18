@@ -5,7 +5,7 @@ swayosd
 swaybg
 kanshi
 waybar
-rofi
+wtype
 xdg-desktop-portal-wlr
 
 #audio

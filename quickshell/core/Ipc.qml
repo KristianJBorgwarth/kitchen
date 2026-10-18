@@ -63,4 +63,12 @@ Scope {
             Launcher.toggle();
         }
     }
+
+    IpcHandler {
+        target: "clipboard"
+
+        function toggle(): void {
+            ClipboardPicker.toggle();
+        }
+    }
 }
