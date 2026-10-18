@@ -11,7 +11,7 @@ import qs.services
 import "components"
 
 // App launcher. One search box over apps (ranked by how often and recently they're
-// launched), app sub-actions, open windows, shell quick actions and a calculator.
+// launched), app sub-actions, open windows, shell quick actions, a calculator and unit and currency conversion.
 // Prefixes: ">" runs a command, "?" searches the web.
 Scope {
     id: root
@@ -27,6 +27,8 @@ Scope {
         }
         query = "";
         selected = 0;
+        if (Date.now() - rates.fetched > 12 * 3600 * 1000)
+            fetchRates.running = true;
         modal.show();
         search.forceActiveFocus();
     }
@@ -67,6 +69,50 @@ Scope {
         const all = Object.assign({}, stats.launches);
         all[id] = { n: (all[id]?.n ?? 0) + 1, last: Date.now() };
         stats.launches = all;
+    }
+
+    // unit -> [category, size in the category's base unit]; temperature is handled apart
+    readonly property var units: {
+        const u = {};
+        const add = (cat, defs) => {
+            for (const [names, f] of defs)
+                for (const n of names.split(" "))
+                    u[n] = [cat, f];
+        };
+        add("length", [["mm millimeter millimeters", 0.001], ["cm centimeter centimeters", 0.01], ["m meter meters metre metres", 1], ["km kilometer kilometers kilometre kilometres", 1000], ["in inch inches", 0.0254], ["ft foot feet", 0.3048], ["yd yard yards", 0.9144], ["mi mile miles", 1609.344]]);
+        add("mass", [["mg milligram milligrams", 0.000001], ["g gram grams", 0.001], ["kg kilogram kilograms", 1], ["oz ounce ounces", 0.028349523125], ["lb lbs pound pounds", 0.45359237], ["st stone", 6.35029318]]);
+        add("volume", [["ml milliliter milliliters millilitre millilitres", 0.001], ["l liter liters litre litres", 1], ["tsp teaspoon teaspoons", 0.00492892159375], ["tbsp tablespoon tablespoons", 0.01478676478125], ["cup cups", 0.2365882365], ["pt pint pints", 0.473176473], ["qt quart quarts", 0.946352946], ["gal gallon gallons", 3.785411784]]);
+        add("data", [["b byte bytes", 1], ["kb", 1000], ["mb", 1e6], ["gb", 1e9], ["tb", 1e12], ["kib", 1024], ["mib", 1048576], ["gib", 1073741824], ["tib", 1099511627776]]);
+        add("speed", [["m/s mps", 1], ["km/h kmh kph", 1 / 3.6], ["mph", 0.44704], ["kn kt knot knots", 0.514444]]);
+        add("time", [["s sec second seconds", 1], ["min minute minutes", 60], ["h hr hour hours", 3600], ["d day days", 86400], ["w week weeks", 604800]]);
+        add("temp", [["c celsius", 0], ["f fahrenheit", 0], ["k kelvin", 0]]);
+        return u;
+    }
+
+    // "5 km in mi", "72 f to c", "3 cups in ml"
+    function convert(t) {
+        const m = t.trim().match(/^(-?\d+(?:[.,]\d+)?)\s*°?\s*([a-z/]+)\s+(?:in|to|as|->)\s+°?([a-z/]+)$/i);
+        if (!m)
+            return null;
+        const val = parseFloat(m[1].replace(",", "."));
+        const a = m[2].toLowerCase(), b = m[3].toLowerCase();
+        const ua = units[a], ub = units[b];
+        let out;
+        if (!ua && !ub) {
+            const ra = rates.table[a.toUpperCase()], rb = rates.table[b.toUpperCase()];
+            if (!ra || !rb)
+                return null;
+            out = val / ra * rb;
+        } else if (!ua || !ub || ua[0] !== ub[0]) {
+            return null;
+        } else if (ua[0] === "temp") {
+            const k = a[0] === "c" ? val + 273.15 : a[0] === "f" ? (val - 32) * 5 / 9 + 273.15 : val;
+            out = b[0] === "c" ? k - 273.15 : b[0] === "f" ? (k - 273.15) * 9 / 5 + 32 : k;
+        } else {
+            out = val * ua[1] / ub[1];
+        }
+        const n = Number(out.toPrecision(8));
+        return { text: n + " " + m[3], from: m[1] + " " + m[2] };
     }
 
     // plain arithmetic only; the character check is what makes eval safe here
@@ -126,6 +172,10 @@ Scope {
         const calc = calculate(t);
         if (calc !== null)
             out.push({ kind: "calc", name: String(calc), sub: "= " + t.replace(/^=/, "").trim() + "  ·  Enter copies", glyph: "󰃬", score: 1000, run: () => Quickshell.clipboardText = String(calc) });
+
+        const conv = convert(t);
+        if (conv)
+            out.push({ kind: "calc", name: conv.text, sub: conv.from + "  ·  Enter copies", glyph: "󰑭", score: 1000, run: () => Quickshell.clipboardText = conv.text.split(" ")[0] });
 
         for (const e of apps) {
             const s = Math.max(score(q, e.name), score(q, e.genericName) * 0.7, score(q, (e.keywords ?? []).join(" ")) * 0.6, score(q, e.id) * 0.5);
@@ -192,6 +242,34 @@ Scope {
         JsonAdapter {
             id: stats
             property var launches: ({})
+        }
+    }
+
+    // currency rates (ECB, via frankfurter.dev), per 1 EUR; refreshed when older than 12 h
+    FileView {
+        printErrors: false
+        path: Quickshell.statePath("rates.json")
+        onAdapterUpdated: writeAdapter()
+
+        JsonAdapter {
+            id: rates
+            property real fetched: 0
+            property var table: ({ EUR: 1 })
+        }
+    }
+
+    Process {
+        id: fetchRates
+        command: ["curl", "-sf", "--max-time", "10", "https://api.frankfurter.dev/v1/latest"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const r = JSON.parse(text).rates;
+                    r.EUR = 1;
+                    rates.table = r;
+                    rates.fetched = Date.now();
+                } catch (e) {}
+            }
         }
     }
 
