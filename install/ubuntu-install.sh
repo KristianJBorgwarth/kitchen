@@ -43,14 +43,15 @@ if [ "$QS_INSTALLED" != "$QS_VERSION" ]; then
         git clone --depth 1 --branch "$QS_VERSION" https://github.com/quickshell-mirror/quickshell.git "$SOURCE_DIR/quickshell"
     fi
     git -C "$SOURCE_DIR/quickshell" checkout "$QS_VERSION"
-    # crash handler needs cpptrace, which ubuntu doesn't package
+    # crash handler needs cpptrace, which ubuntu doesn't package.
+    # installs to ~/.local: sudo here only allows apt/systemctl, not cmake
     cmake -S "$SOURCE_DIR/quickshell" -B "$SOURCE_DIR/quickshell/build" -GNinja \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DCMAKE_INSTALL_PREFIX="$HOME/.local" \
         -DCRASH_HANDLER=OFF \
         -DDISTRIBUTOR="kitchen ubuntu-install.sh"
     cmake --build "$SOURCE_DIR/quickshell/build"
-    sudo cmake --install "$SOURCE_DIR/quickshell/build"
+    cmake --install "$SOURCE_DIR/quickshell/build"
 fi
 sudo systemctl disable --now swayosd-libinput-backend.service
 

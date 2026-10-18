@@ -17,14 +17,11 @@ Scope {
             MusicPlayer.hide();
         if (TrayPanel.opened)
             TrayPanel.hide();
-        unmapTimer.stop();
-        panel.visible = true;
         opened = true;
     }
 
     function hide() {
         opened = false;
-        unmapTimer.restart();
     }
 
     function toggle() {
@@ -32,15 +29,6 @@ Scope {
             hide();
         else
             show();
-    }
-
-    Timer {
-        id: unmapTimer
-        interval: 220
-        onTriggered: {
-            if (!root.opened)
-                panel.visible = false;
-        }
     }
 
     // invisible full-screen catcher so a click anywhere else closes the panel
@@ -63,10 +51,14 @@ Scope {
         }
     }
 
+    // stays mapped: creating the surface on open drops the first animation frame,
+    // which shows at 60Hz. while closed it's click-through (empty input mask)
     PanelWindow {
         id: panel
-        visible: false
         color: "transparent"
+        mask: Region {
+            item: root.opened ? blob : null
+        }
         anchors.top: true
         anchors.right: true
         exclusiveZone: 0
