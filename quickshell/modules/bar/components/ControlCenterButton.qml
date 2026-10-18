@@ -3,7 +3,7 @@ import qs.core
 import qs.services
 import qs.modules.widgets
 
-// Opens the control center; caffeine/silent icons show next to it while on.
+// Opens the control center; stay-awake/silent icons show next to it while on.
 Item {
     id: root
     anchors.verticalCenter: parent.verticalCenter
@@ -15,8 +15,8 @@ Item {
         spacing: 8
 
         Text {
-            visible: Caffeine.enabled
-            text: "󰅶"
+            visible: Awake.enabled
+            text: "󰈈"
             color: Main.theme.colFg
             font: Main.barFont
         }

@@ -9,12 +9,14 @@ Rectangle {
     property bool confirm: false
     property bool armed: false
     property font iconFont: Main.iconFont
+    // fill while armed; danger buttons pass a red
+    property color armedColor: Main.theme.colFg
     signal clicked
 
     implicitWidth: 36
     implicitHeight: 36
     radius: 4
-    color: armed ? Main.theme.colFg : (mouse.containsMouse ? Main.theme.colMuted : "transparent")
+    color: armed ? armedColor : (mouse.containsMouse ? Main.theme.colMuted : "transparent")
 
     Behavior on color {
         ColorAnimation {

@@ -11,6 +11,9 @@ Singleton {
     readonly property bool available: adapter !== null
     readonly property bool enabled: adapter?.enabled ?? false
     readonly property var connectedDevices: adapter ? adapter.devices.values.filter(d => d.connected) : []
+    // connected, then paired, then whatever a scan found (unnamed ones are noise)
+    readonly property var devices: adapter ? adapter.devices.values.filter(d => d.name && d.name !== d.address).sort((a, b) => (b.connected - a.connected) || (b.paired - a.paired) || a.name.localeCompare(b.name)) : []
+    readonly property bool scanning: adapter?.discovering ?? false
 
     readonly property string label: {
         if (!enabled)
@@ -20,6 +23,11 @@ Singleton {
         if (connectedDevices.length === 1)
             return connectedDevices[0].name;
         return connectedDevices.length + " devices";
+    }
+
+    function toggleScan(): void {
+        if (adapter?.enabled)
+            adapter.discovering = !adapter.discovering;
     }
 
     function toggle(): void {

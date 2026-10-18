@@ -23,6 +23,13 @@ Scope {
         function toggle(): void {
             ControlCenter.toggle();
         }
+
+        // open on a tab: sound, network or bluetooth
+        function open(tab: string): void {
+            ControlCenter.openTab(tab);
+            if (!ControlCenter.opened)
+                ControlCenter.show();
+        }
     }
 
     IpcHandler {

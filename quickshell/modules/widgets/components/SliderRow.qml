@@ -7,6 +7,7 @@ Item {
     property string icon: ""
     property real value: 0
     property bool dimmed: false
+    property color accent: Main.theme.colAccentLight
     signal moved(real value)
     signal iconClicked
 
@@ -59,7 +60,7 @@ Item {
                 width: parent.width * Math.max(0, Math.min(1, root.value))
                 height: parent.height
                 radius: 3
-                color: root.dimmed ? Main.theme.colAccentDark : Main.theme.colAccentLight
+                color: root.dimmed ? Main.theme.colAccentDark : root.accent
 
                 Behavior on width {
                     enabled: !drag.pressed

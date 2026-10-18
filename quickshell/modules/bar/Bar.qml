@@ -17,10 +17,10 @@ Scope {
         implicitHeight: 30
         color: "transparent"
 
-        // the bar is always mapped, so it hosts the inhibitor for Caffeine
+        // the bar is always mapped, so it hosts the inhibitor for Awake
         IdleInhibitor {
             window: barWindow
-            enabled: Caffeine.enabled
+            enabled: Awake.enabled
         }
 
         Rectangle {
