@@ -21,6 +21,7 @@ Item {
     readonly property alias vimKeys: keys
 
     signal closed
+    signal keyReleased(var event)
 
     function show() {
         ModalHost.open(root);
@@ -89,6 +90,7 @@ Item {
             anchors.margins: root.padding
             focus: true
             Keys.onPressed: event => keys.handle(event)
+            Keys.onReleased: event => root.keyReleased(event)
         }
 
         KeyHelp {

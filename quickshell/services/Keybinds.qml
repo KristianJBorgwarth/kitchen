@@ -95,17 +95,6 @@ Singleton {
         }).filter(p => p);
     }
 
-    // desktop entry for a program: ids like com.mitchellh.ghostty or brave-browser
-    // don't match a plain heuristic lookup, so also check ids and Exec lines
-    function findEntry(prog) {
-        const p = prog.toLowerCase();
-        const apps = DesktopEntries.applications.values;
-        const id = e => e.id.toLowerCase();
-        const exec = e => (e.execString ?? "").split(/\s+/)[0].split("/").pop();
-        // strictest match wins, so rofi beats rofi-theme-selector
-        return apps.find(e => id(e) === p) ?? apps.find(e => id(e).endsWith("." + p)) ?? apps.find(e => exec(e) === prog && !e.noDisplay) ?? apps.find(e => id(e).startsWith(p + "-")) ?? DesktopEntries.heuristicLookup(prog);
-    }
-
     function describe(cmd, varName) {
         let m;
         const dir = s => ({ left: "left", right: "right", up: "up", down: "down" })[s];
@@ -121,7 +110,7 @@ Singleton {
             return { desc: "Lock screen", glyph: "󰌾" };
         if (cmd.startsWith("exec")) {
             const progs = programs(cmd);
-            const entry = progs.map(p => findEntry(p)).find(e => e) ?? null;
+            const entry = progs.map(p => Apps.findEntry(p)).find(e => e) ?? null;
             const desc = varName ? (varLabels[varName] ?? titleCase(varName)) : (entry?.name ?? progs[0] ?? cmd);
             return { desc, detail: entry && varName ? entry.name : "", app: entry?.icon ?? "", glyph: "󰘳" };
         }

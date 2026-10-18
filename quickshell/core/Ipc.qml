@@ -47,4 +47,12 @@ Scope {
             Cheatsheet.toggle();
         }
     }
+
+    IpcHandler {
+        target: "switcher"
+
+        function toggle(): void {
+            Switcher.toggle();
+        }
+    }
 }
