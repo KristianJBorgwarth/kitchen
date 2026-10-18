@@ -15,7 +15,7 @@ exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY DISPLAY XDG_CU
 exec gsettings set org.gnome.desktop.interface color-scheme prefer-dark
 
 exec_always pkill -x swayosd-server; swayosd-server
-exec_always pkill -x waybar; waybar
+exec_always pkill -x quickshell; quickshell
 exec_always pkill -x mako; mako
 exec_always pkill -x autotiling; ~/.local/bin/autotiling
 exec_always pkill -x kanshi; kanshi

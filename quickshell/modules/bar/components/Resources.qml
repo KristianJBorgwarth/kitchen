@@ -14,7 +14,7 @@ Row {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: Performance.toggle()
+            onClicked: SystemMonitor.toggle()
         }
     }
 }

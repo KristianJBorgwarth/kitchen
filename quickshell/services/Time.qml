@@ -1,31 +1,20 @@
 pragma Singleton
 
 import Quickshell
-import Quickshell.Io
 import QtQuick
 
 // your singletons should always have Singleton as the type
 Singleton {
     id: root
-    property string time
+    // formatted in-process: spawning `date` on a timer forks constantly (expensive under EDR/AV)
+    readonly property string time: Qt.formatDateTime(clock.date, date_format)
     property string date_format: regular
-    property string regular: "+%H:%M"
-    property string long: "+%Y %b, %a - %H:%M:%S"
+    property string regular: "HH:mm"
+    property string verbose: "yyyy MMM, ddd - HH:mm:ss"
 
-    Process {
-        id: dateProc
-        command: ["date", root.date_format]
-        running: true
-
-        stdout: StdioCollector {
-            onStreamFinished: root.time = this.text
-        }
-    }
-
-    Timer {
-        interval: 10
-        running: true
-        repeat: true
-        onTriggered: dateProc.running = true
+    SystemClock {
+        id: clock
+        // only tick every second when seconds are shown
+        precision: root.date_format === root.verbose ? SystemClock.Seconds : SystemClock.Minutes
     }
 }

@@ -1,10 +1,43 @@
+import Quickshell
 import Quickshell.Io
 import qs.modules.widgets
+import qs.services
 
-IpcHandler {
-    target: "performance"
+Scope {
+    IpcHandler {
+        target: "performance"
 
-    function toggle(): void {
-        Performance.toggle();
+        function toggle(): void {
+            SystemMonitor.toggle();
+        }
+
+        // sample interval (ms) used while the monitor is open
+        function setInterval(ms: int): void {
+            Monitor.setOpenInterval(ms);
+        }
+    }
+
+    IpcHandler {
+        target: "controlcenter"
+
+        function toggle(): void {
+            ControlCenter.toggle();
+        }
+    }
+
+    IpcHandler {
+        target: "tray"
+
+        function toggle(): void {
+            TrayPanel.toggle();
+        }
+    }
+
+    IpcHandler {
+        target: "keybinds"
+
+        function toggle(): void {
+            Cheatsheet.toggle();
+        }
     }
 }

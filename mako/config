@@ -48,3 +48,7 @@ default-timeout=0
 
 [hidden]
 format=(%h more)
+
+# toggled by the quickshell control center (makoctl mode -t do-not-disturb)
+[mode=do-not-disturb]
+invisible=1
