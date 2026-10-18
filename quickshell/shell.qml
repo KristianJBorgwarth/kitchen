@@ -10,6 +10,7 @@ Scope {
     readonly property var switcher: Switcher
     Bar {}
     NotificationPopups {}
+    Idle {}
     Ipc {}
     MusicIpc {}
 }
