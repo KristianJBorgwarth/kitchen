@@ -42,11 +42,14 @@ Singleton {
 
     Process {
         id: gammastep
-        command: ["gammastep", "-m", "wayland", "-O", String(root.temperature)]
+        // pkill first: a config reload leaves the old gammastep running with nobody to stop it
+        command: ["sh", "-c", "pkill -x gammastep; exec gammastep -m wayland -O " + root.temperature]
         // only restart when we stopped it ourselves, so a failing gammastep can't loop
         onExited: {
             if (root.restarting) {
                 root.restarting = false;
+                if (!root.enabled)
+                    sweep.running = true;
                 root.start();
             }
         }
@@ -57,6 +60,13 @@ Singleton {
             gammastep.running = true;
     }
 
+    Process {
+        id: sweep
+        command: ["pkill", "-x", "gammastep"]
+    }
+
+    Component.onDestruction: gammastep.running = false
+
     // apply changes after a short pause, so dragging the slider doesn't respawn per pixel
     Timer {
         id: apply
@@ -66,6 +76,8 @@ Singleton {
                 root.restarting = true;
                 gammastep.running = false;
             } else {
+                if (!root.enabled)
+                    sweep.running = true;
                 root.start();
             }
         }
