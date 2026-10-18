@@ -2,9 +2,10 @@ import QtQuick
 import Quickshell
 import qs.core
 
-// Hover label for its parent: put `Tooltip { text: "Lock" }` inside any item. The bubble
-// is lifted to the window's top level so cards that clip can't cut it off, and the
-// hover check is a passive HoverHandler, so the parent's own clicks are untouched.
+// Hover label for its parent: put `Tooltip { text: "Lock" }` inside any item. The hover check
+// is a passive HoverHandler, so the parent's own clicks are untouched. The bubble stays inside
+// the parent: lifting it to the window's top level crashed quickshell when that window moved
+// to another monitor (the bubble kept pointing at the old, destroyed window).
 Item {
     id: root
     property string text: ""
@@ -25,7 +26,6 @@ Item {
 
     Rectangle {
         id: bubble
-        parent: root.QsWindow.window?.contentItem ?? root
         z: 1000
         visible: hover.hovered && !wait.running && root.text !== ""
         width: label.implicitWidth + 16
@@ -33,12 +33,10 @@ Item {
         radius: Main.radius
         color: Main.theme.colFg
 
-        // above the parent, centered; below it when there's no room; kept inside the window
+        // above the parent, centered; below it when the window has no room above
         function place() {
-            const p = root.mapToItem(parent, root.width / 2, 0);
-            const below = root.mapToItem(parent, 0, root.height).y + 6;
-            x = Math.max(4, Math.min(parent.width - width - 4, p.x - width / 2));
-            y = p.y - height - 6 >= 4 ? p.y - height - 6 : below;
+            x = (root.width - width) / 2;
+            y = root.mapToItem(null, 0, 0).y - height - 6 >= 4 ? -height - 6 : root.height + 6;
         }
 
         Text {

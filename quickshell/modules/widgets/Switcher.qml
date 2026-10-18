@@ -114,50 +114,61 @@ Scope {
         onTriggered: root.capture()
     }
 
-    // one capture per monitor, grabbed into an image after each frame arrives. Parented to
-    // the always-mapped overlay (outside the modal, which is hidden while closed) and placed
-    // off-screen, since grabToImage needs a visible item
-    Item {
-        id: captures
-        parent: ModalHost.stage
-        x: -100000
+    // one capture per monitor, grabbed into an image after each frame arrives. They live in
+    // their own 1px window that never changes monitor: the modal overlay moves to the focused
+    // monitor, which recreates it, and capture textures inside it crashed the renderer
+    PanelWindow {
+        screen: Quickshell.screens[0] ?? null
+        implicitWidth: 1
+        implicitHeight: 1
+        color: "transparent"
+        anchors.top: true
+        anchors.left: true
+        exclusiveZone: 0
+        mask: Region {}
+        WlrLayershell.layer: WlrLayer.Background
+        WlrLayershell.namespace: "quickshell-captures"
 
-        function forScreen(name) {
-            for (let i = 0; i < views.count; i++) {
-                if (views.itemAt(i)?.modelData.name === name)
-                    return views.itemAt(i);
-            }
-            return null;
-        }
-
-        Repeater {
-            id: views
-            model: Quickshell.screens
-            ScreencopyView {
-                id: view
-                required property var modelData
-                property string pendingName: ""
-                width: modelData.width / 2
-                height: modelData.height / 2
-                live: false
-
-                function take(name) {
-                    pendingName = name;
-                    // null then the screen: re-setting the same source wouldn't capture again
-                    captureSource = null;
-                    captureSource = modelData;
-                    grabLater.restart();
+        // grabToImage renders the item itself, so it can sit outside the 1px window
+        Item {
+            id: captures
+            function forScreen(name) {
+                for (let i = 0; i < views.count; i++) {
+                    if (views.itemAt(i)?.modelData.name === name)
+                        return views.itemAt(i);
                 }
+                return null;
+            }
 
-                // no frame-arrived signal; a capture lands well within this
-                Timer {
-                    id: grabLater
-                    interval: 250
-                    onTriggered: {
-                        const name = view.pendingName;
-                        if (!view.hasContent || !name)
-                            return;
-                        view.grabToImage(r => root.store(name, r, view.width, view.modelData.width), Qt.size(view.width, view.height));
+            Repeater {
+                id: views
+                model: Quickshell.screens
+                ScreencopyView {
+                    id: view
+                    required property var modelData
+                    property string pendingName: ""
+                    width: modelData.width / 2
+                    height: modelData.height / 2
+                    live: false
+
+                    function take(name) {
+                        pendingName = name;
+                        // null then the screen: re-setting the same source wouldn't capture again
+                        captureSource = null;
+                        captureSource = modelData;
+                        grabLater.restart();
+                    }
+
+                    // no frame-arrived signal; a capture lands well within this
+                    Timer {
+                        id: grabLater
+                        interval: 250
+                        onTriggered: {
+                            const name = view.pendingName;
+                            if (!view.hasContent || !name)
+                                return;
+                            view.grabToImage(r => root.store(name, r, view.width, view.modelData.width), Qt.size(view.width, view.height));
+                        }
                     }
                 }
             }
