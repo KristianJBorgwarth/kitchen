@@ -41,6 +41,40 @@ Scope {
             }
         }
 
+        // focused app, or what's running in a focused terminal
+        Rectangle {
+            id: appPill
+            anchors.left: leftPill.right
+            anchors.leftMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
+            radius: 4
+            color: Main.theme.colBg
+            height: 25
+            width: activeApp.implicitWidth + 20
+            clip: true
+
+            readonly property bool shown: Focus.toplevel !== null
+            visible: opacity > 0
+            opacity: shown ? 1 : 0
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: Main.anim
+                }
+            }
+            Behavior on width {
+                NumberAnimation {
+                    duration: Main.anim
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            ActiveApp {
+                id: activeApp
+                anchors.centerIn: parent
+            }
+        }
+
         Rectangle {
             id: centerPill
             anchors.horizontalCenter: parent.horizontalCenter
