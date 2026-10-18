@@ -62,7 +62,7 @@ Scope {
         const hit = selected?.windows.find(w => matches(w));
         if (hit)
             Windows.focusWindow(hit.id);
-        else if (selected)
+        else if (selected && selected.name !== I3.focusedWorkspace?.name)
             Windows.focusWorkspace(selected.name);
         modal.hide();
     }
@@ -74,28 +74,24 @@ Scope {
     }
 
     // ── snapshots ─────────────────────────────────────────────
-    function snapshotItem(name) {
-        for (let i = 0; i < shots.count; i++) {
-            const it = shots.itemAt(i);
-            if (it?.wsName === name)
-                return it;
-        }
-        return null;
-    }
+    // workspace name → { url, result, w, outW }. Kept as grabbed images, not live captures:
+    // capture items lose their frames when the overlay window moves to another monitor
+    property var snapshots: ({})
 
     function capture() {
         if (ModalHost.active)
             return;
         for (const m of I3.monitors.values) {
-            const it = snapshotItem(m.activeWorkspace?.name ?? "");
-            const screen = Quickshell.screens.find(s => s.name === m.name);
-            if (!it || !screen)
-                continue;
-            // null then the screen: re-setting the same source wouldn't capture again
-            it.captureSource = null;
-            it.captureSource = screen;
-            it.taken = true;
+            const view = captures.forScreen(m.name);
+            if (view && m.activeWorkspace?.name)
+                view.take(m.activeWorkspace.name);
         }
+    }
+
+    function store(name, result, w, outW) {
+        const next = Object.assign({}, snapshots);
+        next[name] = { url: result.url, result, w, outW };
+        snapshots = next;
     }
 
     // let a switch finish painting before capturing it
@@ -118,6 +114,56 @@ Scope {
         onTriggered: root.capture()
     }
 
+    // one capture per monitor, grabbed into an image after each frame arrives. Parented to
+    // the always-mapped overlay (outside the modal, which is hidden while closed) and placed
+    // off-screen, since grabToImage needs a visible item
+    Item {
+        id: captures
+        parent: ModalHost.stage
+        x: -100000
+
+        function forScreen(name) {
+            for (let i = 0; i < views.count; i++) {
+                if (views.itemAt(i)?.modelData.name === name)
+                    return views.itemAt(i);
+            }
+            return null;
+        }
+
+        Repeater {
+            id: views
+            model: Quickshell.screens
+            ScreencopyView {
+                id: view
+                required property var modelData
+                property string pendingName: ""
+                width: modelData.width / 2
+                height: modelData.height / 2
+                live: false
+
+                function take(name) {
+                    pendingName = name;
+                    // null then the screen: re-setting the same source wouldn't capture again
+                    captureSource = null;
+                    captureSource = modelData;
+                    grabLater.restart();
+                }
+
+                // no frame-arrived signal; a capture lands well within this
+                Timer {
+                    id: grabLater
+                    interval: 250
+                    onTriggered: {
+                        const name = view.pendingName;
+                        if (!view.hasContent || !name)
+                            return;
+                        view.grabToImage(r => root.store(name, r, view.width, view.modelData.width), Qt.size(view.width, view.height));
+                    }
+                }
+            }
+        }
+    }
+
     Modal {
         id: modal
         maxWidth: 1600
@@ -137,26 +183,6 @@ Scope {
             { keys: "/", desc: "search windows", run: () => search.forceActiveFocus() },
             { keys: "<Esc>", desc: "", run: () => root.query ? root.query = "" : modal.hide() }
         ]
-
-        // one capture per workspace, kept between opens; the carousel shows them through
-        // ShaderEffectSources cropped to the workspace area. Off-screen rather than
-        // invisible: an invisible source doesn't render into those
-        Item {
-            x: -100000
-            Repeater {
-                id: shots
-                model: I3.workspaces.values
-                ScreencopyView {
-                    required property var modelData
-                    readonly property string wsName: modelData.name
-                    property bool taken: false
-                    readonly property var screen: Quickshell.screens.find(s => s.name === modelData.monitor?.name) ?? null
-                    width: (screen?.width ?? 1920) / 2
-                    height: (screen?.height ?? 1080) / 2
-                    live: false
-                }
-            }
-        }
 
         Item {
             id: header
@@ -292,7 +318,7 @@ Scope {
                 readonly property real d: (x + width / 2 - carousel.contentX - carousel.width / 2) / carousel.slotW
                 readonly property real ad: Math.min(2, Math.abs(d))
                 readonly property var ws: modelData
-                readonly property var shot: root.snapshotItem(ws.name)
+                readonly property var snap: root.snapshots[ws.name] ?? null
                 readonly property real aspect: ws.rect.width / Math.max(1, ws.rect.height)
 
                 width: carousel.slotW
@@ -332,13 +358,14 @@ Scope {
                         color: Main.theme.colBg
 
                         // the snapshot, cropped from the monitor capture to this workspace's area
-                        ShaderEffectSource {
+                        Image {
                             id: picture
                             anchors.fill: parent
-                            visible: slot.shot?.taken ?? false
-                            sourceItem: slot.shot
-                            readonly property real k: (slot.shot?.width ?? 1) / Math.max(1, slot.ws.outputRect.width)
-                            sourceRect: Qt.rect((slot.ws.rect.x - slot.ws.outputRect.x) * k, (slot.ws.rect.y - slot.ws.outputRect.y) * k, slot.ws.rect.width * k, slot.ws.rect.height * k)
+                            visible: slot.snap !== null
+                            source: slot.snap?.url ?? ""
+                            cache: false
+                            readonly property real k: (slot.snap?.w ?? 1) / Math.max(1, slot.snap?.outW ?? 1)
+                            sourceClipRect: Qt.rect((slot.ws.rect.x - slot.ws.outputRect.x) * k, (slot.ws.rect.y - slot.ws.outputRect.y) * k, slot.ws.rect.width * k, slot.ws.rect.height * k)
                         }
 
                         // never-visited workspaces: their window layout with icons

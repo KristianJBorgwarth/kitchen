@@ -28,7 +28,9 @@ Singleton {
     }
 
     function focusWorkspace(name: string): void {
-        I3.dispatch("workspace " + JSON.stringify(name));
+        // the sway config has workspace_auto_back_and_forth, which would turn a switch to
+        // the current workspace into a jump back to the previous one
+        I3.dispatch("workspace --no-auto-back-and-forth " + JSON.stringify(name));
     }
 
     onActiveChanged: if (active) refresh()
