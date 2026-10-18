@@ -94,6 +94,7 @@ Scope {
             { keys: "w", desc: "wi-fi", run: () => { if (Network.hasWifi) Network.toggleWifi(); } },
             { keys: "b", desc: "bluetooth", run: () => Bt.toggle() },
             { keys: "s", desc: "silent", run: () => Dnd.toggle() },
+            { keys: "n", desc: "night light", run: () => NightLight.toggle() },
             { keys: "a", desc: "stay awake", run: () => Awake.enabled = !Awake.enabled },
             { keys: "h", desc: "power: save more", run: () => root.profileBy(-1) },
             { keys: "l", desc: "power: perform more", run: () => root.profileBy(1) },
@@ -259,6 +260,45 @@ Scope {
                         sublabel: Awake.enabled ? "On" : "Off"
                         active: Awake.enabled
                         onClicked: Awake.enabled = !Awake.enabled
+                    }
+                    ToggleTile {
+                        width: tiles.tileW
+                        visible: NightLight.available
+                        accent: Main.theme.colAmber
+                        icon: "󰖔"
+                        label: "Night light"
+                        sublabel: NightLight.enabled ? NightLight.temperature + "K" : "Off"
+                        active: NightLight.enabled
+                        onClicked: NightLight.toggle()
+                    }
+                    ToggleTile {
+                        width: tiles.tileW
+                        readonly property bool muted: Audio.source?.audio?.muted ?? false
+                        accent: Main.theme.colTeal
+                        icon: muted ? "󰍭" : "󰍬"
+                        label: "Microphone"
+                        sublabel: muted ? "Muted" : "On"
+                        active: !muted
+                        onClicked: Audio.toggleMute(Audio.source)
+                    }
+                }
+
+                // night light warmth, while it's on
+                Rectangle {
+                    visible: NightLight.available && NightLight.enabled
+                    width: parent.width
+                    height: 44
+                    radius: Main.radius
+                    color: Main.theme.colSurface
+                    SliderRow {
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 12
+                        icon: "󰖔"
+                        accent: Main.theme.colAmber
+                        // warmer to the right: 6000K → 2500K
+                        value: (6000 - NightLight.temperature) / 3500
+                        onMoved: v => NightLight.setTemperature(6000 - v * 3500)
                     }
                 }
 

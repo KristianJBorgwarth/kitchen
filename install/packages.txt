@@ -14,6 +14,7 @@ pipewire-pulse
 pipewire-alsa
 wireplumber
 cava
+gammastep
 
 #dev tools
 python-pipx
