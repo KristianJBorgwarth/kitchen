@@ -9,6 +9,8 @@ import Quickshell.Io
 Singleton {
     id: root
     property bool detailed: false
+    // just the temperatures, for the control center's stats strip
+    property bool wantSensors: false
     readonly property var intervalChoices: [100, 200, 500, 1000]
     readonly property int openInterval: settings.interval
     readonly property int interval: detailed ? openInterval : 1000
@@ -347,7 +349,7 @@ Singleton {
 
     Timer {
         interval: 2000
-        running: root.detailed
+        running: root.detailed || root.wantSensors
         repeat: true
         triggeredOnStart: true
         onTriggered: sensorsProc.running = true

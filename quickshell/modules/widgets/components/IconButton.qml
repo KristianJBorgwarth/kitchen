@@ -1,5 +1,6 @@
 import QtQuick
 import qs.core
+import qs.core.components
 
 // confirm: the first click arms it, a second within 3s fires.
 Rectangle {
@@ -9,6 +10,9 @@ Rectangle {
     property bool armed: false
     property font iconFont: Main.iconFont
     property color armedColor: Main.theme.colFg
+    property string tooltip: ""
+    // shown while armed, e.g. "Click again to reboot"
+    property string armedTooltip: ""
     signal clicked
 
     implicitWidth: 36
@@ -49,5 +53,9 @@ Rectangle {
             root.armed = false;
             root.clicked();
         }
+    }
+
+    Tooltip {
+        text: root.armed && root.armedTooltip ? root.armedTooltip : root.tooltip
     }
 }

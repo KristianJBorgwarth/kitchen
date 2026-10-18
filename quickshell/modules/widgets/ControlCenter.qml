@@ -32,7 +32,6 @@ Scope {
 
     function show() {
         pskFor = "";
-        calendar.offset = 0;
         modal.show();
     }
 
@@ -74,6 +73,11 @@ Scope {
         value: root.opened
     }
     Binding {
+        target: Monitor
+        property: "wantSensors"
+        value: root.opened
+    }
+    Binding {
         target: Network
         property: "scanning"
         value: root.opened && root.tab === "network"
@@ -82,7 +86,8 @@ Scope {
     Modal {
         id: modal
         maxWidth: 1120
-        maxHeight: 760
+        // as tall as the left column needs, with room for the tab lists either way
+        maxHeight: Math.max(560, leftCol.implicitHeight + padding * 2)
         padding: 24
         bindings: [
             { keys: "k", desc: "volume up", run: () => Audio.setVolume(Audio.sink, (Audio.sink?.audio?.volume ?? 0) + 0.05) },
@@ -105,8 +110,6 @@ Scope {
             { keys: "X", desc: "clear notifications", run: () => Notifs.clearAll() },
             { keys: "gt", desc: "next tab", run: () => root.cycleTab(1) },
             { keys: "gT", desc: "previous tab", run: () => root.cycleTab(-1) },
-            { keys: "[", desc: "previous month", run: () => calendar.shift(-1) },
-            { keys: "]", desc: "next month", run: () => calendar.shift(1) },
             { keys: "L", desc: "lock", run: () => { root.hide(); Lock.lock(); } },
             { keys: "<Esc>", desc: "", run: () => root.pskFor ? root.pskFor = "" : root.hide() }
         ]
@@ -192,11 +195,11 @@ Scope {
                         anchors.margins: 6
                         Repeater {
                             model: [
-                                { icon: "󰌾", confirm: false, danger: false, run: () => { root.hide(); Lock.lock(); } },
-                                { icon: "󰤄", confirm: false, danger: false, run: () => { root.hide(); Lock.suspend(); } },
-                                { icon: "󰍃", confirm: true, danger: true, run: () => Session.logout() },
-                                { icon: "󰜉", confirm: true, danger: true, run: () => Session.reboot() },
-                                { icon: "󰐥", confirm: true, danger: true, run: () => Session.poweroff() }
+                                { icon: "󰌾", tip: "Lock", confirm: false, danger: false, run: () => { root.hide(); Lock.lock(); } },
+                                { icon: "󰤄", tip: "Sleep", confirm: false, danger: false, run: () => { root.hide(); Lock.suspend(); } },
+                                { icon: "󰍃", tip: "Log out", confirm: true, danger: true, run: () => Session.logout() },
+                                { icon: "󰜉", tip: "Reboot", confirm: true, danger: true, run: () => Session.reboot() },
+                                { icon: "󰐥", tip: "Power off", confirm: true, danger: true, run: () => Session.poweroff() }
                             ]
                             IconButton {
                                 required property var modelData
@@ -206,6 +209,8 @@ Scope {
                                 icon: modelData.icon
                                 confirm: modelData.confirm
                                 armedColor: modelData.danger ? Main.theme.colRed : Main.theme.colFg
+                                tooltip: modelData.tip
+                                armedTooltip: "Click again to " + modelData.tip.toLowerCase()
                                 onClicked: modelData.run()
                             }
                         }
@@ -370,19 +375,89 @@ Scope {
                     }
                 }
 
+                // live system stats; the full monitor is a click away
                 Rectangle {
                     width: parent.width
-                    height: leftCol.height - y
+                    height: stats.implicitHeight + 28
                     radius: Main.radius
-                    color: Main.theme.colSurface
+                    color: statsMouse.containsMouse ? Qt.lighter(Main.theme.colSurface, 1.2) : Main.theme.colSurface
                     border.color: Qt.rgba(1, 1, 1, 0.05)
                     border.width: 1
 
-                    MonthCalendar {
-                        id: calendar
+                    MouseArea {
+                        id: statsMouse
                         anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: SystemMonitor.show()
+                    }
+
+                    Column {
+                        id: stats
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.top: parent.top
                         anchors.margins: 14
-                        accent: Main.theme.colBlue
+                        spacing: 10
+
+                        Item {
+                            width: parent.width
+                            height: statsTitle.implicitHeight
+                            SectionLabel {
+                                id: statsTitle
+                                text: "System"
+                            }
+                            Text {
+                                anchors.right: parent.right
+                                text: "open monitor 󰁔"
+                                color: statsMouse.containsMouse ? Main.theme.colFg : Main.theme.colAccentDark
+                                font: Main.smallFont
+                            }
+                        }
+
+                        Grid {
+                            id: statGrid
+                            width: parent.width
+                            columns: 2
+                            columnSpacing: 16
+                            rowSpacing: 10
+
+                            Repeater {
+                                model: [
+                                    { label: "CPU", value: Monitor.cpuUsage, text: Math.round(Monitor.cpuUsage) + "%", tint: Main.theme.colBlue },
+                                    { label: "Memory", value: Monitor.memUsage, text: Monitor.memUsed.toFixed(1) + " / " + Math.round(Monitor.memTotal) + "G", tint: Main.theme.colViolet },
+                                    { label: "GPU", value: Monitor.gpuUsage, text: Monitor.gpuVendor ? Math.round(Monitor.gpuUsage) + "%" : "n/a", tint: Main.theme.colGreen },
+                                    { label: "CPU temp", value: Monitor.cpuTemp, text: Monitor.cpuTemp > 0 ? Monitor.cpuTemp + "°C" : "…", tint: Monitor.cpuTemp >= 85 ? Main.theme.colRed : Main.theme.colAmber }
+                                ]
+                                Column {
+                                    required property var modelData
+                                    width: (statGrid.width - statGrid.columnSpacing) / 2
+                                    spacing: 5
+                                    Item {
+                                        width: parent.width
+                                        height: statLabel.implicitHeight
+                                        Text {
+                                            id: statLabel
+                                            text: parent.parent.modelData.label
+                                            color: Main.theme.colAccentLight
+                                            font: Main.smallFont
+                                        }
+                                        Text {
+                                            anchors.right: parent.right
+                                            text: parent.parent.modelData.text
+                                            color: Main.theme.colFg
+                                            font: Main.smallFont
+                                        }
+                                    }
+                                    Meter {
+                                        width: parent.width
+                                        height: 4
+                                        max: 100
+                                        segments: [{ value: parent.modelData.value, color: parent.modelData.tint }]
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -403,7 +478,7 @@ Scope {
                         id: tabTrack
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        width: 540
+                        width: tabRow.implicitWidth + 8
                         height: 40
                         radius: Main.radius
                         color: Main.theme.colSurface
@@ -416,10 +491,12 @@ Scope {
                         ]
                         readonly property int index: root.tabs.indexOf(root.tab)
 
+                        // follows the active tab's own position and width
                         Rectangle {
-                            x: 4 + tabTrack.index * (tabTrack.width - 8) / tabTrack.defs.length
+                            readonly property Item active: tabButtons.itemAt(tabTrack.index)
+                            x: 4 + (active?.x ?? 0)
                             y: 4
-                            width: (tabTrack.width - 8) / tabTrack.defs.length
+                            width: active?.width ?? 0
                             height: tabTrack.height - 8
                             radius: Main.radius
                             readonly property color tint: tabTrack.defs[tabTrack.index].tint
@@ -433,6 +510,12 @@ Scope {
                                     easing.type: Easing.OutCubic
                                 }
                             }
+                            Behavior on width {
+                                NumberAnimation {
+                                    duration: Main.anim
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                             Behavior on color {
                                 ColorAnimation {
                                     duration: Main.anim
@@ -441,16 +524,20 @@ Scope {
                         }
 
                         Row {
-                            anchors.fill: parent
-                            anchors.margins: 4
+                            id: tabRow
+                            x: 4
+                            y: 4
+                            height: parent.height - 8
                             Repeater {
+                                id: tabButtons
                                 model: tabTrack.defs
                                 Item {
                                     id: tabItem
                                     required property var modelData
-                                    width: parent.width / tabTrack.defs.length
+                                    width: tabText.implicitWidth + 32
                                     height: parent.height
                                     Text {
+                                        id: tabText
                                         anchors.centerIn: parent
                                         text: tabItem.modelData.icon + "  " + tabItem.modelData.label
                                         color: root.tab === tabItem.modelData.id ? tabItem.modelData.tint : Main.theme.colAccentLight
@@ -488,8 +575,7 @@ Scope {
                     id: pane
                     anchors.top: tabBar.bottom
                     anchors.topMargin: 14
-                    anchors.bottom: media.visible ? media.top : parent.bottom
-                    anchors.bottomMargin: media.visible ? 14 : 0
+                    anchors.bottom: parent.bottom
                     width: parent.width
                     radius: Main.radius
                     color: Main.theme.colSurface
@@ -1145,23 +1231,6 @@ Scope {
                             triggeredOnStart: true
                             onTriggered: root.now = Date.now()
                         }
-                    }
-                }
-
-                MediaCard {
-                    id: media
-                    anchors.bottom: parent.bottom
-                    width: parent.width
-                    visible: Media.player !== null
-                    player: Media.player
-                    radius: Main.radius
-
-                    // the card's own buttons sit above this, so it only catches clicks elsewhere
-                    MouseArea {
-                        anchors.fill: parent
-                        z: -1
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: MusicPlayer.show()
                     }
                 }
             }
