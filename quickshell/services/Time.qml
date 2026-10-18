@@ -10,7 +10,7 @@ Singleton {
     readonly property string time: Qt.formatDateTime(clock.date, date_format)
     property string date_format: regular
     property string regular: "HH:mm"
-    property string verbose: "yyyy MMM, ddd - HH:mm:ss"
+    property string verbose: "ddd d MMM yyyy - HH:mm:ss"
 
     SystemClock {
         id: clock
