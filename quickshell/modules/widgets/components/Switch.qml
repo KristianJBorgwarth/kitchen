@@ -1,7 +1,6 @@
 import QtQuick
 import qs.core
 
-// Pill switch; fills with its accent when on.
 Rectangle {
     id: root
     property bool checked: false

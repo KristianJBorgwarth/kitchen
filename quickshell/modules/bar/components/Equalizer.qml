@@ -2,8 +2,7 @@ import QtQuick
 import qs.core
 import qs.services
 
-// Mirrored spectrum bars fed by Cava, resampled down to `count` bars. Without cava
-// installed it fakes a gentle wave while playing; when paused the bars settle into dots.
+// Spectrum bars from Cava resampled to `count`; fakes a wave when cava isn't installed.
 Item {
     id: root
     property int count: 14
@@ -31,7 +30,6 @@ Item {
         }
     }
 
-    // average Cava's bars into `count` buckets
     function resample(src) {
         const out = new Array(count);
         for (let i = 0; i < count; i++) {
@@ -62,7 +60,6 @@ Item {
                 width: root.barWidth
                 height: Math.max(root.barWidth, level * root.maxHeight)
                 radius: root.barWidth / 2
-                // louder bars burn brighter
                 color: Qt.rgba(Main.theme.colFg.r, Main.theme.colFg.g, Main.theme.colFg.b, 0.45 + 0.55 * level)
 
                 Behavior on height {

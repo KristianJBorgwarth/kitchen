@@ -4,10 +4,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Keybinds — sway's bindings, parsed into readable sections for the Keybinds window.
-// Comments above a group of bindsyms become the section title, `mode "x" { }` blocks
-// get their own section, bindings running the same command are merged into one row,
-// and number runs ($mod+1…9 → workspace 1…9) collapse into a single row.
+// Sway bindings parsed into sections: comments become titles, same-command binds merge,
+// and runs like $mod+1…9 collapse into one row.
 Singleton {
     id: root
     // [{ title, rows: [{ desc, detail, combos: [[key, …], …], app, glyph }] }]
@@ -27,7 +25,6 @@ Singleton {
 
     Component.onCompleted: reload()
 
-    // ── key names ─────────────────────────────────────────────
     readonly property var keyNames: ({
             mod4: "Super",
             mod1: "Alt",
@@ -65,7 +62,6 @@ Singleton {
         });
     }
 
-    // ── descriptions ──────────────────────────────────────────
     readonly property var varLabels: ({
             term: "Terminal",
             menu: "App launcher",
@@ -162,7 +158,6 @@ Singleton {
         return { desc: cmd, glyph: "󰌌" };
     }
 
-    // ── parsing ───────────────────────────────────────────────
     function parse(text) {
         const vars = {};
         const sections = [];
@@ -279,7 +274,6 @@ Singleton {
             if (!r.nums) {
                 result.push(r);
             } else if (r.nums.length < 3) {
-                // short runs aren't worth collapsing
                 result.push(...r.rows);
             } else {
                 const first = r.rows[0];

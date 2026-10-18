@@ -1,8 +1,6 @@
 import QtQuick
 import qs.core
 
-// Quick-settings tile: tap the body to toggle; tiles with details get a chevron on the
-// right that opens them instead. Active tiles get an accent tint, border and icon disc.
 Rectangle {
     id: root
     property string icon: ""
@@ -35,7 +33,6 @@ Rectangle {
 
     readonly property color ink: Main.theme.colFg
 
-    // icon disc
     Rectangle {
         id: disc
         anchors.left: parent.left
@@ -86,7 +83,6 @@ Rectangle {
         onClicked: if (root.clickable) root.clicked()
     }
 
-    // details: its own hit area on top of the body
     Rectangle {
         id: chevron
         anchors.right: parent.right

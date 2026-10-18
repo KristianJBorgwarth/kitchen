@@ -2,9 +2,7 @@ import QtQuick
 import qs.core
 import qs.services
 
-// Wide spectrum: bars rise from a baseline with a faded reflection underneath.
-// Uses all of Cava's bars; without cava it fakes a wave shaped like real music
-// (heavier lows, lighter highs) so the panel still looks alive.
+// Without cava it fakes a music-shaped wave (heavier lows) so the panel still moves.
 Item {
     id: root
     property bool playing: false
@@ -38,7 +36,6 @@ Item {
 
     readonly property var levels: !playing ? new Array(count).fill(0) : Cava.available ? Cava.bars : fake
 
-    // baseline
     Rectangle {
         y: root.baseY
         width: parent.width
@@ -82,7 +79,6 @@ Item {
                 }
             }
 
-            // reflection
             Rectangle {
                 y: root.baseY + 2
                 width: parent.width

@@ -4,7 +4,6 @@ import Quickshell.Services.SystemTray
 import qs.core
 import qs.modules.widgets
 
-// Tray button: opens the TrayPanel drawer under itself. Hidden with no tray items.
 Text {
     id: root
     anchors.verticalCenter: parent.verticalCenter
@@ -28,6 +27,5 @@ Text {
         onClicked: TrayPanel.toggle()
     }
 
-    // the drawer drops down centered under this button
     Component.onCompleted: TrayPanel.anchorItem = root
 }

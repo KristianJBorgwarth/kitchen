@@ -4,8 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Lyrics — synced lyrics from lrclib.net for the given track. Off by default since it
-// sends artist/title to lrclib; the toggle is remembered across restarts.
+// Off by default: looking lyrics up sends artist/title to lrclib.net.
 Singleton {
     id: root
     readonly property bool enabled: settings.lyrics
@@ -72,7 +71,6 @@ Singleton {
         xhr.send();
     }
 
-    // exact match first (artist + title + duration), then a fuzzy search
     function load(title: string, artist: string, album: string, length: real): void {
         if (!enabled || !title) {
             _key = "";

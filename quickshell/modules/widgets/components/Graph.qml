@@ -1,9 +1,7 @@
 import QtQuick
 import qs.core
 
-// Smooth area graph of a rolling history, newest sample on the right.
-// Samples are placed by their timestamp in times, so uneven sample rates still
-// plot to scale. values2 is an optional second series drawn dimmer behind.
+// Samples are placed by their timestamp in `times`, so uneven sample rates plot to scale.
 Canvas {
     id: root
     // repainted 5x/s while the monitor is open; rasterize on the GPU
@@ -25,7 +23,6 @@ Canvas {
     onHeightChanged: requestPaint()
 
     function series(ctx, data, col, fillAlpha) {
-        // data and times share their tail; align from the newest sample back
         const n = Math.min(data.length, times.length);
         if (n < 2)
             return;
@@ -54,7 +51,6 @@ Canvas {
         ctx.fillStyle = g;
         ctx.fill();
 
-        // live dot on the newest sample
         ctx.beginPath();
         ctx.arc(x(data.length - 1) - 2, y(data[data.length - 1]), 2.5, 0, 2 * Math.PI);
         ctx.fillStyle = col;
@@ -65,7 +61,6 @@ Canvas {
         const ctx = getContext("2d");
         ctx.reset();
 
-        // faint guide lines at 25/50/75%
         ctx.strokeStyle = Qt.rgba(1, 1, 1, 0.05);
         ctx.lineWidth = 1;
         for (const f of [0.25, 0.5, 0.75]) {

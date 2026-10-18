@@ -1,7 +1,6 @@
 import QtQuick
 import qs.core
 
-// Icon + draggable bar + percentage. Click the icon for the secondary action (mute).
 Item {
     id: root
     property string icon: ""

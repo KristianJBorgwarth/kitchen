@@ -6,8 +6,7 @@ import Quickshell.Io
 // qualified: its PowerProfile type would shadow this singleton's name
 import Quickshell.Services.UPower as UP
 
-// PowerProfile — power-profiles-daemon (or tuned-ppd) over D-Bus via Quickshell's UPower
-// module: change notifications instead of polling powerprofilesctl (a python process).
+// power-profiles-daemon over D-Bus: change notifications instead of polling powerprofilesctl (python).
 Singleton {
     id: root
     // the daemon ships one of these D-Bus service files; checking them needs no process

@@ -1,7 +1,6 @@
 import QtQuick
 import qs.core
 
-// Cheat sheet for a VimKeys handler; fills its parent while vimKeys.helpVisible.
 Rectangle {
     id: root
     required property var vimKeys
@@ -29,13 +28,9 @@ Rectangle {
         anchors.centerIn: parent
         spacing: 16
 
-        Text {
+        SectionLabel {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "KEYS"
-            color: Main.theme.colAccentMid
-            font.family: Main.fontFamily
-            font.pixelSize: 11
-            font.letterSpacing: 1.5
+            text: "Keys"
         }
 
         Grid {

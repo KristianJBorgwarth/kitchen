@@ -4,8 +4,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Networking
 
-// Network — NetworkManager state (wired + wifi). `scanning` turns the wifi scanner on
-// while the control center's network tab is visible.
 Singleton {
     id: root
     property bool scanning: false
@@ -20,7 +18,6 @@ Singleton {
     readonly property bool connected: activeDevice !== null
     readonly property bool wired: activeDevice?.type === DeviceType.Wired
 
-    // connected first, then saved, then by signal
     readonly property var wifiNetworks: !wifiDevice ? [] : wifiDevice.networks.values.filter(n => n.name).sort((a, b) => (b.connected - a.connected) || (b.known - a.known) || (b.signalStrength - a.signalStrength))
 
     readonly property string label: {

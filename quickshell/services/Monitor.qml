@@ -4,22 +4,17 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Monitor — system stats for the SystemMonitor window.
-// Cheap /proc + /sys reads run all the time (every 200ms while the window is
-// open, every second otherwise), so the graphs are already full when it opens;
-// process list, sensors and disks are only polled while open (detailed = true).
-// Every sample is timestamped in historyTimes so graphs plot by time, not count.
+// Cheap /proc and /sys reads run all the time so graphs are full when the window opens;
+// process list, sensors and disks only poll while it's open (`detailed`).
 Singleton {
     id: root
     property bool detailed: false
-    // sample rate while open is picked in the monitor header and remembered across restarts
     readonly property var intervalChoices: [100, 200, 500, 1000]
     readonly property int openInterval: settings.interval
     readonly property int interval: detailed ? openInterval : 1000
     readonly property int historyWindow: 60000 // ms shown in graphs
     property var historyTimes: []
 
-    // system
     property string host: ""
     property string kernel: ""
     property string distro: ""
@@ -27,7 +22,6 @@ Singleton {
     property var load: [0, 0, 0]
     property int procCount: 0
 
-    // cpu
     property string cpuModel: ""
     property real cpuUsage: 0
     property var coreUsage: []
@@ -64,7 +58,6 @@ Singleton {
     property var diskReadHistory: []
     property var diskWriteHistory: []
 
-    // detailed only
     property var processes: []  // [{pid, cpu, mem, name}]
     property var sensors: []    // [{name, temp}]
     property var mounts: []     // [{mount, used, total}] in GiB
@@ -76,7 +69,6 @@ Singleton {
     property real _lastFreq: 0
     property real _lastNvidia: 0
 
-    // appends v and drops whatever fell out of the time window (drop = count to cut)
     function setOpenInterval(ms: int): void {
         settings.interval = ms;
     }
@@ -266,7 +258,6 @@ Singleton {
         onTriggered: root.tick()
     }
 
-    // one-time facts + gpu detection
     Process {
         running: true
         command: ["sh", "-c", "cat /proc/sys/kernel/hostname /proc/sys/kernel/osrelease; . /etc/os-release; echo \"$PRETTY_NAME\"; grep -m1 'model name' /proc/cpuinfo | cut -d: -f2"]

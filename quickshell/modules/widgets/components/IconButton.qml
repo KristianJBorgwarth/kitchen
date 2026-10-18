@@ -1,15 +1,13 @@
 import QtQuick
 import qs.core
 
-// Round icon button. With confirm: true the first click arms it and a second
-// click within 3s fires, so reboot/poweroff can't happen by accident.
+// confirm: the first click arms it, a second within 3s fires.
 Rectangle {
     id: root
     property string icon: ""
     property bool confirm: false
     property bool armed: false
     property font iconFont: Main.iconFont
-    // fill while armed; danger buttons pass a red
     property color armedColor: Main.theme.colFg
     signal clicked
 

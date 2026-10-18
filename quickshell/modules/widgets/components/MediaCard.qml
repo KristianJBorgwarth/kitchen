@@ -4,7 +4,6 @@ import Quickshell.Services.Mpris
 import Quickshell.Widgets
 import qs.core
 
-// Now-playing card for one MPRIS player.
 Rectangle {
     id: root
     required property MprisPlayer player

@@ -4,9 +4,8 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Brightness — first /sys/class/backlight device, set through brightnessctl (goes via
-// logind, so no udev rules needed). Reads are plain file reads, so polling costs no
-// processes; one `ls` at startup finds the device. Unavailable on desktops.
+// brightnessctl goes via logind, so no udev rules are needed for writes. Reads are plain
+// file reads, so polling starts no processes.
 Singleton {
     id: root
     property string device: ""

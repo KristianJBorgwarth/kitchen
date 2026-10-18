@@ -5,11 +5,8 @@ import Quickshell
 import Quickshell.Services.Mpris
 import Quickshell.Wayland
 
-// Media — MPRIS players worth showing, and the one to show: playing first, else the first.
-// Music apps in musicApps always count. Browsers don't tell MPRIS which site is playing, so a
-// browser counts when the site publishes real media metadata (title, artist/channel, artwork,
-// length) like YouTube does, which also works for background tabs. That lets in other media
-// sites (YouTube Music, SoundCloud, ...) but keeps out calls, generic tabs and bare <video>s.
+// Browsers don't tell MPRIS which site is playing, so they only count when the site publishes
+// full media metadata (YouTube does; calls, generic tabs and bare <video>s don't).
 Singleton {
     id: root
     readonly property var musicApps: ["feishin"]

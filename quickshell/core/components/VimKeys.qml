@@ -1,10 +1,7 @@
 import QtQuick
 
-// Vim-style key handler shared by the widgets.
-//   bindings: [{ keys: "gg" | "h" | "<C-d>" | "<Esc>", desc: "…", run: () => … }]
-// Feed it from an item with focus:  Keys.onPressed: event => vimKeys.handle(event)
-// Multi-key sequences wait up to `timeout` ms for the next key, like vim's timeoutlen.
-// "?" toggles `helpVisible` so a KeyHelp overlay can list the bindings.
+// bindings: [{ keys: "gg" | "h" | "<C-d>" | "<Esc>", desc, run }]. Multi-key sequences wait
+// `timeout` ms for the next key, like vim's timeoutlen; "?" toggles helpVisible for KeyHelp.
 Item {
     id: root
     property var bindings: []

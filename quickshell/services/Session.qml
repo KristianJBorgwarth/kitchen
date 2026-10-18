@@ -4,14 +4,12 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Session — user/host/uptime and power actions
 Singleton {
     id: root
     readonly property string user: Quickshell.env("USER")
     readonly property string host: hostFile.text().trim()
     property string uptime: ""
 
-    // plain file reads: no processes
     FileView {
         id: hostFile
         path: "/proc/sys/kernel/hostname"

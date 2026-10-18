@@ -4,8 +4,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Cava — audio spectrum (0..1 per bar) from cava's raw output.
-// Only runs while something is playing; available is false when cava isn't installed.
 Singleton {
     id: root
     readonly property int count: 48

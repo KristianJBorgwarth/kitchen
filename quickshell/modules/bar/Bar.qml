@@ -58,7 +58,6 @@ Scope {
             }
         }
 
-        // music island, right of the clock; only while a player exists
         Rectangle {
             id: musicPill
             anchors.left: centerPill.right

@@ -1,8 +1,6 @@
 import QtQuick
 import qs.core
 
-// Month grid, weeks starting Monday; today is filled with the accent. The arrows
-// (or h/l via shift(±1)) page through months.
 Item {
     id: root
     property color accent: Main.theme.colBlue
@@ -29,7 +27,6 @@ Item {
                 weekend: d.getDay() === 0 || d.getDay() === 6
             });
         }
-        // drop a trailing week that belongs entirely to the next month
         return out.slice(35).every(c => !c.inMonth) ? out.slice(0, 35) : out;
     }
 

@@ -1,7 +1,7 @@
 import QtQuick
 import qs.core
+import qs.core.components
 
-// Rounded card with a small caps title row; children go in the body below it.
 Rectangle {
     id: root
     property string title: ""
@@ -14,16 +14,12 @@ Rectangle {
     border.color: Qt.rgba(1, 1, 1, 0.05)
     border.width: 1
 
-    Text {
+    SectionLabel {
         id: titleText
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.margins: 16
-        text: (root.icon ? root.icon + "  " : "") + root.title.toUpperCase()
-        color: Main.theme.colAccentMid
-        font.family: Main.fontFamily
-        font.pixelSize: 11
-        font.letterSpacing: 1.5
+        text: (root.icon ? root.icon + "  " : "") + root.title
     }
 
     Text {

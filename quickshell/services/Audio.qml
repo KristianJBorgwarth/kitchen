@@ -4,8 +4,6 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Pipewire
 
-// Audio — PipeWire default sink (output) and source (mic), plus every device and
-// per-app stream while `detailed` (the control center is open).
 Singleton {
     id: root
     property bool detailed: false

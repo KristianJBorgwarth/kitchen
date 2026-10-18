@@ -4,14 +4,13 @@ import QtQuick
 import Quickshell
 import Quickshell.Bluetooth
 
-// Bt — BlueZ default adapter; available is false on machines without one
 Singleton {
     id: root
     readonly property BluetoothAdapter adapter: Bluetooth.defaultAdapter
     readonly property bool available: adapter !== null
     readonly property bool enabled: adapter?.enabled ?? false
     readonly property var connectedDevices: adapter ? adapter.devices.values.filter(d => d.connected) : []
-    // connected, then paired, then whatever a scan found (unnamed ones are noise)
+    // unnamed devices only have an address, not worth listing
     readonly property var devices: adapter ? adapter.devices.values.filter(d => d.name && d.name !== d.address).sort((a, b) => (b.connected - a.connected) || (b.paired - a.paired) || a.name.localeCompare(b.name)) : []
     readonly property bool scanning: adapter?.discovering ?? false
 

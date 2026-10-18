@@ -8,7 +8,6 @@ import Quickshell.Widgets
 import qs.core
 import qs.core.components
 
-// Tray drawer: drops down under the bar's tray button, so the bar never reflows.
 Scope {
     id: root
     property bool opened: false
@@ -16,14 +15,10 @@ Scope {
     property Item anchorItem: null
     property real anchorX: 0
     property var screen: null
-    // keyboard selection (h/j/k/l), reset on every open
     property int selected: 0
 
     function show() {
-        if (ControlCenter.opened)
-            ControlCenter.hide();
-        if (MusicPlayer.opened)
-            MusicPlayer.hide();
+        ModalHost.current?.hide();
         if (anchorItem) {
             anchorX = anchorItem.mapToItem(null, anchorItem.width / 2, 0).x;
             screen = anchorItem.QsWindow.window.screen;
@@ -46,6 +41,13 @@ Scope {
             show();
     }
 
+    Connections {
+        target: ModalHost
+        function onOpening() {
+            root.hide();
+        }
+    }
+
     Timer {
         id: unmapTimer
         interval: Main.anim + 20
@@ -55,7 +57,6 @@ Scope {
         }
     }
 
-    // invisible full-screen catcher so a click anywhere else closes the drawer
     PanelWindow {
         visible: root.opened
         screen: root.screen

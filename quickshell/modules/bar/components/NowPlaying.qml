@@ -3,7 +3,6 @@ import qs.core
 import qs.services
 import qs.modules.widgets
 
-// Bar now-playing island content: equalizer + track. Hidden without an MPRIS player.
 Item {
     id: root
     anchors.verticalCenter: parent.verticalCenter
