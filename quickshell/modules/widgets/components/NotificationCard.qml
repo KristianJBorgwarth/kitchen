@@ -1,5 +1,4 @@
 import QtQuick
-import Quickshell
 import Quickshell.Services.Notifications
 import Quickshell.Widgets
 import qs.core

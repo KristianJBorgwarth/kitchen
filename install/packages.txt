@@ -6,7 +6,6 @@ swaybg
 kanshi
 waybar
 rofi
-mako
 xdg-desktop-portal-wlr
 
 #audio

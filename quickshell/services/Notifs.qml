@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Services.Notifications
 
-// The desktop notification server (replaces mako). Every notification is kept as history
+// The desktop notification server. Every notification is kept as history
 // until dismissed; `popups` is the subset currently shown on screen.
 Singleton {
     id: root
