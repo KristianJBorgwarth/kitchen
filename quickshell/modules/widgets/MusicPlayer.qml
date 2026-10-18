@@ -112,7 +112,7 @@ Scope {
 
     Timer {
         id: unmapTimer
-        interval: 250
+        interval: Main.anim + 20
         onTriggered: {
             if (!root.opened)
                 win.visible = false;
@@ -150,7 +150,7 @@ Scope {
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 200
+                    duration: Main.anim
                 }
             }
 
@@ -176,14 +176,13 @@ Scope {
 
             Behavior on scale {
                 NumberAnimation {
-                    duration: 260
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.2
+                    duration: Main.anim
+                    easing.type: Easing.OutCubic
                 }
             }
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 180
+                    duration: Main.anim
                 }
             }
 
@@ -292,7 +291,7 @@ Scope {
 
                                 Behavior on color {
                                     ColorAnimation {
-                                        duration: 120
+                                        duration: Main.anim
                                     }
                                 }
 
@@ -337,7 +336,7 @@ Scope {
 
                             Behavior on color {
                                 ColorAnimation {
-                                    duration: 120
+                                    duration: Main.anim
                                 }
                             }
 
@@ -563,7 +562,7 @@ Scope {
                                 highlightRangeMode: Lyrics.status === "synced" ? ListView.StrictlyEnforceRange : ListView.NoHighlightRange
                                 preferredHighlightBegin: height / 2 - 14
                                 preferredHighlightEnd: height / 2 + 14
-                                highlightMoveDuration: 400
+                                highlightMoveDuration: Main.anim * 2
                                 spacing: 4
 
                                 delegate: Text {
@@ -580,7 +579,7 @@ Scope {
 
                                     Behavior on font.pixelSize {
                                         NumberAnimation {
-                                            duration: 200
+                                            duration: Main.anim
                                         }
                                     }
                                 }
@@ -615,7 +614,7 @@ Scope {
 
                                         Behavior on height {
                                             NumberAnimation {
-                                                duration: 100
+                                                duration: Main.anim
                                             }
                                         }
 
@@ -638,7 +637,7 @@ Scope {
 
                                         Behavior on width {
                                             NumberAnimation {
-                                                duration: 100
+                                                duration: Main.anim
                                             }
                                         }
                                     }
@@ -737,12 +736,12 @@ Scope {
 
                                         Behavior on scale {
                                             NumberAnimation {
-                                                duration: 100
+                                                duration: Main.anim
                                             }
                                         }
                                         Behavior on color {
                                             ColorAnimation {
-                                                duration: 120
+                                                duration: Main.anim
                                             }
                                         }
 

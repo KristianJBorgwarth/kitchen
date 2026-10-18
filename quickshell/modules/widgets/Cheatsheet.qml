@@ -55,7 +55,7 @@ Scope {
 
     Timer {
         id: unmapTimer
-        interval: 250
+        interval: Main.anim + 20
         onTriggered: {
             if (!root.opened)
                 win.visible = false;
@@ -85,7 +85,7 @@ Scope {
 
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 200
+                    duration: Main.anim
                 }
             }
 
@@ -110,14 +110,13 @@ Scope {
 
             Behavior on scale {
                 NumberAnimation {
-                    duration: 260
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.2
+                    duration: Main.anim
+                    easing.type: Easing.OutCubic
                 }
             }
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 180
+                    duration: Main.anim
                 }
             }
 
@@ -259,7 +258,7 @@ Scope {
                         id: scrollAnim
                         target: flick
                         property: "contentY"
-                        duration: 140
+                        duration: Main.anim
                         easing.type: Easing.OutCubic
                     }
 

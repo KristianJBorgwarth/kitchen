@@ -16,8 +16,8 @@ Text {
 
     Behavior on scale {
         NumberAnimation {
-            duration: 180
-            easing.type: Easing.OutBack
+            duration: Main.anim
+            easing.type: Easing.OutCubic
         }
     }
 

@@ -114,14 +114,13 @@ Scope {
 
             Behavior on scale {
                 NumberAnimation {
-                    duration: 220
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.6
+                    duration: Main.anim
+                    easing.type: Easing.OutCubic
                 }
             }
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 150
+                    duration: Main.anim
                 }
             }
 
@@ -259,7 +258,7 @@ Scope {
 
                                 Behavior on color {
                                     ColorAnimation {
-                                        duration: 150
+                                        duration: Main.anim
                                     }
                                 }
 

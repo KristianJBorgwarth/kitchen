@@ -64,7 +64,7 @@ Item {
                 Behavior on width {
                     enabled: !drag.pressed
                     NumberAnimation {
-                        duration: 120
+                        duration: Main.anim
                     }
                 }
             }
@@ -80,7 +80,7 @@ Item {
 
             Behavior on width {
                 NumberAnimation {
-                    duration: 100
+                    duration: Main.anim
                 }
             }
         }

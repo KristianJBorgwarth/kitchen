@@ -48,7 +48,7 @@ Scope {
 
     Timer {
         id: unmapTimer
-        interval: 220
+        interval: Main.anim + 20
         onTriggered: {
             if (!root.opened)
                 panel.visible = false;
@@ -132,14 +132,13 @@ Scope {
 
             Behavior on scale {
                 NumberAnimation {
-                    duration: 220
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.6
+                    duration: Main.anim
+                    easing.type: Easing.OutCubic
                 }
             }
             Behavior on opacity {
                 NumberAnimation {
-                    duration: 150
+                    duration: Main.anim
                 }
             }
 
@@ -182,7 +181,7 @@ Scope {
 
                         Behavior on color {
                             ColorAnimation {
-                                duration: 120
+                                duration: Main.anim
                             }
                         }
 
