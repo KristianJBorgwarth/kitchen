@@ -109,7 +109,7 @@ Item {
                     anchors.centerIn: parent
                     width: Math.min(parent.width, parent.height) - 2
                     height: width
-                    radius: width / 2
+                    radius: Main.radius
                     color: parent.modelData.isToday ? root.accent : "transparent"
                 }
                 Text {

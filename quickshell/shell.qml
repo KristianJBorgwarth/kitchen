@@ -8,6 +8,8 @@ import qs.modules.widgets
 Scope {
     readonly property var modalHost: ModalHost
     readonly property var switcher: Switcher
+    // loads its launch stats (and the one-time rofi import) before the first open
+    readonly property var launcher: Launcher
     Bar {}
     NotificationPopups {}
     Ipc {}

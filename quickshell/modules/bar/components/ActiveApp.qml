@@ -19,7 +19,8 @@ Item {
             width: 16
             height: 16
             IconImage {
-                anchors.fill: parent
+                anchors.centerIn: parent
+                implicitSize: 16
                 visible: Focus.icon !== ""
                 source: Focus.icon ? Quickshell.iconPath(Focus.icon, true) : ""
             }

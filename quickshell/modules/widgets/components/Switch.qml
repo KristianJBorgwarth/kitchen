@@ -9,7 +9,7 @@ Rectangle {
 
     implicitWidth: 40
     implicitHeight: 22
-    radius: height / 2
+    radius: Main.radius
     color: checked ? accent : Main.theme.colMuted
 
     Behavior on color {
@@ -23,7 +23,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         width: root.height - 6
         height: width
-        radius: width / 2
+        radius: Main.radius - 1
         color: root.checked ? Main.theme.colBg : Main.theme.colFg
 
         Behavior on x {

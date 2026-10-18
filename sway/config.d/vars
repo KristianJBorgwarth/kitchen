@@ -5,7 +5,7 @@ set $up k
 set $right l
 set $term ghostty
 set $browser brave
-set $menu rofi -show drun
+set $menu qs ipc call launcher toggle
 set $screenshot grim -g "$(slurp)" - | swappy -f -
 set $filemanager thunar
 set $clipboard-history PATH="$PATH:$HOME/go/bin" sh -c 'cliphist list | rofi -dmenu -p "" | cliphist decode | wl-copy'

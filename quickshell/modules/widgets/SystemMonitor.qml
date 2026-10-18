@@ -53,7 +53,6 @@ Scope {
         maxWidth: 1240
         maxHeight: 820
         padding: 20
-        radius: 14
         onClosed: Monitor.detailed = false
         bindings: [
             { keys: "+", desc: "update faster", run: () => root.stepInterval(-1) },
@@ -107,7 +106,7 @@ Scope {
                         anchors.verticalCenter: parent.verticalCenter
                         height: 28
                         width: intervalRow.implicitWidth + 6
-                        radius: 14
+                        radius: Main.radius
                         color: Main.theme.colSurface
 
                         Row {
@@ -186,7 +185,7 @@ Scope {
                                     required property string modelData
                                     height: 22
                                     width: t.implicitWidth + 14
-                                    radius: 11
+                                    radius: Main.radius
                                     color: Main.theme.colMuted
                                     Text {
                                         id: t

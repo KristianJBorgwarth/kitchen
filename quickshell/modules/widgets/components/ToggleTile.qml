@@ -14,7 +14,7 @@ Rectangle {
     signal detailsClicked
 
     implicitHeight: 76
-    radius: 14
+    radius: Main.radius
     color: active ? Qt.rgba(accent.r, accent.g, accent.b, body.containsMouse ? 0.22 : 0.16) : (body.containsMouse && clickable ? Qt.lighter(Main.theme.colSurface, 1.35) : Main.theme.colSurface)
     border.color: active ? Qt.rgba(accent.r, accent.g, accent.b, 0.45) : Qt.rgba(1, 1, 1, 0.05)
     border.width: 1
@@ -40,7 +40,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         width: 42
         height: 42
-        radius: 21
+        radius: Main.radius
         color: root.active ? root.accent : Qt.rgba(1, 1, 1, 0.06)
 
         Text {
@@ -90,7 +90,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         width: root.hasDetails ? 28 : 0
         height: 44
-        radius: 8
+        radius: Main.radius
         visible: root.hasDetails
         color: chevMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : "transparent"
 

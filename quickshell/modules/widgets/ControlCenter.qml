@@ -123,7 +123,7 @@ Scope {
                 Rectangle {
                     width: parent.width
                     height: 138
-                    radius: 14
+                    radius: Main.radius
                     color: Main.theme.colSurface
                     border.color: Qt.rgba(1, 1, 1, 0.05)
                     border.width: 1
@@ -163,7 +163,7 @@ Scope {
                         visible: root.hasBattery
                         height: 24
                         width: battText.implicitWidth + 20
-                        radius: 12
+                        radius: Main.radius
                         readonly property color tint: root.batteryLevel < 0.15 ? Main.theme.colRed : root.batteryLevel < 0.35 ? Main.theme.colAmber : Main.theme.colGreen
                         color: Qt.rgba(tint.r, tint.g, tint.b, 0.15)
                         Text {
@@ -180,7 +180,7 @@ Scope {
                 Rectangle {
                     width: parent.width
                     height: 56
-                    radius: 14
+                    radius: Main.radius
                     color: Main.theme.colSurface
                     border.color: Qt.rgba(1, 1, 1, 0.05)
                     border.width: 1
@@ -201,7 +201,7 @@ Scope {
                                 required property var modelData
                                 implicitWidth: powerRow.width / 5
                                 implicitHeight: powerRow.height
-                                radius: 10
+                                radius: Main.radius
                                 icon: modelData.icon
                                 confirm: modelData.confirm
                                 armedColor: modelData.danger ? Main.theme.colRed : Main.theme.colFg
@@ -266,7 +266,7 @@ Scope {
                     visible: PowerProfile.available
                     width: parent.width
                     height: 40
-                    radius: 14
+                    radius: Main.radius
                     color: Main.theme.colSurface
 
                     Row {
@@ -284,7 +284,7 @@ Scope {
                                 readonly property bool selected: PowerProfile.current === modelData.id
                                 width: parent.width / 3
                                 height: parent.height
-                                radius: 9
+                                radius: Main.radius
                                 color: selected ? Qt.rgba(modelData.tint.r, modelData.tint.g, modelData.tint.b, 0.2) : (segMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.06) : "transparent")
                                 border.color: selected ? Qt.rgba(modelData.tint.r, modelData.tint.g, modelData.tint.b, 0.5) : "transparent"
                                 border.width: 1
@@ -317,7 +317,7 @@ Scope {
                     visible: Brightness.available
                     width: parent.width
                     height: 44
-                    radius: 14
+                    radius: Main.radius
                     color: Main.theme.colSurface
                     SliderRow {
                         anchors.fill: parent
@@ -333,7 +333,7 @@ Scope {
                 Rectangle {
                     width: parent.width
                     height: leftCol.height - y
-                    radius: 14
+                    radius: Main.radius
                     color: Main.theme.colSurface
                     border.color: Qt.rgba(1, 1, 1, 0.05)
                     border.width: 1
@@ -365,7 +365,7 @@ Scope {
                         anchors.verticalCenter: parent.verticalCenter
                         width: 540
                         height: 40
-                        radius: 12
+                        radius: Main.radius
                         color: Main.theme.colSurface
 
                         readonly property var defs: [
@@ -381,7 +381,7 @@ Scope {
                             y: 4
                             width: (tabTrack.width - 8) / tabTrack.defs.length
                             height: tabTrack.height - 8
-                            radius: 9
+                            radius: Main.radius
                             readonly property color tint: tabTrack.defs[tabTrack.index].tint
                             color: Qt.rgba(tint.r, tint.g, tint.b, 0.2)
                             border.color: Qt.rgba(tint.r, tint.g, tint.b, 0.5)
@@ -451,7 +451,7 @@ Scope {
                     anchors.bottom: media.visible ? media.top : parent.bottom
                     anchors.bottomMargin: media.visible ? 14 : 0
                     width: parent.width
-                    radius: 14
+                    radius: Main.radius
                     color: Main.theme.colSurface
                     border.color: Qt.rgba(1, 1, 1, 0.05)
                     border.width: 1
@@ -686,7 +686,7 @@ Scope {
                                 readonly property bool expanded: root.pskFor === modelData.name
                                 width: ListView.view.width
                                 height: expanded ? 88 : 44
-                                radius: 10
+                                radius: Main.radius
                                 color: modelData.connected ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.12) : (netMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.05) : "transparent")
                                 border.color: modelData.connected ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.35) : "transparent"
                                 border.width: 1
@@ -783,7 +783,7 @@ Scope {
                                     Rectangle {
                                         width: net.width - 120
                                         height: 32
-                                        radius: 8
+                                        radius: Main.radius
                                         color: Main.theme.colBg
                                         border.color: psk.activeFocus ? Main.theme.colBlue : Main.theme.colMuted
                                         border.width: 1
@@ -820,7 +820,7 @@ Scope {
                                         signal clicked
                                         width: 84
                                         height: 32
-                                        radius: 8
+                                        radius: Main.radius
                                         color: joinMouse.containsMouse ? Qt.lighter(Main.theme.colBlue, 1.1) : Main.theme.colBlue
                                         onClicked: {
                                             if (!root.pskText)
@@ -873,7 +873,7 @@ Scope {
                                     visible: Bt.enabled
                                     height: 26
                                     width: scanRow.implicitWidth + 20
-                                    radius: 13
+                                    radius: Main.radius
                                     color: Bt.scanning ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.18) : (scanMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.08) : Qt.rgba(1, 1, 1, 0.03))
                                     border.color: Bt.scanning ? Main.theme.colViolet : Qt.rgba(1, 1, 1, 0.08)
                                     border.width: 1
@@ -943,7 +943,7 @@ Scope {
                                 readonly property bool busy: modelData.pairing || modelData.state === BluetoothDeviceState.Connecting || modelData.state === BluetoothDeviceState.Disconnecting
                                 width: ListView.view.width
                                 height: 48
-                                radius: 10
+                                radius: Main.radius
                                 color: modelData.connected ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.12) : (devMouse.containsMouse ? Qt.rgba(1, 1, 1, 0.05) : "transparent")
                                 border.color: modelData.connected ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.35) : "transparent"
                                 border.width: 1
@@ -1114,7 +1114,7 @@ Scope {
                     width: parent.width
                     visible: Media.player !== null
                     player: Media.player
-                    radius: 12
+                    radius: Main.radius
 
                     // the card's own buttons sit above this, so it only catches clicks elsewhere
                     MouseArea {

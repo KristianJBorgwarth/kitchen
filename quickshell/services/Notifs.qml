@@ -13,13 +13,14 @@ Singleton {
     readonly property int count: server.trackedNotifications.values.length
     property var popups: []
     // notification id → arrival time (ms); notifications carry no timestamp of their own
-    readonly property var arrived: persist.arrived
+    readonly property var arrived: JSON.parse(persist.arrived)
 
-    // survives config reloads, like the notifications themselves (keepOnReload)
+    // survives config reloads, like the notifications themselves (keepOnReload). A string,
+    // since a JS object can't be carried over into the reloaded engine
     PersistentProperties {
         id: persist
         reloadableId: "notifs"
-        property var arrived: ({})
+        property string arrived: "{}"
     }
 
     NotificationServer {
@@ -34,10 +35,10 @@ Singleton {
 
         onNotification: n => {
             n.tracked = true;
-            if (!persist.arrived[n.id]) {
-                const a = Object.assign({}, persist.arrived);
+            if (!root.arrived[n.id]) {
+                const a = Object.assign({}, root.arrived);
                 a[n.id] = Date.now();
-                persist.arrived = a;
+                persist.arrived = JSON.stringify(a);
             }
             // closed objects are destroyed, so never keep one in the popup list
             n.closed.connect(() => root.hidePopup(n));

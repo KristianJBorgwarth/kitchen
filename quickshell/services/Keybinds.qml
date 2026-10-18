@@ -74,7 +74,9 @@ Singleton {
             music: "Music player",
             controlcenter: "Control center",
             tray: "Tray",
-            keybinds: "Keybinds"
+            keybinds: "Keybinds",
+            launcher: "App launcher",
+            switcher: "Workspace switcher"
         })
 
     function titleCase(s) {

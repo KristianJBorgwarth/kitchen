@@ -47,7 +47,6 @@ Scope {
         maxWidth: 760
         maxHeight: 900
         padding: 22
-        radius: 14
         bindings: [
             { keys: "j", desc: "scroll down", run: () => root.scrollBy(80) },
             { keys: "k", desc: "scroll up", run: () => root.scrollBy(-80) },
@@ -98,7 +97,7 @@ Scope {
                         anchors.verticalCenter: parent.verticalCenter
                         width: 280
                         height: 32
-                        radius: 16
+                        radius: Main.radius
                         color: Main.theme.colSurface
                         border.color: search.activeFocus ? Main.theme.colAccentMid : Main.theme.colMuted
                         border.width: 1

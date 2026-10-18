@@ -9,7 +9,7 @@ Rectangle {
     property string detail: ""
     default property alias content: body.data
 
-    radius: 10
+    radius: Main.radius
     color: Main.theme.colSurface
     border.color: Qt.rgba(1, 1, 1, 0.05)
     border.width: 1

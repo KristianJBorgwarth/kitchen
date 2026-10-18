@@ -18,7 +18,7 @@ Rectangle {
     readonly property real progress: Number(n?.hints?.value ?? -1)
 
     implicitHeight: body.implicitHeight + 28
-    radius: 12
+    radius: Main.radius
     color: popup ? Main.theme.colBg : (hovered ? Qt.lighter(Main.theme.colSurface, 1.2) : Main.theme.colSurface)
     border.color: popup ? Main.theme.colMuted : Qt.rgba(1, 1, 1, 0.05)
     border.width: 1
@@ -66,7 +66,7 @@ Rectangle {
             ClippingRectangle {
                 anchors.fill: parent
                 visible: root.n?.image ? true : false
-                radius: 8
+                radius: Main.radius
                 color: "transparent"
                 Image {
                     anchors.fill: parent

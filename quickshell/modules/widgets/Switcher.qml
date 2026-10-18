@@ -208,7 +208,7 @@ Scope {
                     anchors.verticalCenter: parent.verticalCenter
                     width: 280
                     height: 32
-                    radius: 16
+                    radius: Main.radius
                     color: Main.theme.colSurface
                     border.color: search.activeFocus ? Main.theme.colBlue : Main.theme.colMuted
                     border.width: 1
@@ -345,7 +345,7 @@ Scope {
                     anchors.centerIn: parent
                     height: Math.min(parent.height, parent.width / slot.aspect)
                     width: height * slot.aspect
-                    radius: 12
+                    radius: Main.radius
                     color: Main.theme.colSurface
                     border.color: slot.current ? Main.theme.colBlue : Qt.rgba(1, 1, 1, 0.14)
                     border.width: slot.current ? 2 : 1
@@ -354,7 +354,7 @@ Scope {
                         id: preview
                         anchors.fill: parent
                         anchors.margins: 3
-                        radius: 10
+                        radius: Main.radius
                         color: Main.theme.colBg
 
                         // the snapshot, cropped from the monitor capture to this workspace's area
@@ -378,7 +378,7 @@ Scope {
                                 y: modelData.rect.y * s
                                 width: modelData.rect.width * s
                                 height: modelData.rect.height * s
-                                radius: 6
+                                radius: Main.radius
                                 color: Main.theme.colSurface
                                 border.color: Qt.rgba(1, 1, 1, 0.08)
                                 IconImage {
@@ -407,7 +407,7 @@ Scope {
                                 y: modelData.rect.y * s
                                 width: modelData.rect.width * s
                                 height: modelData.rect.height * s
-                                radius: 6
+                                radius: Main.radius
                                 color: "transparent"
                                 border.color: Main.theme.colBlue
                                 border.width: 2

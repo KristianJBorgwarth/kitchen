@@ -55,4 +55,12 @@ Scope {
             Switcher.toggle();
         }
     }
+
+    IpcHandler {
+        target: "launcher"
+
+        function toggle(): void {
+            Launcher.toggle();
+        }
+    }
 }

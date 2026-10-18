@@ -11,7 +11,7 @@ Item {
     property real maxWidth: 1000
     property real maxHeight: 700
     property real padding: 24
-    property real radius: 16
+    property real radius: Main.radius
     property var bindings: []
 
     default property alias content: body.data

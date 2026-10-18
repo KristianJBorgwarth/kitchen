@@ -275,7 +275,7 @@ Scope {
                     anchors.verticalCenter: parent.verticalCenter
                     width: main.coverSize
                     height: main.coverSize
-                    radius: 10
+                    radius: Main.radius
                     color: Main.theme.colSurface
 
                     Rectangle {
@@ -581,7 +581,7 @@ Scope {
                                     anchors.verticalCenter: parent.verticalCenter
                                     implicitWidth: 44
                                     implicitHeight: 44
-                                    radius: 22
+                                    radius: Main.radius
                                     icon: "󰒮"
                                     opacity: root.player?.canGoPrevious ? 1 : 0.4
                                     onClicked: root.player?.previous()
@@ -591,7 +591,7 @@ Scope {
                                     anchors.verticalCenter: parent.verticalCenter
                                     width: 60
                                     height: 60
-                                    radius: 30
+                                    radius: Main.radius
                                     color: playMouse.containsMouse ? Main.theme.colAccentLight : Main.theme.colFg
                                     scale: playMouse.pressed ? 0.92 : 1
 
@@ -626,7 +626,7 @@ Scope {
                                     anchors.verticalCenter: parent.verticalCenter
                                     implicitWidth: 44
                                     implicitHeight: 44
-                                    radius: 22
+                                    radius: Main.radius
                                     icon: "󰒭"
                                     opacity: root.player?.canGoNext ? 1 : 0.4
                                     onClicked: root.player?.next()

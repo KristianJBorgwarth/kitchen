@@ -10,6 +10,8 @@ Singleton {
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
     // how long UI motion takes (open/close, dim, hovers); data smoothing has its own timings
     readonly property int anim: 50
+    // corner radius for everything boxy: cards, islands, chips, buttons, popups
+    readonly property int radius: 4
 
     property font barFont: Qt.font({
         family: root.fontFamily,
