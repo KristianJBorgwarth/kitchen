@@ -20,6 +20,9 @@ sudo pacman -S --needed --noconfirm papirus-icon-theme nwg-look qt5ct qt6ct
 sudo pacman -S --needed --noconfirm xorg-xwayland
 sudo pacman -S --needed --noconfirm aspnet-targeting-pack
 
+# quickshell (not in packages.txt: ubuntu has no package, see ubuntu-install.sh)
+sudo pacman -S --needed --noconfirm quickshell
+
 # media tools
 sudo pacman -S --needed --noconfirm picard
 sudo pacman -S --needed --noconfirm feishin
