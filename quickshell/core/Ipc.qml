@@ -32,4 +32,12 @@ Scope {
             TrayPanel.toggle();
         }
     }
+
+    IpcHandler {
+        target: "keybinds"
+
+        function toggle(): void {
+            Cheatsheet.toggle();
+        }
+    }
 }
