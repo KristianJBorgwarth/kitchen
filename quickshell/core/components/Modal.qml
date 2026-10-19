@@ -12,6 +12,8 @@ Item {
     property real maxHeight: 700
     property real padding: 24
     property real radius: Main.radius
+    property bool frameless: false  // no card fill or border; content floats on the backdrop
+    property real dim: 0.5  // backdrop opacity while this modal is open
     property var bindings: []
 
     default property alias content: body.data
@@ -55,9 +57,9 @@ Item {
         width: Math.min(root.maxWidth, root.width - 64)
         height: Math.min(root.maxHeight, root.height - 64)
         radius: root.radius
-        color: Main.theme.colBg
+        color: root.frameless ? "transparent" : Main.theme.colBg
         border.color: Main.theme.colMuted
-        border.width: 1
+        border.width: root.frameless ? 0 : 1
 
         scale: root.opened ? 1 : 0.96
         opacity: root.opened ? 1 : 0

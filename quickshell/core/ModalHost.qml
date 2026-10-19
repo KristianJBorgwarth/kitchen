@@ -47,7 +47,7 @@ PanelWindow {
         id: backdrop
         anchors.fill: parent
         color: "black"
-        opacity: root.active ? 0.5 : 0
+        opacity: root.active ? root.current.dim : 0
 
         Behavior on opacity {
             NumberAnimation {

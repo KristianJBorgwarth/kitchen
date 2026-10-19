@@ -66,9 +66,11 @@ Scope {
 
     Modal {
         id: modal
-        maxWidth: 1600
+        maxWidth: Infinity  // screen width minus the 32px edge gutter
         maxHeight: 760
         padding: 24
+        frameless: true
+        dim: 0.8
         bindings: [
             { keys: "l", desc: "next", run: () => root.step(1) },
             { keys: "h", desc: "previous", run: () => root.step(-1) },
@@ -88,16 +90,6 @@ Scope {
             id: header
             width: parent.width
             height: 36
-
-            Text {
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-                text: "Wallpaper"
-                color: Main.theme.colFg
-                font.family: Main.fontFamily
-                font.pixelSize: 20
-                font.weight: Font.DemiBold
-            }
 
             Row {
                 anchors.right: parent.right
