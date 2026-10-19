@@ -1,12 +1,12 @@
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Wayland
 import qs.core
 import qs.services
 
-// Dim, lock and power the displays off on idle (sway's ext-idle-notify). Inhibitors count:
-// Stay awake, and apps like fullscreen video that ask for the screen to stay on.
+// Dim and lock on idle (sway's ext-idle-notify). Inhibitors count: Stay awake, and apps like
+// fullscreen video that ask for the screen to stay on. The displays are never powered off:
+// monitors waking up under the lock crash quickshell (upstream quickshell #1340, #503).
 // Locking before a sleep started elsewhere (lid, systemctl) is swayidle's before-sleep hook
 // in the sway config, since that needs a logind delay lock this can't take.
 Scope {
@@ -14,8 +14,6 @@ Scope {
     // seconds
     property int dimAfter: 240
     property int lockAfter: 300
-    property int offAfter: 600
-    property int offAfterWhileLocked: 60
 
     IdleMonitor {
         id: dim
@@ -26,18 +24,6 @@ Scope {
         onIsIdleChanged: {
             if (isIdle && !Lock.locked)
                 Lock.lock();
-        }
-    }
-    IdleMonitor {
-        id: off
-        timeout: Lock.locked ? root.offAfterWhileLocked : root.offAfter
-    }
-
-    // any input clears isIdle, which powers them back on
-    Connections {
-        target: off
-        function onIsIdleChanged() {
-            I3.dispatch("output * power " + (off.isIdle ? "off" : "on"));
         }
     }
 
