@@ -11,7 +11,7 @@ import "components"
 // Screenshot tool. Every monitor is frozen on open, so menus and hover states hold still;
 // then click a window (or empty desktop for the whole monitor), drag a region, or press f.
 // With a selection, p/a/r/m/x draw on the frozen frame (pen, arrow, box, marker, pixelate).
-// Enter copies and saves to ~/Pictures/Screenshots, e opens it in swappy. The capture is
+// Enter copies and saves to ~/Pictures/Screenshots. The capture is
 // Quickshell's own screencopy: the frozen frame and the drawings on it are clipped to the
 // selection and grabbed (ScreenshotFrame). Each monitor gets a ScreenshotOverlay.
 Scope {
@@ -24,7 +24,6 @@ Scope {
     // while a region is dragged out it follows the mouse directly instead of easing
     property bool dragging: false
     property bool capturing: false
-    property string action: "copy" // "copy", "edit"
     // "screen": capture the focused monitor as soon as its frame lands, no selecting
     property string instant: ""
     // the monitor the mouse is on, for f
@@ -92,10 +91,9 @@ Scope {
         history = history.slice(0, -1);
     }
 
-    function finish(a: string): void {
+    function finish(): void {
         if (!hasSel || capturing)
             return;
-        action = a;
         // the overlay holding the selection crops its frame and grabs it into store()
         capturing = true;
     }
@@ -109,10 +107,7 @@ Scope {
             return;
         }
         Quickshell.execDetached(["sh", "-c", "wl-copy -t image/png < \"$1\"", "sh", path]);
-        if (action === "edit")
-            Quickshell.execDetached(["swappy", "-f", path]);
-        else
-            preview.show(path);
+        preview.show(path);
     }
 
     // windows on the visible workspace of `output`, in its logical coordinates; floating last

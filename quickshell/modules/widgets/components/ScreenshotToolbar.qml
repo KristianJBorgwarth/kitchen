@@ -56,7 +56,7 @@ Rectangle {
             tint: Main.theme.colBlue
             clickable: root.shot.hasSel
             opacity: root.shot.hasSel ? 1 : 0.4
-            onClicked: root.shot.finish("copy")
+            onClicked: root.shot.finish()
         }
         Chip {
             text: "<b>Esc</b>"

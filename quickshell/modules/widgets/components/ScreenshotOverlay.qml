@@ -63,7 +63,7 @@ PanelWindow {
                 stage.forceActiveFocus();
                 if (win.shot.instant === "screen") {
                     win.shot.select(win.name, Qt.rect(0, 0, win.width, win.height));
-                    win.shot.finish("copy");
+                    win.shot.finish();
                 }
             }
         }
@@ -178,7 +178,7 @@ PanelWindow {
                 }
                 onDoubleClicked: m => {
                     if (win.mine && win.shot.hasSel && inSel(m.x, m.y))
-                        win.shot.finish("copy");
+                        win.shot.finish();
                 }
                 onExited: win.mx = -1
             }
@@ -201,8 +201,7 @@ PanelWindow {
     VimKeys {
         id: keys
         bindings: [
-            { keys: "<CR>", desc: "copy + save", run: () => win.shot.finish("copy") },
-            { keys: "e", desc: "edit in swappy", run: () => win.shot.finish("edit") },
+            { keys: "<CR>", desc: "copy + save", run: () => win.shot.finish() },
             { keys: "f", desc: "whole monitor", run: () => win.selectScreen() }
         ].concat(win.shot.tools.map(t => ({ keys: t.key, desc: t.label, run: () => win.shot.setTool(t.id) })), win.shot.inks.map((ink, i) => ({ keys: String(i + 1), desc: ink.name, run: () => win.shot.ink = ink.color })), [
             { keys: "u", desc: "undo", run: () => win.shot.undo() },

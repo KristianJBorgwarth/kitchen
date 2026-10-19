@@ -33,9 +33,6 @@ docker
 
 #general tools
 ghostty
-grim
-slurp
-swappy
 thunar
 blueman
 wl-clipboard
