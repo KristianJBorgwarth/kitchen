@@ -16,8 +16,6 @@ PanelWindow {
     readonly property bool mine: shot.selScreen === name
     readonly property var wins: shot.windowsOn(name)
     property var hover: null
-    // the mark being drawn
-    property var draft: null
     property real mx: -1
     property real my: -1
     readonly property bool mouseHere: shot.mouseScreen === name && mx >= 0
@@ -73,8 +71,18 @@ PanelWindow {
         ScreenshotFrame {
             id: frame
             screen: win.modelData
-            marks: win.shot.marks.filter(m => m.screen === win.name).concat(win.draft ? [win.draft] : [])
             crop: win.shot.capturing && win.mine ? win.shot.sel : Qt.rect(0, 0, 0, 0)
+
+            // on the frame, so the drawings are in the grab; it gets the mouse while a tool
+            // is picked, as the selecting MouseArea above steps aside
+            Sketch {
+                anchors.fill: parent
+                owner: win.shot
+                screen: win.name
+                source: frame.view
+                interactive: win.mine
+                onRightClicked: win.shot.tool = ""
+            }
         }
 
         Item {
@@ -96,9 +104,10 @@ PanelWindow {
 
             MouseArea {
                 anchors.fill: parent
+                enabled: !(win.shot.tool && win.mine)
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton | Qt.RightButton
-                cursorShape: moving ? Qt.ClosedHandCursor : !win.shot.tool && win.mine && win.shot.hasSel && inSel(mouseX, mouseY) ? Qt.OpenHandCursor : Qt.CrossCursor
+                cursorShape: moving ? Qt.ClosedHandCursor : win.mine && win.shot.hasSel && inSel(mouseX, mouseY) ? Qt.OpenHandCursor : Qt.CrossCursor
 
                 property point origin
                 property rect startSel
@@ -120,12 +129,6 @@ PanelWindow {
                     track(m);
                     if (!pressed) {
                         win.hover = win.shot.windowAt(win.wins, m.x, m.y);
-                        return;
-                    }
-                    if (win.draft) {
-                        const p = { x: m.x, y: m.y };
-                        const pts = win.draft.tool === "pen" || win.draft.tool === "marker" ? win.draft.points.concat([p]) : [win.draft.points[0], p];
-                        win.draft = Object.assign({}, win.draft, { points: pts });
                         return;
                     }
                     if (!moved && Math.hypot(m.x - origin.x, m.y - origin.y) < 4)
@@ -151,10 +154,6 @@ PanelWindow {
                             win.shot.close();
                         return;
                     }
-                    if (win.shot.tool && win.mine) {
-                        win.draft = { screen: win.name, tool: win.shot.tool, color: String(win.shot.ink), points: [{ x: m.x, y: m.y }] };
-                        return;
-                    }
                     origin = Qt.point(m.x, m.y);
                     moved = false;
                     moving = win.mine && win.shot.hasSel && inSel(m.x, m.y);
@@ -162,15 +161,6 @@ PanelWindow {
                 }
                 onReleased: m => {
                     if (m.button !== Qt.LeftButton)
-                        return;
-                    if (win.draft) {
-                        const r = frame.markRect(win.draft);
-                        if (win.draft.points.length > 2 || r.width + r.height > 3)
-                            win.shot.marks = win.shot.marks.concat([win.draft]);
-                        win.draft = null;
-                        return;
-                    }
-                    if (win.shot.tool)
                         return;
                     win.shot.dragging = false;
                     const wasMoving = moving;
@@ -187,7 +177,7 @@ PanelWindow {
                     win.shot.select(win.name, win.hover ?? Qt.rect(0, 0, win.width, win.height));
                 }
                 onDoubleClicked: m => {
-                    if (!win.shot.tool && win.mine && win.shot.hasSel && inSel(m.x, m.y))
+                    if (win.mine && win.shot.hasSel && inSel(m.x, m.y))
                         win.shot.finish("copy");
                 }
                 onExited: win.mx = -1

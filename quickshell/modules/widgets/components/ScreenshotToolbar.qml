@@ -44,50 +44,10 @@ Rectangle {
             onClicked: root.screenRequested()
         }
 
-        Repeater {
-            model: root.shot.hasSel ? root.shot.tools : []
-            Chip {
-                required property var modelData
-                text: "<b>" + modelData.key + "</b>  " + modelData.label
-                active: root.shot.tool === modelData.id
-                tint: root.shot.ink
-                clickable: true
-                onClicked: root.shot.setTool(modelData.id)
-            }
-        }
-        Row {
+        DrawingTools {
             visible: root.shot.hasSel
             anchors.verticalCenter: parent.verticalCenter
-            leftPadding: 4
-            rightPadding: 4
-            spacing: 6
-
-            Repeater {
-                model: root.shot.inks
-                Rectangle {
-                    required property var modelData
-                    anchors.verticalCenter: parent.verticalCenter
-                    width: 18
-                    height: 18
-                    radius: 9
-                    color: modelData.color
-                    border.color: Main.theme.colFg
-                    border.width: Qt.colorEqual(root.shot.ink, modelData.color) ? 2 : 0
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.shot.ink = parent.modelData.color
-                    }
-                }
-            }
-        }
-        Chip {
-            visible: root.shot.hasSel
-            text: "<b>u</b>  undo"
-            clickable: root.shot.marks.length > 0
-            opacity: root.shot.marks.length > 0 ? 1 : 0.4
-            onClicked: root.shot.undo()
+            owner: root.shot
         }
         Chip {
             text: "<b>⏎</b>  copy"

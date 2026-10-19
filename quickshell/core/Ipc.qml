@@ -93,6 +93,15 @@ Scope {
     }
 
     IpcHandler {
+        target: "draw"
+
+        // draw on the screen; while drawing, clear and stop
+        function toggle(): void {
+            Draw.toggle();
+        }
+    }
+
+    IpcHandler {
         target: "launcher"
 
         function toggle(): void {

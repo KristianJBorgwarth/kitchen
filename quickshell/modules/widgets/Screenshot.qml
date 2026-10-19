@@ -32,23 +32,13 @@ Scope {
 
     // drawing: "" moves the selection, otherwise the tool the mouse draws with
     property string tool: ""
-    readonly property var tools: [
-        { id: "pen", key: "p", label: "pen" },
-        { id: "arrow", key: "a", label: "arrow" },
-        { id: "box", key: "r", label: "box" },
-        { id: "marker", key: "m", label: "marker" },
-        { id: "pixelate", key: "x", label: "pixelate" }
-    ]
-    readonly property var inks: [
-        { name: "red", color: Main.theme.colRed },
-        { name: "amber", color: Main.theme.colAmber },
-        { name: "green", color: Main.theme.colGreen },
-        { name: "blue", color: Main.theme.colBlue },
-        { name: "white", color: Main.theme.colFg }
-    ]
+    // Draw's, plus pixelate, which needs the frozen frame
+    readonly property var tools: Draw.tools.concat([{ id: "pixelate", key: "x", label: "pixelate" }])
+    readonly property var inks: Draw.inks
     property color ink: inks[0].color
     // finished drawings, each on its monitor: [{ screen, tool, color, points: [{ x, y }] }]
     property var marks: []
+    property var history: []
 
     readonly property string dir: Quickshell.env("HOME") + "/Pictures/Screenshots"
 
@@ -77,6 +67,7 @@ Scope {
         sel = Qt.rect(0, 0, 0, 0);
         tool = "";
         marks = [];
+        history = [];
     }
 
     function select(screen: string, r: rect): void {
@@ -89,8 +80,16 @@ Scope {
             tool = tool === t ? "" : t;
     }
 
+    // marks as they were before each change, for undo
+    function remember(): void {
+        history = history.concat([marks]);
+    }
+
     function undo(): void {
-        marks = marks.slice(0, -1);
+        if (history.length === 0)
+            return;
+        marks = history[history.length - 1];
+        history = history.slice(0, -1);
     }
 
     function finish(a: string): void {
