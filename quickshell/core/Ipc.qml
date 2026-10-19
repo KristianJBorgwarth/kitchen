@@ -79,6 +79,20 @@ Scope {
     }
 
     IpcHandler {
+        target: "screenshot"
+
+        // freeze the monitors, then pick a window, region or monitor and draw on it
+        function start(): void {
+            Screenshot.start();
+        }
+        // the focused monitor, straight to the clipboard and ~/Pictures/Screenshots
+        function screen(): void {
+            Screenshot.instant = "screen";
+            Screenshot.start();
+        }
+    }
+
+    IpcHandler {
         target: "launcher"
 
         function toggle(): void {

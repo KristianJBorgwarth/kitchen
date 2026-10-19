@@ -6,6 +6,6 @@ set $right l
 set $term ghostty
 set $browser brave
 set $menu qs ipc call launcher toggle
-set $screenshot grim -g "$(slurp)" - | swappy -f -
+set $screenshot qs ipc call screenshot start
 set $filemanager thunar
 set $clipboard-history qs ipc call clipboard toggle
