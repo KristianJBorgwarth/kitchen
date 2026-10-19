@@ -12,7 +12,7 @@ import "components"
 
 // App launcher. One search box over apps (ranked by how often and recently they're
 // launched), app sub-actions, open windows, shell quick actions, a calculator and unit and currency conversion.
-// Prefixes: ">" runs a command, "?" searches the web.
+// Prefixes: ">" runs a command in the terminal, "?" searches the web.
 Scope {
     id: root
     readonly property alias opened: modal.opened
@@ -153,7 +153,6 @@ Scope {
         if (t.startsWith(">")) {
             const cmd = t.slice(1).trim();
             if (cmd) {
-                out.push({ kind: "run", name: cmd, sub: "Run command", glyph: "", run: () => Quickshell.execDetached(["sh", "-c", cmd]) });
                 out.push({ kind: "run", name: cmd, sub: "Run in " + terminal, glyph: "", run: () => Quickshell.execDetached([terminal, "-e", "sh", "-c", cmd + "; exec ${SHELL:-sh}"]) });
             }
             return out;
