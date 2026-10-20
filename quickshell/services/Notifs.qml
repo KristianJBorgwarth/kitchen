@@ -16,7 +16,8 @@ Singleton {
     property var popups: []
     // notification id → arrival time (ms); notifications carry no timestamp of their own
     readonly property var arrived: JSON.parse(persist.arrived)
-    // workspace number → true while it has a notification the user hasn't looked at: only
+    // workspace number → highest urgency of the notifications it has that the user hasn't
+    // looked at (NotificationUrgency: Low 0, Normal 1, Critical 2): only
     // where the sending window is, not every workspace with another window of the same app.
     // Kept apart from the notifications, which apps often withdraw within seconds
     readonly property var marks: JSON.parse(persist.marks)
@@ -217,13 +218,14 @@ Singleton {
         for (const n of queue)
             for (const num of sources(n, workspaces))
                 if (!focused.includes(num))
-                    m[num] = true;
+                    m[num] = Math.max(Number(m[num] ?? -1), n.urgency);
         persist.marks = JSON.stringify(m);
     }
 
     // the workspace has been looked at: its mark is cleared
     function seen(num) {
-        if (!marks[num])
+        // Low urgency is 0, so test presence rather than truthiness
+        if (marks[num] === undefined)
             return;
         const m = Object.assign({}, marks);
         delete m[num];

@@ -1,4 +1,5 @@
 import Quickshell.I3
+import Quickshell.Services.Notifications
 import QtQuick // for Text
 import qs.core
 import qs.services
@@ -20,14 +21,15 @@ Row {
             readonly property bool hasContent: apps.length > 0
 
             // marked while an app on it asks for attention (sway's urgent), or has sent a
-            // notification since the workspace was last looked at
+            // notification since the workspace was last looked at: the highest urgency of
+            // those notifications, -1 when unmarked
             onFocusedChanged: if (focused)
                 Notifs.seen(index + 1)
-            readonly property bool pinged: !focused && (Notifs.marks[index + 1] ?? false)
-            readonly property bool attention: (ws?.urgent ?? false) || pinged
+            readonly property int level: focused ? -1 : Math.max(Number(Notifs.marks[index + 1] ?? -1), (ws?.urgent ?? false) ? NotificationUrgency.Normal : -1)
 
-            text: focused ? "" : index + 1
-            color: focused ? Main.theme.colFg : attention ? Main.theme.colAmber : hasContent ? Main.theme.colAccentLight : Main.theme.colMuted
+            // marked ones show the selector's square, colored by urgency
+            text: focused || level >= 0 ? "" : index + 1
+            color: focused ? Main.theme.colFg : level === NotificationUrgency.Critical ? Main.theme.colRed : level >= 0 ? Main.theme.colAmber : hasContent ? Main.theme.colAccentLight : Main.theme.colMuted
 
             font: Main.pillFont
             MouseArea {
