@@ -227,7 +227,6 @@ Scope {
 
                     ToggleTile {
                         width: tiles.tileW
-                        accent: Main.theme.colBlue
                         icon: Network.hasWifi ? (Network.wifiEnabled ? "󰤨" : "󰤭") : "󰈀"
                         label: Network.hasWifi ? "Wi-Fi" : "Network"
                         sublabel: Network.hasWifi && !Network.wifiEnabled ? (Network.wired ? "Off · wired" : "Off") : Network.label
@@ -240,7 +239,6 @@ Scope {
                     ToggleTile {
                         width: tiles.tileW
                         visible: Bt.available
-                        accent: Main.theme.colViolet
                         icon: Bt.enabled ? "󰂯" : "󰂲"
                         label: "Bluetooth"
                         sublabel: Bt.label
@@ -251,7 +249,6 @@ Scope {
                     }
                     ToggleTile {
                         width: tiles.tileW
-                        accent: Main.theme.colRed
                         icon: Dnd.enabled ? "󰂛" : "󰂚"
                         label: "Silent"
                         sublabel: Dnd.enabled ? "Don't disturb" : "Off"
@@ -260,7 +257,6 @@ Scope {
                     }
                     ToggleTile {
                         width: tiles.tileW
-                        accent: Main.theme.colAmber
                         icon: "󰈈"
                         label: "Stay awake"
                         sublabel: Awake.enabled ? "On" : "Off"
@@ -270,7 +266,6 @@ Scope {
                     ToggleTile {
                         width: tiles.tileW
                         visible: NightLight.available
-                        accent: Main.theme.colAmber
                         icon: "󰖔"
                         label: "Night light"
                         sublabel: NightLight.enabled ? NightLight.temperature + "K" : "Off"
@@ -279,7 +274,6 @@ Scope {
                     }
                     ToggleTile {
                         width: tiles.tileW
-                        accent: Main.theme.colViolet
                         icon: Main.theme.dark ? "󰖔" : "󰖙"
                         label: "Dark mode"
                         sublabel: Main.theme.dark ? "On" : "Off  ·  light"
@@ -289,7 +283,6 @@ Scope {
                     ToggleTile {
                         width: tiles.tileW
                         readonly property bool muted: Audio.source?.audio?.muted ?? false
-                        accent: Main.theme.colTeal
                         icon: muted ? "󰍭" : "󰍬"
                         label: "Microphone"
                         sublabel: muted ? "Muted" : "On"
@@ -329,9 +322,9 @@ Scope {
                         anchors.margins: 4
                         Repeater {
                             model: [
-                                { id: "power-saver", icon: "󰾆", label: "Saver", tint: Main.theme.colGreen },
-                                { id: "balanced", icon: "󰾅", label: "Balanced", tint: Main.theme.colBlue },
-                                { id: "performance", icon: "󰓅", label: "Performance", tint: Main.theme.colAmber }
+                                { id: "power-saver", icon: "󰾆", label: "Saver" },
+                                { id: "balanced", icon: "󰾅", label: "Balanced" },
+                                { id: "performance", icon: "󰓅", label: "Performance" }
                             ]
                             delegate: Rectangle {
                                 id: seg
@@ -340,9 +333,7 @@ Scope {
                                 width: parent.width / 3
                                 height: parent.height
                                 radius: Main.radius
-                                color: selected ? Qt.rgba(modelData.tint.r, modelData.tint.g, modelData.tint.b, 0.2) : (segMouse.containsMouse ? Main.theme.overlay(0.06) : "transparent")
-                                border.color: selected ? Qt.rgba(modelData.tint.r, modelData.tint.g, modelData.tint.b, 0.5) : "transparent"
-                                border.width: 1
+                                color: selected ? Main.theme.colFg : (segMouse.containsMouse ? Main.theme.overlay(0.06) : "transparent")
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -353,7 +344,7 @@ Scope {
                                 Text {
                                     anchors.centerIn: parent
                                     text: seg.modelData.icon + "  " + seg.modelData.label
-                                    color: seg.selected ? seg.modelData.tint : Main.theme.colFg
+                                    color: seg.selected ? Main.theme.colBg : Main.theme.colFg
                                     font: Main.smallFont
                                 }
                                 MouseArea {
@@ -494,25 +485,23 @@ Scope {
                         color: Main.theme.colSurface
 
                         readonly property var defs: [
-                            { id: "sound", icon: "󰕾", label: "Sound", tint: Main.theme.colGreen },
-                            { id: "network", icon: "󰛳", label: "Network", tint: Main.theme.colBlue },
-                            { id: "bluetooth", icon: "󰂯", label: "Bluetooth", tint: Main.theme.colViolet },
-                            { id: "notifications", icon: "󰂚", label: "Notifications", tint: Main.theme.colAmber }
+                            { id: "sound", icon: "󰕾", label: "Sound" },
+                            { id: "network", icon: "󰛳", label: "Network" },
+                            { id: "bluetooth", icon: "󰂯", label: "Bluetooth" },
+                            { id: "notifications", icon: "󰂚", label: "Notifications" }
                         ]
                         readonly property int index: root.tabs.indexOf(root.tab)
 
-                        // follows the active tab's own position and width
+                        // follows the active tab's own position and width. itemAt() isn't a
+                        // binding source, so count makes it re-run once the buttons exist
                         Rectangle {
-                            readonly property Item active: tabButtons.itemAt(tabTrack.index)
+                            readonly property Item active: tabButtons.count > tabTrack.index ? tabButtons.itemAt(tabTrack.index) : null
                             x: 4 + (active?.x ?? 0)
                             y: 4
                             width: active?.width ?? 0
                             height: tabTrack.height - 8
                             radius: Main.radius
-                            readonly property color tint: tabTrack.defs[tabTrack.index].tint
-                            color: Qt.rgba(tint.r, tint.g, tint.b, 0.2)
-                            border.color: Qt.rgba(tint.r, tint.g, tint.b, 0.5)
-                            border.width: 1
+                            color: Main.theme.colFg
 
                             Behavior on x {
                                 NumberAnimation {
@@ -524,11 +513,6 @@ Scope {
                                 NumberAnimation {
                                     duration: Main.anim
                                     easing.type: Easing.OutCubic
-                                }
-                            }
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: Main.anim
                                 }
                             }
                         }
@@ -550,7 +534,7 @@ Scope {
                                         id: tabText
                                         anchors.centerIn: parent
                                         text: tabItem.modelData.icon + "  " + tabItem.modelData.label
-                                        color: root.tab === tabItem.modelData.id ? tabItem.modelData.tint : Main.theme.colAccentLight
+                                        color: root.tab === tabItem.modelData.id ? Main.theme.colBg : Main.theme.colAccentLight
                                         font: Main.barFont
                                     }
                                     MouseArea {
