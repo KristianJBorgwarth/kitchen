@@ -16,11 +16,11 @@ Item {
 
         Item {
             anchors.verticalCenter: parent.verticalCenter
-            width: 16
-            height: 16
+            width: 18
+            height: 18
             IconImage {
                 anchors.centerIn: parent
-                implicitSize: 16
+                implicitSize: 18
                 visible: Focus.icon !== ""
                 source: Focus.icon ? Quickshell.iconPath(Focus.icon, true) : ""
             }
@@ -29,7 +29,7 @@ Item {
                 visible: Focus.icon === ""
                 text: Focus.glyph
                 color: Main.theme.colFg
-                font: Main.barFont
+                font: Main.pillFont
             }
         }
 
@@ -37,7 +37,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: Focus.name
             color: Main.theme.colFg
-            font: Main.barFont
+            font: Main.pillFont
         }
 
         Text {
@@ -46,7 +46,7 @@ Item {
             width: Math.min(implicitWidth, 260)
             text: Focus.detail
             color: Main.theme.colAccentMid
-            font: Main.barFont
+            font: Main.pillFont
             elide: Text.ElideRight
         }
     }

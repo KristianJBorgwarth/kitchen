@@ -83,7 +83,7 @@ Item {
                         anchors.verticalCenter: parent.verticalCenter
                         text: modelData.icon + (isArmed ? " " + modelData.label + "?" : "")
                         color: isArmed ? Main.theme.colRed : actionMouse.containsMouse ? Main.theme.colFg : Main.theme.colAccentLight
-                        font: Main.barFont
+                        font: Main.pillFont
 
                         Behavior on color {
                             ColorAnimation {
@@ -116,7 +116,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: root.expanded ? "󰅖" : "󰐥"
             color: root.expanded ? Main.theme.colAccentLight : Main.theme.colFg
-            font: Main.barFont
+            font: Main.pillFont
 
             MouseArea {
                 anchors.fill: parent

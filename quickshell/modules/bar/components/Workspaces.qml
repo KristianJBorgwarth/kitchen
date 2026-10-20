@@ -21,7 +21,7 @@ Row {
             text: ws?.focused ? "" : index + 1
             color: ws?.focused ? Main.theme.colFg : (hasContent ? Main.theme.colAccentLight : Main.theme.colMuted)
 
-            font: Main.barFont
+            font: Main.pillFont
             MouseArea {
                 anchors.fill: parent
                 onClicked: I3.dispatch("workspace " + (workspace.index + 1))

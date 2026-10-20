@@ -14,8 +14,12 @@ Scope {
         anchors.top: true
         anchors.left: true
         anchors.right: true
-        implicitHeight: 30
+        // the pills plus the gap above them; the gap below is sway's own window gap
+        implicitHeight: 34
         color: "transparent"
+
+        // space between the pills, and between them and the screen edges
+        readonly property int gap: 8
 
         // the bar is always mapped, so it hosts the inhibitor for Awake
         IdleInhibitor {
@@ -23,157 +27,49 @@ Scope {
             enabled: Awake.enabled
         }
 
-        Rectangle {
+        BarPill {
             id: leftPill
             anchors.left: parent.left
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.leftMargin: 6
-            radius: 4
-            color: Main.theme.colBg
-            height: 25
-            width: leftRow.implicitWidth + 16
-
-            Row {
-                id: leftRow
-                anchors.centerIn: parent
-                spacing: 4
-                Workspaces {}
-            }
+            anchors.leftMargin: barWindow.gap
+            Workspaces {}
         }
 
         // focused app, or what's running in a focused terminal
-        Rectangle {
-            id: appPill
+        BarPill {
             anchors.left: leftPill.right
-            anchors.leftMargin: 6
-            anchors.verticalCenter: parent.verticalCenter
-            radius: 4
-            color: Main.theme.colBg
-            height: 25
-            width: activeApp.implicitWidth + 20
-            clip: true
-
-            readonly property bool shown: Focus.toplevel !== null
-            visible: opacity > 0
-            opacity: shown ? 1 : 0
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: Main.anim
-                }
-            }
-            Behavior on width {
-                NumberAnimation {
-                    duration: Main.anim
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            ActiveApp {
-                id: activeApp
-                anchors.centerIn: parent
-            }
+            anchors.leftMargin: barWindow.gap
+            shown: Focus.toplevel !== null
+            ActiveApp {}
         }
 
-        Rectangle {
+        BarPill {
             id: centerPill
             anchors.horizontalCenter: parent.horizontalCenter
-            anchors.verticalCenter: parent.verticalCenter
-            radius: 4
-            color: Main.theme.colBg
-            height: 25
-            width: centerRow.implicitWidth + 16
-
-            Row {
-                id: centerRow
-                anchors.centerIn: parent
-                spacing: 8
-                Clock {}
-            }
+            Clock {}
         }
 
-        Rectangle {
-            id: musicPill
+        BarPill {
             anchors.left: centerPill.right
-            anchors.leftMargin: 6
-            anchors.verticalCenter: parent.verticalCenter
-            radius: 4
-            color: Main.theme.colBg
-            height: 25
-            width: nowPlaying.implicitWidth + 20
-            clip: true
-
-            readonly property bool shown: Media.player !== null
-            visible: opacity > 0
-            opacity: shown ? 1 : 0
-            scale: shown ? 1 : 0.8
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: Main.anim
-                }
-            }
-            Behavior on scale {
-                NumberAnimation {
-                    duration: Main.anim
-                    easing.type: Easing.OutCubic
-                }
-            }
-            Behavior on width {
-                NumberAnimation {
-                    duration: Main.anim
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            NowPlaying {
-                id: nowPlaying
-                anchors.centerIn: parent
-            }
+            anchors.leftMargin: barWindow.gap
+            shown: Media.player !== null
+            NowPlaying {}
         }
 
-        Rectangle {
-            id: notifPill
+        BarPill {
             anchors.right: rightPill.left
-            anchors.rightMargin: 6
-            anchors.verticalCenter: parent.verticalCenter
-            radius: 4
-            color: Main.theme.colBg
-            height: 25
-            width: notifications.implicitWidth + 16
-
-            Behavior on width {
-                NumberAnimation {
-                    duration: Main.anim
-                    easing.type: Easing.OutCubic
-                }
-            }
-
-            Notifications {
-                id: notifications
-                anchors.centerIn: parent
-            }
+            anchors.rightMargin: barWindow.gap
+            Notifications {}
         }
 
-        Rectangle {
+        BarPill {
             id: rightPill
             anchors.right: parent.right
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.rightMargin: 6
-            radius: 4
-            color: Main.theme.colBg
-            height: 25
-            width: rightRow.implicitWidth + 16
-
-            Row {
-                id: rightRow
-                anchors.centerIn: parent
-                spacing: 20
-                AwakeIndicator {}
-                Volume {}
-                Tray {}
-                PowerMenu {}
-            }
+            anchors.rightMargin: barWindow.gap
+            spacing: 20
+            AwakeIndicator {}
+            Volume {}
+            Tray {}
+            PowerMenu {}
         }
     }
 }

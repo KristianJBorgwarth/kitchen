@@ -13,7 +13,7 @@ Text {
 
     text: (Dnd.enabled ? "󰂛" : "󰂚") + (Notifs.count > 0 ? " " + Notifs.count : "")
     color: showing ? Main.theme.colAccentLight : Main.theme.colFg
-    font: Main.barFont
+    font: Main.pillFont
 
     MouseArea {
         anchors.fill: parent

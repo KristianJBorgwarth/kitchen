@@ -18,6 +18,12 @@ Singleton {
         pixelSize: 13
     })
 
+    // the bar's own text, a size up from barFont (which most popups use)
+    property font pillFont: Qt.font({
+        family: root.fontFamily,
+        pixelSize: 14
+    })
+
     property font iconFont: Qt.font({
         family: root.fontFamily,
         pixelSize: 18

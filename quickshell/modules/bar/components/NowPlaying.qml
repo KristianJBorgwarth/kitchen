@@ -29,7 +29,7 @@ Item {
                 return a ? t + " — " + a : t;
             }
             color: root.player?.isPlaying ? Main.theme.colFg : Main.theme.colAccentMid
-            font: Main.barFont
+            font: Main.pillFont
             elide: Text.ElideRight
         }
     }

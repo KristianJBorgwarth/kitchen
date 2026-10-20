@@ -6,7 +6,7 @@ import qs.services
 Text {
     text: Time.time
     color: Main.theme.colFg
-    font: Main.barFont
+    font: Main.pillFont
 
     MouseArea {
         anchors.fill: parent

@@ -10,7 +10,7 @@ Text {
     visible: SystemTray.items.values.length > 0
     text: "\u{f003b}"
     color: TrayPanel.opened ? Main.theme.colAccentLight : Main.theme.colFg
-    font: Main.barFont
+    font: Main.pillFont
     scale: TrayPanel.opened ? 0.85 : 1
 
     Behavior on scale {

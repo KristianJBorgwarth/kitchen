@@ -15,7 +15,7 @@ Text {
     visible: Audio.sink !== null
     text: glyph + " " + Math.round(volume * 100) + "%"
     color: muted ? Main.theme.colAccentMid : Main.theme.colFg
-    font: Main.barFont
+    font: Main.pillFont
 
     MouseArea {
         anchors.fill: parent
