@@ -133,6 +133,29 @@ Scope {
         }
 
         Rectangle {
+            id: notifPill
+            anchors.right: rightPill.left
+            anchors.rightMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
+            radius: 4
+            color: Main.theme.colBg
+            height: 25
+            width: notifications.implicitWidth + 16
+
+            Behavior on width {
+                NumberAnimation {
+                    duration: Main.anim
+                    easing.type: Easing.OutCubic
+                }
+            }
+
+            Notifications {
+                id: notifications
+                anchors.centerIn: parent
+            }
+        }
+
+        Rectangle {
             id: rightPill
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
@@ -146,9 +169,10 @@ Scope {
                 id: rightRow
                 anchors.centerIn: parent
                 spacing: 20
-                Resources {}
+                AwakeIndicator {}
+                Volume {}
                 Tray {}
-                ControlCenterButton {}
+                PowerMenu {}
             }
         }
     }
