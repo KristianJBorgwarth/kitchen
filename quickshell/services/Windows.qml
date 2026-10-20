@@ -12,7 +12,7 @@ import Quickshell.Wayland
 Singleton {
     id: root
     property bool active: false
-    // [{ name, num, output, outputRect, visible, focused, rect, windows: [{ id, appId, title, rect, floating, focused, toplevel, icon }] }]
+    // [{ name, num, output, outputRect, visible, focused, rect, windows: [{ id, pid, appId, title, rect, floating, focused, toplevel, icon }] }]
     property var workspaces: []
     property bool pending: false
 
@@ -96,6 +96,7 @@ Singleton {
                     const appId = c.app_id ?? c.window_properties?.class ?? "";
                     return {
                         id: c.id,
+                        pid: c.pid ?? 0,
                         appId,
                         title: c.name ?? "",
                         rect: { x: c.rect.x - ws.rect.x, y: c.rect.y - ws.rect.y, width: c.rect.width, height: c.rect.height },

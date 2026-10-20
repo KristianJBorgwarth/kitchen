@@ -59,18 +59,20 @@ Rectangle {
         anchors.leftMargin: 18
         spacing: 12
 
-        // the notification's own image (album art, avatar…) beats the app icon
+        // the notification's own image (album art, avatar…) beats the app icon. Either can
+        // fail to load (browsers delete their temp files), so fall through to the bell
         Item {
             width: 36
             height: 36
             ClippingRectangle {
                 anchors.fill: parent
-                visible: root.n?.image ? true : false
+                visible: picture.status === Image.Ready
                 radius: Main.radius
                 color: "transparent"
                 Image {
+                    id: picture
                     anchors.fill: parent
-                    source: root.n?.image ?? ""
+                    source: root.n ? Notifs.image(root.n) : ""
                     fillMode: Image.PreserveAspectCrop
                     sourceSize.width: 72
                     sourceSize.height: 72
@@ -78,14 +80,15 @@ Rectangle {
                 }
             }
             IconImage {
+                id: appIcon
                 anchors.centerIn: parent
-                visible: !root.n?.image && source != ""
+                visible: picture.status !== Image.Ready && status === Image.Ready
                 implicitSize: 28
                 source: root.n ? Notifs.icon(root.n) : ""
             }
             Text {
                 anchors.centerIn: parent
-                visible: !root.n?.image && !(root.n && Notifs.icon(root.n))
+                visible: picture.status !== Image.Ready && appIcon.status !== Image.Ready
                 text: "󰂚"
                 color: root.tint
                 font: Main.iconFont

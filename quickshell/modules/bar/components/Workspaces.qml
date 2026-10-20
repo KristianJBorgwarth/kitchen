@@ -21,9 +21,9 @@ Row {
 
             // marked while an app on it asks for attention (sway's urgent), or has sent a
             // notification since the workspace was last looked at
-            property real seenAt: Date.now()
-            onFocusedChanged: seenAt = Date.now()
-            readonly property bool pinged: !focused && Notifs.list.some(n => (Notifs.arrived[n.id] ?? 0) > seenAt && apps.some(a => Notifs.fromApp(n, a)))
+            onFocusedChanged: if (focused)
+                Notifs.seen(index + 1)
+            readonly property bool pinged: !focused && (Notifs.marks[index + 1] ?? false)
             readonly property bool attention: (ws?.urgent ?? false) || pinged
 
             text: focused ? "" : index + 1
