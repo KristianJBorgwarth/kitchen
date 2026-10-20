@@ -74,6 +74,20 @@ Singleton {
             dismiss(n);
     }
 
+    // whether `n` came from the window with this app id (sway's app_id, or the X11 class).
+    // Notifications name their app loosely, so this compares the desktop entry and the app
+    // name against the id and its last dotted part: "org.telegram.desktop", "Telegram Desktop"
+    function fromApp(n, appId) {
+        const id = appId.toLowerCase();
+        const tail = id.split(".").pop();
+        return [n.desktopEntry, n.appName].some(c => {
+            if (!c)
+                return false;
+            c = c.toLowerCase();
+            return c === id || c === tail || c.replace(/\s+/g, "-") === id || c.replace(/\s+/g, "") === tail || id.endsWith("." + c);
+        });
+    }
+
     // ms a popup stays up; 0 = until dismissed
     function timeout(n) {
         if (n.expireTimeout > 0)

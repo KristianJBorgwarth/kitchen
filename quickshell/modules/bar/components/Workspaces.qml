@@ -1,6 +1,7 @@
 import Quickshell.I3
 import QtQuick // for Text
 import qs.core
+import qs.services
 
 Row {
     id: root
@@ -12,14 +13,21 @@ Row {
             required property int index
 
             property var ws: I3.workspaces.values.find(w => w.number === index + 1)
+            readonly property bool focused: ws?.focused ?? false
 
-            property bool hasContent: {
-                const rep = ws?.lastIpcObject?.representation;
-                return !!rep && !/\[\s*\]$/.test(rep);
-            }
+            // the app ids on it, from sway's layout string: "H[V[ghostty] brave-browser]"
+            readonly property var apps: (ws?.lastIpcObject?.representation ?? "").replace(/[HVTS]?\[|\]/g, " ").split(/\s+/).filter(a => a)
+            readonly property bool hasContent: apps.length > 0
 
-            text: ws?.focused ? "" : index + 1
-            color: ws?.focused ? Main.theme.colFg : (hasContent ? Main.theme.colAccentLight : Main.theme.colMuted)
+            // marked while an app on it asks for attention (sway's urgent), or has sent a
+            // notification since the workspace was last looked at
+            property real seenAt: Date.now()
+            onFocusedChanged: seenAt = Date.now()
+            readonly property bool pinged: !focused && Notifs.list.some(n => (Notifs.arrived[n.id] ?? 0) > seenAt && apps.some(a => Notifs.fromApp(n, a)))
+            readonly property bool attention: (ws?.urgent ?? false) || pinged
+
+            text: focused ? "" : index + 1
+            color: focused ? Main.theme.colFg : attention ? Main.theme.colAmber : hasContent ? Main.theme.colAccentLight : Main.theme.colMuted
 
             font: Main.pillFont
             MouseArea {
