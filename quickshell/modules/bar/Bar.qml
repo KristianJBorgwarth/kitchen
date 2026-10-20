@@ -58,6 +58,8 @@ Scope {
         BarPill {
             anchors.right: rightPill.left
             anchors.rightMargin: barWindow.gap
+            // only while there are notifications; silent mode is in the control center too
+            shown: Notifs.count > 0
             Notifications {}
         }
 
@@ -66,7 +68,9 @@ Scope {
             anchors.right: parent.right
             anchors.rightMargin: barWindow.gap
             spacing: 20
+            Privacy {}
             AwakeIndicator {}
+            Battery {}
             Volume {}
             Tray {}
             PowerMenu {}

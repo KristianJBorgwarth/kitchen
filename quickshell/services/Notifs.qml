@@ -21,6 +21,11 @@ Singleton {
     // where the sending window is, not every workspace with another window of the same app.
     // Kept apart from the notifications, which apps often withdraw within seconds
     readonly property var marks: JSON.parse(persist.marks)
+    // notification id → workspace numbers it came from; looking at one of them clears it
+    readonly property var origins: JSON.parse(persist.origins)
+    // ids seen while their popup was still up: dismissed once the popup goes, so looking at
+    // a workspace never cuts a popup short
+    property var dismissAfterPopup: []
     // notification id → pid of the process that sent it, from scripts/notify_senders.sh
     property var senderPids: ({})
     // new notifications waiting on their sender pid and the window tree
@@ -36,6 +41,7 @@ Singleton {
         reloadableId: "notifs"
         property string arrived: "{}"
         property string marks: "{}"
+        property string origins: "{}"
         property string seenTitles: "{}"
     }
 
@@ -110,7 +116,7 @@ Singleton {
                 resolveDelay.restart();
             }
            // closed objects are destroyed, so never keep one in the popup list
-            n.closed.connect(() => root.hidePopup(n));
+            n.closed.connect(() => root.forget(n));
             // after a reload the old notifications are handed over again; they're history, not news
             if (n.lastGeneration)
                 return;
@@ -121,9 +127,25 @@ Singleton {
 
     function hidePopup(n) {
         popups = popups.filter(p => p !== n);
+        if (dismissAfterPopup.includes(n.id)) {
+            dismissAfterPopup = dismissAfterPopup.filter(id => id !== n.id);
+            n.dismiss();
+        }
+    }
+
+    // `n` is closed (dismissed, expired or withdrawn by its app) and about to be destroyed
+    function forget(n) {
+        dismissAfterPopup = dismissAfterPopup.filter(id => id !== n.id);
+        hidePopup(n);
+        if (origins[n.id] !== undefined) {
+            const o = Object.assign({}, origins);
+            delete o[n.id];
+            persist.origins = JSON.stringify(o);
+        }
     }
 
     function dismiss(n) {
+        dismissAfterPopup = dismissAfterPopup.filter(id => id !== n.id);
         hidePopup(n);
         n.dismiss();
     }
@@ -215,21 +237,34 @@ Singleton {
         // the workspace being looked at already has the user's eyes on it
         const focused = workspaces.filter(ws => ws.focused).map(ws => ws.num);
         const m = Object.assign({}, marks);
-        for (const n of queue)
-            for (const num of sources(n, workspaces))
+        const o = Object.assign({}, origins);
+        for (const n of queue) {
+            const nums = sources(n, workspaces);
+            if (nums.length > 0)
+                o[n.id] = nums;
+            for (const num of nums)
                 if (!focused.includes(num))
                     m[num] = Math.max(Number(m[num] ?? -1), n.urgency);
+        }
         persist.marks = JSON.stringify(m);
+        persist.origins = JSON.stringify(o);
     }
 
-    // the workspace has been looked at: its mark is cleared
+    // the workspace has been looked at: its mark is cleared, and so are the notifications
+    // that came from it (after their popup, if one is still up)
     function seen(num) {
         // Low urgency is 0, so test presence rather than truthiness
-        if (marks[num] === undefined)
-            return;
-        const m = Object.assign({}, marks);
-        delete m[num];
-        persist.marks = JSON.stringify(m);
+        if (marks[num] !== undefined) {
+            const m = Object.assign({}, marks);
+            delete m[num];
+            persist.marks = JSON.stringify(m);
+        }
+        for (const n of list.filter(n => (origins[n.id] ?? []).includes(num))) {
+            if (popups.includes(n))
+                dismissAfterPopup = dismissAfterPopup.concat([n.id]);
+            else
+                n.dismiss();
+        }
     }
 
     // the notification's own image. Quickshell hands a file path over as
