@@ -27,10 +27,11 @@
           "type": "git",
           "style": "plain",
           "foreground": "magenta",
-          "template": "   {{ .HEAD }}{{ if gt .Ahead 0 }} <green>↑{{ .Ahead }}</>{{ end }}{{ if gt .Behind 0 }} <red>↓{{ .Behind }}</>{{ end }}{{ if .Staging.Changed }} <green>{{ add .Staging.Added .Staging.Modified .Staging.Deleted }}</>{{ end }}{{ if .Working.Changed }} <yellow>●{{ add .Working.Added .Working.Modified .Working.Deleted .Working.Untracked }}</>{{ end }}",
+          "template": "   {{ .HEAD }}{{ if gt .Ahead 0 }} <green>↑{{ .Ahead }}</>{{ end }}{{ if gt .Behind 0 }} <red>↓{{ .Behind }}</>{{ end }}{{ if .Staging.Changed }} <green>{{ add .Staging.Added .Staging.Modified .Staging.Deleted }}</>{{ end }}{{ if .Working.Changed }} <yellow>●{{ add .Working.Added .Working.Modified .Working.Deleted .Working.Untracked }}</>{{ end }}{{ if gt .StashCount 0 }} <blue>󰏗 {{ .StashCount }}</>{{ end }}",
           "properties": {
             "branch_icon": "",
-            "fetch_status": true
+            "fetch_status": true,
+            "fetch_stash_count": true
           }
         },
         {
