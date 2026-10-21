@@ -14,22 +14,22 @@ import qs.services
 Scope {
     id: root
     property bool opened: false
-    property int num: -1
+    property string name: ""
     property real anchorX: 0
     property var screen: null
 
     // the number under the mouse while the open delay runs
-    property int pending: -1
+    property string pending: ""
     property Item pendingItem: null
-    // the number the mouse is on, -1 for none. Moving between numbers can deliver the new
-    // one's enter before the old one's leave, so a leave only counts for the current number
-    property int hovered: -1
+    // the workspace the mouse is on, "" for none. Moving between them can deliver the new
+    // one's enter before the old one's leave, so a leave only counts for the current one
+    property string hovered: ""
 
-    readonly property var ws: Windows.workspaces.find(w => w.num === num) ?? null
+    readonly property var ws: Windows.workspaces.find(w => w.name === name) ?? null
     readonly property var windows: ws?.windows ?? []
     readonly property var snap: ws ? (Switcher.snapshots[ws.name] ?? null) : null
 
-    function enter(n: int, item: Item): void {
+    function enter(n: string, item: Item): void {
         hovered = n;
         closeDelay.stop();
         if (opened) {
@@ -43,10 +43,10 @@ Scope {
         openDelay.restart();
     }
 
-    function leave(n: int): void {
+    function leave(n: string): void {
         if (hovered !== n)
             return;
-        hovered = -1;
+        hovered = "";
         openDelay.stop();
         closeDelay.restart();
     }
@@ -58,8 +58,8 @@ Scope {
         unmap.restart();
     }
 
-    function place(n: int, item: Item): void {
-        num = n;
+    function place(n: string, item: Item): void {
+        name = n;
         anchorX = item.mapToItem(null, item.width / 2, 0).x;
         screen = item.QsWindow.window.screen;
     }
@@ -80,7 +80,7 @@ Scope {
     Timer {
         id: closeDelay
         interval: 200
-        onTriggered: if (root.hovered < 0 && !cardHover.hovered) root.hide()
+        onTriggered: if (root.hovered === "" && !cardHover.hovered) root.hide()
     }
     Timer {
         id: unmap
@@ -149,7 +149,7 @@ Scope {
                 spacing: 8
 
                 Text {
-                    text: "Workspace " + root.num + "  ·  " + root.windows.length + (root.windows.length === 1 ? " window" : " windows")
+                    text: "Workspace " + root.name + "  ·  " + root.windows.length + (root.windows.length === 1 ? " window" : " windows")
                     color: Main.theme.colAccentMid
                     font: Main.smallFont
                 }
