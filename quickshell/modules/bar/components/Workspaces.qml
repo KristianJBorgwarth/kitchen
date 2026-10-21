@@ -3,6 +3,7 @@ import Quickshell.Services.Notifications
 import QtQuick // for Text
 import qs.core
 import qs.services
+import qs.modules.widgets
 
 Row {
     id: root
@@ -43,7 +44,20 @@ Row {
                 anchors.topMargin: -6
                 anchors.bottomMargin: -6
                 cursorShape: Qt.PointingHandCursor
-                onClicked: I3.dispatch("workspace " + (workspace.index + 1))
+                onClicked: {
+                    WorkspacePeek.hide();
+                    I3.dispatch("workspace " + (workspace.index + 1));
+                }
+
+                // a peek at what's on it; not for the one you're on, or an empty one
+                HoverHandler {
+                    onHoveredChanged: {
+                        if (hovered && !workspace.focused && workspace.hasContent)
+                            WorkspacePeek.enter(workspace.index + 1, workspace);
+                        else
+                            WorkspacePeek.leave(workspace.index + 1);
+                    }
+                }
             }
         }
     }

@@ -8,10 +8,13 @@ import Quickshell.Wayland
 
 // Sway workspaces and their windows, from get_tree (Quickshell's I3 module has no window
 // tree). Each window is matched to its Wayland toplevel by app id + title so it can be
-// screen-captured. Only refreshed while `active`, so closed it starts no processes.
+// screen-captured. Only refreshed while `active` (switcher, screenshot) or `peeking` (the
+// bar's workspace peek), so otherwise it starts no processes.
 Singleton {
     id: root
     property bool active: false
+    property bool peeking: false
+    readonly property bool live: active || peeking
     // [{ name, num, output, outputRect, visible, focused, rect, windows: [{ id, pid, appId, title, rect, floating, focused, toplevel, icon }] }]
     property var workspaces: []
     property bool pending: false
@@ -33,7 +36,7 @@ Singleton {
         I3.dispatch("workspace --no-auto-back-and-forth " + JSON.stringify(name));
     }
 
-    onActiveChanged: if (active) refresh()
+    onLiveChanged: if (live) refresh()
 
     Process {
         id: treeProc
@@ -51,13 +54,13 @@ Singleton {
 
     I3IpcListener {
         subscriptions: ["window"]
-        onIpcEvent: if (root.active) root.refresh()
+        onIpcEvent: if (root.live) root.refresh()
     }
 
     Connections {
         target: I3
         function onFocusedWorkspaceChanged() {
-            if (root.active)
+            if (root.live)
                 root.refresh();
         }
     }
