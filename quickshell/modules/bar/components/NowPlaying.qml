@@ -34,6 +34,10 @@ Item {
         }
     }
 
+    HoverChip {
+        padX: 8
+    }
+
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.MiddleButton

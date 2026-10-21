@@ -8,8 +8,12 @@ Text {
     color: Main.theme.colFg
     font: Main.pillFont
 
+    HoverChip {}
+
     MouseArea {
         anchors.fill: parent
+        anchors.margins: -4
+        cursorShape: Qt.PointingHandCursor
         onClicked: {
             Time.date_format = Time.date_format === Time.regular ? Time.verbose : Time.regular;
         }

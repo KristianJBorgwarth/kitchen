@@ -15,6 +15,8 @@ Text {
     color: showing ? Main.theme.colAccentLight : Main.theme.colFg
     font: Main.pillFont
 
+    HoverChip {}
+
     MouseArea {
         anchors.fill: parent
         anchors.margins: -4

@@ -32,8 +32,17 @@ Row {
             color: focused ? Main.theme.colFg : level === NotificationUrgency.Critical ? Main.theme.colRed : level >= 0 ? Main.theme.colAmber : hasContent ? Main.theme.colAccentLight : Main.theme.colMuted
 
             font: Main.pillFont
+
+            HoverChip {}
+
+            // reaches halfway into the gaps on either side, so there's no dead space between
             MouseArea {
                 anchors.fill: parent
+                anchors.leftMargin: -root.spacing / 2
+                anchors.rightMargin: -root.spacing / 2
+                anchors.topMargin: -6
+                anchors.bottomMargin: -6
+                cursorShape: Qt.PointingHandCursor
                 onClicked: I3.dispatch("workspace " + (workspace.index + 1))
             }
         }

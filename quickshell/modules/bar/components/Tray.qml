@@ -20,6 +20,8 @@ Text {
         }
     }
 
+    HoverChip {}
+
     MouseArea {
         anchors.fill: parent
         anchors.margins: -4
