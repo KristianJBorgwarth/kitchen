@@ -39,6 +39,8 @@ blueman
 wl-clipboard
 btop
 ripgrep
+eza
+bat
 newsboat
 
 # misc 

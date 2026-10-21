@@ -31,6 +31,20 @@ else
     git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions.git "$SOURCE_DIR/zsh-autosuggestions"
 fi
 
+# zsh-syntax-highlighting
+if [ -d "$SOURCE_DIR/zsh-syntax-highlighting" ]; then
+    git -C "$SOURCE_DIR/zsh-syntax-highlighting" pull
+else
+    git clone --depth 1 https://github.com/zsh-users/zsh-syntax-highlighting.git "$SOURCE_DIR/zsh-syntax-highlighting"
+fi
+
+# fzf-tab
+if [ -d "$SOURCE_DIR/fzf-tab" ]; then
+    git -C "$SOURCE_DIR/fzf-tab" pull
+else
+    git clone --depth 1 https://github.com/Aloxaf/fzf-tab.git "$SOURCE_DIR/fzf-tab"
+fi
+
 
 # neovim (apt lags upstream — build a pinned stable release into ~/.local
 # requires cmake + ninja-build,
