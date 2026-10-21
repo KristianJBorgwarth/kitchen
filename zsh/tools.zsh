@@ -5,7 +5,7 @@ eval "$(zoxide init zsh)"
 
 # oh-my-posh
 export OMP_CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/oh-my-posh"
-eval "$(oh-my-posh init zsh --config "$HOME/kitchen/assets/omp/monochrome.omp.json")"
+eval "$(oh-my-posh init zsh --config "$HOME/kitchen/assets/omp/kitchen.omp.json")"
 
 # fnm (fast node manager, drop-in replacement for nvm)
 FNM_PATH="$HOME/.local/share/fnm"

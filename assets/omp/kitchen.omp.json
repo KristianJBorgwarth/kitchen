@@ -1,0 +1,98 @@
+{
+  "$schema": "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json",
+  "version": 3,
+  "final_space": true,
+  "blocks": [
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "segments": [
+        {
+          "type": "session",
+          "style": "plain",
+          "foreground": "cyan",
+          "template": "{{ if .SSHSession }}{{ .UserName }}@{{ .HostName }} <darkGray>in</> {{ end }}"
+        },
+        {
+          "type": "path",
+          "style": "plain",
+          "foreground": "cyan",
+          "template": "<b>{{ .Path }}</b>",
+          "properties": {
+            "style": "full",
+            "home_icon": "~"
+          }
+        },
+        {
+          "type": "git",
+          "style": "plain",
+          "foreground": "magenta",
+          "template": "   {{ .HEAD }}{{ if gt .Ahead 0 }} <green>↑{{ .Ahead }}</>{{ end }}{{ if gt .Behind 0 }} <red>↓{{ .Behind }}</>{{ end }}{{ if .Staging.Changed }} <green>{{ add .Staging.Added .Staging.Modified .Staging.Deleted }}</>{{ end }}{{ if .Working.Changed }} <yellow>●{{ add .Working.Added .Working.Modified .Working.Deleted .Working.Untracked }}</>{{ end }}",
+          "properties": {
+            "branch_icon": "",
+            "fetch_status": true
+          }
+        },
+        {
+          "type": "python",
+          "style": "plain",
+          "foreground": "green",
+          "template": " <darkGray>via</>  {{ .Venv }}",
+          "properties": {
+            "display_mode": "environment",
+            "fetch_virtual_env": true,
+            "fetch_version": false
+          }
+        },
+        {
+          "type": "executiontime",
+          "style": "plain",
+          "foreground": "yellow",
+          "template": " <darkGray>took</> {{ .FormattedMs }}",
+          "properties": {
+            "threshold": 2000,
+            "style": "austin"
+          }
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "right",
+      "segments": [
+        {
+          "type": "time",
+          "style": "plain",
+          "foreground": "darkGray",
+          "template": "{{ .CurrentDate | date .Format }}",
+          "properties": {
+            "time_format": "15:04"
+          }
+        }
+      ]
+    },
+    {
+      "type": "prompt",
+      "alignment": "left",
+      "newline": true,
+      "segments": [
+        {
+          "type": "text",
+          "style": "plain",
+          "foreground": "green",
+          "foreground_templates": [
+            "{{ if and (gt .Code 0) (ne .Code 130) (ne .Code 148) }}red{{ end }}"
+          ],
+          "template": "{{ if and (gt .Code 0) (ne .Code 130) (ne .Code 148) }}✘ {{ .Code }} {{ end }}❯"
+        }
+      ]
+    }
+  ],
+  "transient_prompt": {
+    "foreground": "green",
+    "foreground_templates": [
+      "{{ if and (gt .Code 0) (ne .Code 130) (ne .Code 148) }}red{{ end }}"
+    ],
+    "template": "❯ "
+  }
+}
