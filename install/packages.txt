@@ -27,6 +27,7 @@ dotnet-runtime-10.0
 aspnet-runtime-10.0
 github-cli
 lazygit
+git-delta
 tree-sitter-cli
 git
 docker

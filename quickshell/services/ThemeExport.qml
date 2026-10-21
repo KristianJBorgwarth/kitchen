@@ -8,7 +8,8 @@ import qs.core
 
 // Writes other apps' colors from the palettes: ghostty themes for both modes (ghostty picks
 // one from the system color scheme), and for the active mode sway's window border colors
-// (also applied live) and the palette block of the k9s skin. Switching modes also sets the
+// (also applied live), the palette block of the k9s skin, and lazygit's theme block and
+// delta config. Switching modes also sets the
 // system color scheme and GTK/icon themes, which Brave, GTK apps and ghostty follow. A file
 // is only rewritten when its content changes, so this doesn't churn git.
 Singleton {
@@ -40,6 +41,67 @@ Singleton {
     }
     function sway() {
         return ["# " + banner(Main.theme.name)].concat(swayLines(), [""]).join("\n");
+    }
+
+    // a over b, `t` of the way: "#rrggbb"
+    function mix(a, b, t) {
+        const ch = (h, i) => parseInt(String(h).slice(1 + 2 * i, 3 + 2 * i), 16);
+        return "#" + [0, 1, 2].map(i => Math.round(ch(a, i) * t + ch(b, i) * (1 - t)).toString(16).padStart(2, "0")).join("");
+    }
+
+    // lazygit's diff renderer. Code keeps its syntax colors (the "ansi" theme is the terminal
+    // palette) over a soft red/green line tint, a stronger one on the words that changed
+    function delta() {
+        const t = p.terminal;
+        const bg = c(t.background);
+        const red = c(t.ansi[1]);
+        const green = c(t.ansi[2]);
+        const soft = dark ? 0.16 : 0.2;
+        const strong = dark ? 0.36 : 0.42;
+        const q = v => '"' + v + '"';
+        return ["# " + banner(Main.theme.name), "[delta]",
+            "    " + (dark ? "dark" : "light") + " = true",
+            "    syntax-theme = ansi",
+            "    line-numbers = true",
+            "    minus-style = syntax " + q(mix(red, bg, soft)),
+            "    minus-emph-style = syntax " + q(mix(red, bg, strong)),
+            "    plus-style = syntax " + q(mix(green, bg, soft)),
+            "    plus-emph-style = syntax " + q(mix(green, bg, strong)),
+            "    line-numbers-minus-style = " + q(red),
+            "    line-numbers-plus-style = " + q(green),
+            "    line-numbers-zero-style = " + q(c("@dim")),
+            "    line-numbers-left-style = " + q(c("@muted")),
+            "    line-numbers-right-style = " + q(c("@muted")),
+            "    file-style = " + q(c("@fg")) + " bold",
+            "    file-decoration-style = " + q(c("@muted")) + " ul",
+            "    hunk-header-style = file line-number syntax",
+            "    hunk-header-file-style = " + q(c("@mid")),
+            "    hunk-header-line-number-style = " + q(c("@mid")),
+            "    hunk-header-decoration-style = " + q(c("@muted")) + " box",
+            "    whitespace-error-style = " + q(red) + " reverse",
+            ""].join("\n");
+    }
+
+    // only the theme block between the markers; the rest of the config is hand-written
+    function lazygit(current) {
+        const t = p.terminal;
+        const col = (v, bold) => '["' + c(v) + '"' + (bold ? ", bold" : "") + "]";
+        const block = ["  # --- theme: " + banner(Main.theme.name) + " ---", "  theme:",
+            "    activeBorderColor: " + col(t.ansi[2], true),
+            "    inactiveBorderColor: " + col("@dim"),
+            "    searchingActiveBorderColor: " + col(t.ansi[3], true),
+            "    optionsTextColor: " + col("@mid"),
+            "    selectedLineBgColor: " + col("@muted"),
+            "    inactiveViewSelectedLineBgColor: " + col("@surface"),
+            "    cherryPickedCommitFgColor: " + col(t.ansi[4]),
+            "    cherryPickedCommitBgColor: " + col("@surface"),
+            "    markedBaseCommitFgColor: " + col(t.ansi[3]),
+            "    markedBaseCommitBgColor: " + col("@surface"),
+            "    unstagedChangesColor: " + col(t.ansi[1]),
+            "    defaultFgColor: [default]",
+            "  # --- end theme ---"].join("\n");
+        const m = current.match(/  # --- theme:[^\n]*\n[\s\S]*?  # --- end theme ---/);
+        return m ? current.replace(m[0], block) : current;
     }
 
     // only the anchors block between the markers; the rest of the skin is hand-written
@@ -78,6 +140,18 @@ Singleton {
     FileView {
         id: swayFile
         path: root.home + "/.config/sway/config.d/colors"
+        blockLoading: true
+        printErrors: false
+    }
+    FileView {
+        id: lazygitFile
+        path: root.home + "/.config/lazygit/config.yml"
+        blockLoading: true
+        printErrors: false
+    }
+    FileView {
+        id: deltaFile
+        path: root.home + "/.config/lazygit/delta.gitconfig"
         blockLoading: true
         printErrors: false
     }
@@ -121,6 +195,10 @@ Singleton {
         }
         if (k9sFile.text())
             write(k9sFile, k9s(k9sFile.text()));
+        if (lazygitFile.text()) {
+            write(lazygitFile, lazygit(lazygitFile.text()));
+            write(deltaFile, delta());
+        }
     }
 
     // color-scheme reaches libadwaita apps, Brave and ghostty through the desktop portal;
@@ -138,6 +216,16 @@ Singleton {
     }
 
     onPChanged: exportAll()
+    // both ghostty themes are written, so an edit to the inactive palette counts too
+    Connections {
+        target: Main.theme
+        function onDarkPaletteChanged() {
+            root.exportAll();
+        }
+        function onLightPaletteChanged() {
+            root.exportAll();
+        }
+    }
     onDarkChanged: {
         applyAppearance();
         write(gtk3, gtkSettings());
@@ -145,6 +233,9 @@ Singleton {
     }
     Component.onCompleted: {
         exportAll();
+        // the first pass can run before the file paths are bound (see write()), so again
+        // once they are: picks up palette edits made while quickshell wasn't running
+        Qt.callLater(exportAll);
         applyAppearance();
     }
 }

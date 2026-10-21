@@ -24,8 +24,8 @@
         "foreground": "@fg",
         "cursor": "#ffffff",
         "ansi": [
-            "#000000", "#ffffff", "#808080", "#ffffff", "#82a082", "#808080", "#a0a0a0", "#f0f0f0",
-            "#404040", "#ffffff", "#a0a0a0", "#ffffff", "#82a082", "#a0a0a0", "#e0e0e0", "#ffffff"
+            "#232a2e", "#e67e80", "#a7c080", "#dbbc7f", "#7fbbb3", "#d699b6", "#83c092", "#d3c6aa",
+            "#5c6a72", "#e67e80", "#a7c080", "#dbbc7f", "#7fbbb3", "#d699b6", "#83c092", "#d3c6aa"
         ]
     }
 }
