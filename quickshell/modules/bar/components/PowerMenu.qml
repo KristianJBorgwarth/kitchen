@@ -13,8 +13,8 @@ Item {
     implicitHeight: row.implicitHeight
 
     property bool expanded: false
-    // the slide is slower than Main.anim so it reads as motion, not a jump
-    readonly property int slide: Main.anim * 4
+    // between the actions, and between them and the button
+    readonly property int gap: 12
 
     readonly property var actions: [
         { icon: "󰌾", label: "lock", confirm: false, run: () => Lock.lock() },
@@ -44,26 +44,27 @@ Item {
 
     Row {
         id: row
-        spacing: 12
 
+        // the gap to the button is part of the drawer, so it opens with it instead of popping
         Item {
             id: drawer
             anchors.verticalCenter: parent.verticalCenter
             height: items.implicitHeight
-            width: root.expanded ? items.implicitWidth : 0
+            width: root.expanded ? items.implicitWidth + root.gap : 0
             opacity: root.expanded ? 1 : 0
             visible: width > 0
             clip: true
 
+            // out with a soft landing, back in a little quicker
             Behavior on width {
                 NumberAnimation {
-                    duration: root.slide
-                    easing.type: Easing.OutCubic
+                    duration: root.expanded ? 220 : 160
+                    easing.type: root.expanded ? Easing.OutCubic : Easing.InCubic
                 }
             }
             Behavior on opacity {
                 NumberAnimation {
-                    duration: root.slide
+                    duration: root.expanded ? 220 : 120
                 }
             }
 
@@ -71,7 +72,8 @@ Item {
             Row {
                 id: items
                 anchors.right: parent.right
-                spacing: 12
+                anchors.rightMargin: root.gap
+                spacing: root.gap
 
                 Repeater {
                     model: root.actions

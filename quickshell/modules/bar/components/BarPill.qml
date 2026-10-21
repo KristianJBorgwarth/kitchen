@@ -35,12 +35,9 @@ Rectangle {
             easing.type: Easing.OutCubic
         }
     }
-    Behavior on width {
-        NumberAnimation {
-            duration: Main.anim
-            easing.type: Easing.OutCubic
-        }
-    }
+    // no Behavior on width: the pill follows its content exactly. Drawers inside (volume,
+    // power) animate their own width, and a pill animation chasing that every frame lagged
+    // and made the centered content wobble
 
     Row {
         id: row
