@@ -19,6 +19,11 @@ gui:
   # --- end theme ---
 git:
   # delta: syntax highlighting, soft +/- line tints and word-level changes
+  # pagers is the pre-0.58 format (Debian/Ubuntu); newer lazygit (Arch) uses diffRenderers.
+  # Keep both: each version ignores the other and neither rewrites this file.
+  pagers:
+    - colorArg: always
+      pager: sh -c 'exec delta --paging=never --config "$HOME/.config/lazygit/delta.gitconfig"'
   diffRenderers:
     - name: delta
       type: stdinFilter
