@@ -1,116 +1,117 @@
 import Quickshell
 import Quickshell.I3
 import Quickshell.Services.Notifications
-import QtQuick // for Text
+import QtQuick
 import qs.core
 import qs.services
 import qs.modules.widgets
 
-// The workspaces on one monitor, as sway has them: sway drops an empty workspace once it's
-// off screen, so this is what's in use plus whatever is showing. A pill glides to the one
-// that's visible here: solid while this monitor has focus, faint otherwise.
+// Workspaces 1-9 as a fixed row of pips, so each one is always in the same spot: a ring when
+// empty, filled when something's on it. The focused one stretches into a bar.
 Item {
     id: root
-    required property var screen
     anchors.verticalCenter: parent.verticalCenter
     implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight
 
-    // the numbered ones, in order; named ones (m, d) are single-purpose and stay off the bar
-    readonly property var spaces: I3.workspaces.values.filter(w => w.number >= 0 && w.monitor?.name === screen?.name).sort((a, b) => a.number - b.number)
-    readonly property bool focusedHere: I3.focusedMonitor?.name === screen?.name
+    readonly property int dotSize: 7
+    readonly property int activeSize: 18
 
-    // where the visible workspace's label is; that delegate fills these in, and the others
-    // leave them alone when they stop being visible (RestoreNone), so the order the old and
-    // new one update in doesn't matter
+    // where the focused workspace's slot is; that slot fills these in, and the others leave
+    // them alone when they lose focus (RestoreNone), so the order the old and new one update
+    // in doesn't matter. Live bindings, so the pill follows the slot as it opens up
     property real activeX: 0
     property real activeW: 0
-    // straight from the list rather than set by the delegates: the old one letting go after
-    // the new one took over would switch the pill off
-    readonly property bool hasActive: spaces.some(w => w.active)
-    // no glide on the first placement, only from then on
+    // straight from the list rather than set by the slots: the old one letting go after the
+    // new one took over would switch the pill off
+    readonly property bool hasActive: I3.workspaces.values.some(w => w.focused && w.number >= 1 && w.number <= 9)
+    // no animation on the first layout, only from then on
     property bool placed: false
     Component.onCompleted: Qt.callLater(() => placed = true)
 
     Rectangle {
         anchors.verticalCenter: row.verticalCenter
-        x: root.activeX - 7
-        width: root.activeW + 14
-        height: 22
-        radius: Main.radius
+        x: root.activeX
+        width: root.activeW
+        height: root.dotSize
+        radius: height / 2
         visible: root.hasActive
-        color: root.focusedHere ? Main.theme.colFg : Main.theme.colMuted
-
-        Behavior on x {
-            enabled: root.placed
-            NumberAnimation {
-                duration: 220
-                easing.type: Easing.OutCubic
-            }
-        }
-        Behavior on width {
-            enabled: root.placed
-            NumberAnimation {
-                duration: 220
-                easing.type: Easing.OutCubic
-            }
-        }
-        Behavior on color {
-            ColorAnimation {
-                duration: Main.anim * 2
-            }
-        }
+        color: Main.theme.colFg
     }
 
     Row {
         id: row
-        spacing: 15
+        spacing: 10
 
         Repeater {
-            model: root.spaces
-            Text {
+            model: 9
+            Item {
                 id: workspace
-                required property var modelData
-                readonly property var ws: modelData
-                readonly property bool focused: ws.focused
-                readonly property bool isActive: ws.active
+                required property int index
+                readonly property int number: index + 1
+                // null while sway doesn't have it: empty and not showing anywhere
+                readonly property var ws: I3.workspaces.values.find(w => w.number === number) ?? null
+                readonly property bool focused: ws?.focused ?? false
+                // showing on the other monitor
+                readonly property bool isActive: ws?.active ?? false
 
                 // the app ids on it, from sway's layout string: "H[V[ghostty] brave-browser]"
-                readonly property var apps: (ws.lastIpcObject?.representation ?? "").replace(/[HVTS]?\[|\]/g, " ").split(/\s+/).filter(a => a)
+                readonly property var apps: (ws?.lastIpcObject?.representation ?? "").replace(/[HVTS]?\[|\]/g, " ").split(/\s+/).filter(a => a)
                 readonly property bool hasContent: apps.length > 0
 
                 // marked while an app on it asks for attention (sway's urgent), or has sent a
                 // notification since the workspace was last looked at: the highest urgency of
-                // those notifications, -1 when unmarked. Notifications are tracked by number,
-                // so named workspaces only get sway's urgent
-                onFocusedChanged: if (focused && ws.number >= 0)
-                    Notifs.seen(ws.number)
+                // those notifications, -1 when unmarked
+                onFocusedChanged: if (focused)
+                    Notifs.seen(number)
                 // a workspace sway just created for you is already being looked at
-                Component.onCompleted: if (focused && ws.number >= 0)
-                    Notifs.seen(ws.number)
-                readonly property int level: focused ? -1 : Math.max(ws.number >= 0 ? Number(Notifs.marks[ws.number] ?? -1) : -1, ws.urgent ? NotificationUrgency.Normal : -1)
+                Component.onCompleted: if (focused)
+                    Notifs.seen(number)
+                readonly property int level: focused ? -1 : Math.max(Number(Notifs.marks[number] ?? -1), (ws?.urgent ?? false) ? NotificationUrgency.Normal : -1)
 
-                // marked ones show the selector's square, colored by urgency
-                text: !isActive && level >= 0 ? "" : ws.name
-                // dark text only while the pill is there to sit on
-                color: isActive ? (root.focusedHere && root.hasActive ? Main.theme.colBg : Main.theme.colFg) : level === NotificationUrgency.Critical ? Main.theme.colRed : level >= 0 ? Main.theme.colAmber : hasContent ? Main.theme.colAccentLight : Main.theme.colMuted
-                font: Main.pillFont
+                implicitWidth: focused ? root.activeSize : root.dotSize
+                implicitHeight: 16
+                Behavior on implicitWidth {
+                    enabled: root.placed
+                    NumberAnimation {
+                        duration: 220
+                        easing.type: Easing.OutCubic
+                    }
+                }
 
-                Behavior on color {
-                    ColorAnimation {
-                        duration: Main.anim * 2
+                // marked ones by urgency, then the one showing on the other monitor, then in use
+                Rectangle {
+                    readonly property color tint: workspace.level === NotificationUrgency.Critical ? Main.theme.colRed : workspace.level >= 0 ? Main.theme.colAmber : workspace.isActive ? Main.theme.colFg : workspace.hasContent ? Main.theme.colAccentLight : Main.theme.colMuted
+                    anchors.centerIn: parent
+                    width: root.dotSize
+                    height: root.dotSize
+                    radius: width / 2
+                    color: workspace.level >= 0 || workspace.isActive || workspace.hasContent ? tint : "transparent"
+                    border.width: 1.5
+                    border.color: tint
+                    opacity: workspace.focused ? 0 : 1
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: Main.anim * 2
+                        }
+                    }
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: Main.anim * 2
+                        }
                     }
                 }
 
                 Binding {
-                    when: workspace.isActive
+                    when: workspace.focused
                     target: root
                     property: "activeX"
                     value: workspace.x
                     restoreMode: Binding.RestoreNone
                 }
                 Binding {
-                    when: workspace.isActive
+                    when: workspace.focused
                     target: root
                     property: "activeW"
                     value: workspace.width
@@ -118,7 +119,7 @@ Item {
                 }
 
                 HoverChip {
-                    visible: !workspace.isActive
+                    visible: !workspace.focused
                 }
 
                 // reaches halfway into the gaps on either side, so there's no dead space between
@@ -131,7 +132,7 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: {
                         WorkspacePeek.hide();
-                        Windows.focusWorkspace(workspace.ws.name);
+                        Windows.focusWorkspace(String(workspace.number));
                     }
 
                     // a peek at what's on it; not for the one you're on, or an empty one
@@ -140,7 +141,7 @@ Item {
                             if (hovered && !workspace.focused && workspace.hasContent)
                                 WorkspacePeek.enter(workspace.ws.name, workspace);
                             else
-                                WorkspacePeek.leave(workspace.ws.name);
+                                WorkspacePeek.leave(String(workspace.number));
                         }
                     }
                 }
