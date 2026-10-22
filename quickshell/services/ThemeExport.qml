@@ -52,6 +52,9 @@ Singleton {
     // lazygit's diff renderer. Code keeps its syntax colors (the "ansi" theme is the terminal
     // palette) over a soft red/green line tint, a stronger one on the words that changed
     function delta() {
+        // read here rather than root.dark: on a switch the palette changes (and this runs)
+        // before that binding catches up
+        const dark = Main.theme.dark;
         const t = p.terminal;
         const bg = c(t.background);
         const red = c(t.ansi[1]);
