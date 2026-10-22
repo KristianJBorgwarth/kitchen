@@ -15,7 +15,7 @@ link() {
     echo "linked $dest -> $src"
 }
 
-for app in environment.d fastfetch ghostty gtk-3.0 gtk-4.0 k9s kanshi lazygit newsboat quickshell sway waybar; do
+for app in environment.d fastfetch ghostty git gtk-3.0 gtk-4.0 k9s kanshi lazygit newsboat quickshell sway waybar; do
     link "$REPO_DIR/$app" "$CONFIG_DIR/$app"
 done
 

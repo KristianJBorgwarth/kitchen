@@ -1,0 +1,12 @@
+# shared git settings, linked to ~/.config/git/config; identity and the credential helper
+# stay in ~/.gitconfig, since they're per machine
+
+# delta for diffs, themed from the kitchen palette (quickshell writes that file)
+[include]
+	path = ~/.config/lazygit/delta.gitconfig
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
