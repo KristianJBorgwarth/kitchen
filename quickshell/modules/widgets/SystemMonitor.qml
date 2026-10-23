@@ -42,6 +42,37 @@ Scope {
         return v.toFixed(1);
     }
 
+    property string selectedPid: ""
+    property string armedPid: ""
+
+    readonly property var selectedProc: Monitor.processes.find(p => p.pid === selectedPid) ?? null
+
+    function heatColor(frac) {
+        return frac > 0.85 ? Main.theme.colRed : frac > 0.6 ? Main.theme.colAmber : Main.theme.colGreen;
+    }
+
+    function moveSelection(d) {
+        const procs = Monitor.processes;
+        if (procs.length === 0)
+            return;
+        const i = procs.findIndex(p => p.pid === selectedPid);
+        selectedPid = procs[Math.max(0, Math.min(procs.length - 1, i < 0 ? (d > 0 ? 0 : procs.length - 1) : i + d))].pid;
+        armedPid = "";
+    }
+
+    // first press arms, second press sends the signal
+    function endSelected(sig) {
+        if (!selectedProc)
+            return;
+        if (armedPid === selectedPid + sig) {
+            Monitor.signalProc(selectedPid, sig);
+            armedPid = "";
+            selectedPid = "";
+        } else {
+            armedPid = selectedPid + sig;
+        }
+    }
+
     function stepInterval(d) {
         const choices = Monitor.intervalChoices;
         const i = choices.indexOf(Monitor.openInterval);
@@ -53,8 +84,22 @@ Scope {
         maxWidth: 1240
         maxHeight: 820
         padding: 20
-        onClosed: Monitor.detailed = false
+        onClosed: {
+            Monitor.detailed = false;
+            Monitor.paused = false;
+            root.selectedPid = "";
+            root.armedPid = "";
+        }
         bindings: [
+            { keys: "p", desc: "pause / resume", run: () => Monitor.paused = !Monitor.paused },
+            { keys: "<Space>", desc: "pause / resume", run: () => Monitor.paused = !Monitor.paused },
+            { keys: "s", desc: "sort processes by cpu / memory", run: () => Monitor.toggleSort() },
+            { keys: "j", desc: "select next process", run: () => root.moveSelection(1) },
+            { keys: "k", desc: "select previous process", run: () => root.moveSelection(-1) },
+            { keys: "<Down>", desc: "", run: () => root.moveSelection(1) },
+            { keys: "<Up>", desc: "", run: () => root.moveSelection(-1) },
+            { keys: "x", desc: "end process (press twice)", run: () => root.endSelected("TERM") },
+            { keys: "X", desc: "kill process (press twice)", run: () => root.endSelected("KILL") },
             { keys: "+", desc: "update faster", run: () => root.stepInterval(-1) },
             { keys: "-", desc: "update slower", run: () => root.stepInterval(1) },
             { keys: "1", desc: "every 100ms", run: () => Monitor.setOpenInterval(100) },
@@ -70,8 +115,8 @@ Scope {
             readonly property real gap: 12
             readonly property real headerH: 48
             readonly property real rowsH: height - headerH - gap * 3
-            readonly property real row1H: rowsH * 0.38
-            readonly property real row2H: rowsH * 0.28
+            readonly property real row1H: rowsH * 0.34
+            readonly property real row2H: rowsH * 0.24
             readonly property real row3H: rowsH - row1H - row2H
 
             Item {
@@ -101,6 +146,17 @@ Scope {
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 8
+
+                    Chip {
+                        anchors.verticalCenter: parent.verticalCenter
+                        implicitHeight: 28
+                        padding: 10
+                        text: Monitor.paused ? "󰐊  paused" : "󰏤  live"
+                        tint: Monitor.paused ? Main.theme.colAmber : Main.theme.colGreen
+                        active: true
+                        clickable: true
+                        onClicked: Monitor.paused = !Monitor.paused
+                    }
 
                     Rectangle {
                         anchors.verticalCenter: parent.verticalCenter
@@ -217,14 +273,29 @@ Scope {
                                 width: cores.barW
                                 height: cores.height
                                 radius: 2
-                                color: Main.theme.overlay(0.04)
+                                color: coreHover.hovered ? Main.theme.overlay(0.1) : Main.theme.overlay(0.04)
+
+                                HoverHandler {
+                                    id: coreHover
+                                }
+
+                                Text {
+                                    visible: coreHover.hovered
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.bottom: parent.top
+                                    anchors.bottomMargin: 3
+                                    z: 2
+                                    text: parent.index + ": " + Math.round(parent.v) + "%"
+                                    color: Main.theme.colFg
+                                    font: Main.smallFont
+                                }
 
                                 Rectangle {
                                     anchors.bottom: parent.bottom
                                     width: parent.width
                                     height: Math.max(2, parent.height * parent.v / 100)
                                     radius: 2
-                                    color: Qt.rgba(Main.theme.colFg.r, Main.theme.colFg.g, Main.theme.colFg.b, 0.35 + 0.65 * parent.v / 100)
+                                    color: Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.35 + 0.65 * parent.v / 100)
 
                                     Behavior on height {
                                         NumberAnimation {
@@ -244,6 +315,7 @@ Scope {
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         values: Monitor.cpuHistory
+                        color: Main.theme.colBlue
                         times: Monitor.historyTimes
                         window: Monitor.historyWindow
                     }
@@ -273,7 +345,7 @@ Scope {
                             height: 8
                             max: Monitor.memTotal
                             segments: [
-                                { value: Monitor.memUsed, color: Main.theme.colFg },
+                                { value: Monitor.memUsed, color: Main.theme.colViolet },
                                 { value: Monitor.memCache, color: Main.theme.colAccentDark }
                             ]
                         }
@@ -282,7 +354,7 @@ Scope {
                             spacing: 14
                             Repeater {
                                 model: [
-                                    { c: Main.theme.colFg, l: "used " + root.gib(Monitor.memUsed) },
+                                    { c: Main.theme.colViolet, l: "used " + root.gib(Monitor.memUsed) },
                                     { c: Main.theme.colAccentDark, l: "cache " + root.gib(Monitor.memCache) },
                                     { c: Main.theme.colMuted, l: "swap " + root.gib(Monitor.swapUsed) + "/" + root.gib(Monitor.swapTotal) }
                                 ]
@@ -313,6 +385,7 @@ Scope {
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
                         values: Monitor.memHistory
+                        color: Main.theme.colViolet
                         times: Monitor.historyTimes
                         window: Monitor.historyWindow
                     }
@@ -379,7 +452,7 @@ Scope {
                                 width: parent.width
                                 height: 4
                                 max: Monitor.vramTotal
-                                segments: [{ value: Monitor.vramUsed, color: Main.theme.colAccentLight }]
+                                segments: [{ value: Monitor.vramUsed, color: Main.theme.colGreen }]
                             }
                         }
 
@@ -389,6 +462,7 @@ Scope {
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
                             values: Monitor.gpuHistory
+                            color: Main.theme.colGreen
                             times: Monitor.historyTimes
                             window: Monitor.historyWindow
                         }
@@ -408,12 +482,12 @@ Scope {
                         spacing: 6
                         Text {
                             text: "↓ " + Monitor.fmtRate(Monitor.netRx)
-                            color: Main.theme.colFg
+                            color: Main.theme.colTeal
                             font: Main.barFont
                         }
                         Text {
                             text: "↑ " + Monitor.fmtRate(Monitor.netTx)
-                            color: Main.theme.colAccentMid
+                            color: Main.theme.colAmber
                             font: Main.barFont
                         }
                     }
@@ -426,6 +500,11 @@ Scope {
                         max: 0
                         values: Monitor.netRxHistory
                         values2: Monitor.netTxHistory
+                        color: Main.theme.colTeal
+                        color2: Main.theme.colAmber
+                        format: Monitor.fmtRate
+                        label: "↓ "
+                        label2: "↑ "
                         times: Monitor.historyTimes
                         window: Monitor.historyWindow
                     }
@@ -443,12 +522,12 @@ Scope {
                         spacing: 6
                         Text {
                             text: "R " + Monitor.fmtRate(Monitor.diskRead)
-                            color: Main.theme.colFg
+                            color: Main.theme.colTeal
                             font: Main.barFont
                         }
                         Text {
                             text: "W " + Monitor.fmtRate(Monitor.diskWrite)
-                            color: Main.theme.colAccentMid
+                            color: Main.theme.colAmber
                             font: Main.barFont
                         }
                     }
@@ -461,6 +540,11 @@ Scope {
                         max: 0
                         values: Monitor.diskReadHistory
                         values2: Monitor.diskWriteHistory
+                        color: Main.theme.colTeal
+                        color2: Main.theme.colAmber
+                        format: Monitor.fmtRate
+                        label: "R "
+                        label2: "W "
                         times: Monitor.historyTimes
                         window: Monitor.historyWindow
                     }
@@ -481,12 +565,12 @@ Scope {
                     height: parent.height
                     title: "Processes"
                     icon: "󰑮"
-                    detail: "by cpu"
+                    detail: root.armedPid && root.selectedProc ? "press again to " + (root.armedPid.endsWith("KILL") ? "kill " : "end ") + root.selectedProc.name : root.selectedProc ? "x end  ·  X kill  ·  j/k move" : "click a row  ·  s sorts"
 
                     Column {
                         anchors.fill: parent
                         spacing: 0
-                        readonly property real rowH: height / 9
+                        readonly property real rowH: height / (Monitor.procLimit + 1)
 
                         Item {
                             width: parent.width
@@ -497,42 +581,74 @@ Scope {
                                 color: Main.theme.colAccentDark
                                 font: Main.smallFont
                             }
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.right: parent.right
-                                anchors.rightMargin: 90
-                                text: "CPU"
-                                color: Main.theme.colAccentDark
-                                font: Main.smallFont
-                            }
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                anchors.right: parent.right
-                                text: "MEMORY"
-                                color: Main.theme.colAccentDark
-                                font: Main.smallFont
+                            Repeater {
+                                model: [
+                                    { key: "cpu", label: "CPU", margin: 90 },
+                                    { key: "mem", label: "MEMORY", margin: 0 }
+                                ]
+                                Text {
+                                    required property var modelData
+                                    readonly property bool on: Monitor.procSort === modelData.key
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.right: parent.right
+                                    anchors.rightMargin: modelData.margin
+                                    text: modelData.label + (on ? " ▾" : "")
+                                    color: on ? Main.theme.colFg : (headMouse.containsMouse ? Main.theme.colAccentLight : Main.theme.colAccentDark)
+                                    font: Main.smallFont
+
+                                    MouseArea {
+                                        id: headMouse
+                                        anchors.fill: parent
+                                        anchors.margins: -4
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: if (!parent.on) Monitor.toggleSort()
+                                    }
+                                }
                             }
                         }
 
                         Repeater {
                             model: Monitor.processes
                             Item {
+                                id: procRow
                                 required property var modelData
+                                readonly property bool selected: root.selectedPid === modelData.pid
+                                readonly property bool armed: selected && root.armedPid !== ""
+                                readonly property real frac: Monitor.procSort === "mem" ? Math.min(1, modelData.mem / Math.max(1, Monitor.memTotal * 1024)) : Math.min(1, modelData.cpu / 100)
                                 width: parent.width
                                 height: parent.rowH
 
                                 Rectangle {
                                     anchors.verticalCenter: parent.verticalCenter
                                     height: parent.height - 4
-                                    width: parent.width * Math.min(1, parent.modelData.cpu / 100)
+                                    width: parent.width
                                     radius: 4
-                                    color: Main.theme.overlay(0.05)
+                                    color: procRow.armed ? Qt.rgba(Main.theme.colRed.r, Main.theme.colRed.g, Main.theme.colRed.b, 0.2) : procRow.selected ? Main.theme.overlay(0.1) : rowMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent"
+                                    border.color: procRow.armed ? Main.theme.colRed : procRow.selected ? Main.theme.overlay(0.2) : "transparent"
+                                    border.width: 1
+                                }
+                                Rectangle {
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    height: parent.height - 4
+                                    width: parent.width * parent.frac
+                                    radius: 4
+                                    color: Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.14)
 
                                     Behavior on width {
                                         NumberAnimation {
                                             duration: 400
                                             easing.type: Easing.OutCubic
                                         }
+                                    }
+                                }
+                                MouseArea {
+                                    id: rowMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    onClicked: {
+                                        root.selectedPid = procRow.selected ? "" : procRow.modelData.pid;
+                                        root.armedPid = "";
                                     }
                                 }
                                 Text {
@@ -552,11 +668,12 @@ Scope {
                                     anchors.rightMargin: 90
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: parent.modelData.cpu.toFixed(1) + "%"
-                                    color: Main.theme.colFg
+                                    color: parent.modelData.cpu >= 100 ? Main.theme.colAmber : Main.theme.colFg
                                     font: Main.barFont
                                 }
                                 Text {
                                     anchors.right: parent.right
+                                    anchors.rightMargin: 6
                                     anchors.verticalCenter: parent.verticalCenter
                                     text: parent.modelData.mem >= 1024 ? (parent.modelData.mem / 1024).toFixed(1) + " G" : parent.modelData.mem + " M"
                                     color: Main.theme.colAccentMid
@@ -566,6 +683,7 @@ Scope {
                         }
                     }
                 }
+
 
                 Island {
                     width: (row3.width - layout.gap * 2) * 0.25
@@ -605,7 +723,7 @@ Scope {
                                     width: parent.width
                                     height: 6
                                     max: parent.modelData.total
-                                    segments: [{ value: parent.modelData.used, color: Main.theme.colAccentLight }]
+                                    segments: [{ value: parent.modelData.used, color: root.heatColor(parent.modelData.used / Math.max(1, parent.modelData.total)) }]
                                 }
                             }
                         }
@@ -649,7 +767,7 @@ Scope {
                                         width: parent.width * Math.min(1, parent.parent.modelData.temp / 100)
                                         height: parent.height
                                         radius: 2
-                                        color: Qt.rgba(1, 1, 1, 0.35 + 0.65 * parent.parent.heat)
+                                        color: root.heatColor(parent.parent.heat)
                                     }
                                 }
                                 Text {
@@ -659,7 +777,7 @@ Scope {
                                     width: 40
                                     horizontalAlignment: Text.AlignRight
                                     text: parent.modelData.temp + "°"
-                                    color: Qt.rgba(1, 1, 1, 0.55 + 0.45 * parent.heat)
+                                    color: parent.heat > 0.6 ? root.heatColor(parent.heat) : Main.theme.colFg
                                     font: Main.barFont
                                 }
                             }

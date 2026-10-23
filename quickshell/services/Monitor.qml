@@ -16,6 +16,9 @@ Singleton {
     readonly property int interval: detailed ? openInterval : 1000
     readonly property int historyWindow: 60000 // ms shown in graphs
     property var historyTimes: []
+    property bool paused: false
+    property string procSort: "cpu" // "cpu" | "mem"
+    readonly property int procLimit: 10
 
     property string host: ""
     property string kernel: ""
@@ -85,6 +88,25 @@ Singleton {
             id: settings
             property int interval: 200
         }
+    }
+
+    function toggleSort(): void {
+        procSort = procSort === "cpu" ? "mem" : "cpu";
+        if (detailed)
+            procsProc.running = true;
+    }
+
+    function signalProc(pid, sig): void {
+        Quickshell.execDetached(["kill", "-" + sig, String(pid)]);
+        procRefresh.restart();
+    }
+
+    function peak(arr) {
+        let m = 0;
+        for (const v of arr)
+            if (v > m)
+                m = v;
+        return m;
     }
 
     function push(arr, v, drop) {
@@ -254,7 +276,7 @@ Singleton {
 
     Timer {
         interval: root.interval
-        running: true
+        running: !root.paused
         repeat: true
         triggeredOnStart: true
         onTriggered: root.tick()
@@ -357,7 +379,7 @@ Singleton {
 
     Process {
         id: procsProc
-        command: [Quickshell.shellPath("scripts/top_procs.sh"), "8"]
+        command: [Quickshell.shellPath("scripts/top_procs.sh"), String(root.procLimit), root.procSort]
         stdout: StdioCollector {
             onStreamFinished: {
                 root.processes = this.text.trim().split("\n").filter(l => l).map(l => {
@@ -388,9 +410,16 @@ Singleton {
         }
     }
 
+    // quick re-poll after a kill so the row disappears
+    Timer {
+        id: procRefresh
+        interval: 400
+        onTriggered: procsProc.running = true
+    }
+
     Timer {
         interval: 2000
-        running: root.detailed
+        running: root.detailed && !root.paused
         repeat: true
         triggeredOnStart: true
         property int ticks: 0
