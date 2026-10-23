@@ -38,10 +38,16 @@ Scope {
             show();
     }
 
+    function fmtMem(m) {
+        return m >= 1024 ? (m / 1024).toFixed(1) + " G" : Math.round(m) + " M";
+    }
+
     function gib(v) {
         return v.toFixed(1);
     }
 
+    readonly property bool focusing: Monitor.focused
+    readonly property string focusLabel: "“" + Monitor.procFilter + "”"
     property string selectedPid: ""
     property string armedPid: ""
 
@@ -89,10 +95,12 @@ Scope {
             Monitor.paused = false;
             root.selectedPid = "";
             root.armedPid = "";
+            search.text = "";
         }
         bindings: [
             { keys: "p", desc: "pause / resume", run: () => Monitor.paused = !Monitor.paused },
             { keys: "<Space>", desc: "pause / resume", run: () => Monitor.paused = !Monitor.paused },
+            { keys: "/", desc: "search processes", run: () => search.forceActiveFocus() },
             { keys: "s", desc: "sort processes by cpu / memory", run: () => Monitor.toggleSort() },
             { keys: "j", desc: "select next process", run: () => root.moveSelection(1) },
             { keys: "k", desc: "select previous process", run: () => root.moveSelection(-1) },
@@ -220,7 +228,7 @@ Scope {
                     height: parent.height
                     title: "Processor"
                     icon: "󰍛"
-                    detail: Monitor.cpuModel
+                    detail: root.focusing ? root.focusLabel + " · " + Monitor.focusCount + " procs" : Monitor.cpuModel
 
                     Column {
                         id: cpuStats
@@ -229,14 +237,14 @@ Scope {
                         spacing: 6
 
                         Text {
-                            text: Math.round(Monitor.cpuUsage) + "%"
+                            text: root.focusing ? Monitor.focusCpu.toFixed(1) + "%" : Math.round(Monitor.cpuUsage) + "%"
                             color: Main.theme.colFg
                             font: root.bigFont
                         }
                         Row {
                             spacing: 6
                             Repeater {
-                                model: [Monitor.cpuFreqGHz > 0 ? Monitor.cpuFreqGHz.toFixed(1) + " GHz" : "", Monitor.cpuTemp > 0 ? Monitor.cpuTemp + "°C" : "", Monitor.coreUsage.length + " threads"].filter(s => s)
+                                model: root.focusing ? [Monitor.focusCount + " processes", "of " + Monitor.coreUsage.length + " threads"] : [Monitor.cpuFreqGHz > 0 ? Monitor.cpuFreqGHz.toFixed(1) + " GHz" : "", Monitor.cpuTemp > 0 ? Monitor.cpuTemp + "°C" : "", Monitor.coreUsage.length + " threads"].filter(s => s)
                                 Rectangle {
                                     required property string modelData
                                     height: 22
@@ -257,6 +265,7 @@ Scope {
 
                     Row {
                         id: cores
+                        visible: !root.focusing
                         anchors.left: parent.left
                         anchors.bottom: parent.bottom
                         width: cpuStats.width
@@ -314,9 +323,9 @@ Scope {
                         anchors.right: parent.right
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
-                        values: Monitor.cpuHistory
+                        values: root.focusing ? Monitor.focusCpuHistory : Monitor.cpuHistory
                         color: Main.theme.colBlue
-                        times: Monitor.historyTimes
+                        times: root.focusing ? Monitor.focusTimes : Monitor.historyTimes
                         window: Monitor.historyWindow
                     }
                 }
@@ -326,7 +335,7 @@ Scope {
                     height: parent.height
                     title: "Memory"
                     icon: "󰘚"
-                    detail: Math.round(Monitor.memUsage) + "%"
+                    detail: root.focusing ? root.focusLabel : Math.round(Monitor.memUsage) + "%"
 
                     Column {
                         id: memStats
@@ -335,7 +344,7 @@ Scope {
 
                         Text {
                             textFormat: Text.StyledText
-                            text: root.gib(Monitor.memUsed) + "<font color='" + Main.theme.colAccentDark + "'> / " + root.gib(Monitor.memTotal) + " GiB</font>"
+                            text: root.gib(root.focusing ? Monitor.focusMem : Monitor.memUsed) + "<font color='" + Main.theme.colAccentDark + "'> / " + root.gib(Monitor.memTotal) + " GiB</font>"
                             color: Main.theme.colFg
                             font: root.midFont
                         }
@@ -345,13 +354,14 @@ Scope {
                             height: 8
                             max: Monitor.memTotal
                             segments: [
-                                { value: Monitor.memUsed, color: Main.theme.colViolet },
-                                { value: Monitor.memCache, color: Main.theme.colAccentDark }
+                                { value: root.focusing ? Monitor.focusMem : Monitor.memUsed, color: Main.theme.colViolet },
+                                { value: root.focusing ? 0 : Monitor.memCache, color: Main.theme.colAccentDark }
                             ]
                         }
 
                         Row {
                             spacing: 14
+                            visible: !root.focusing
                             Repeater {
                                 model: [
                                     { c: Main.theme.colViolet, l: "used " + root.gib(Monitor.memUsed) },
@@ -384,9 +394,9 @@ Scope {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
-                        values: Monitor.memHistory
+                        values: root.focusing ? Monitor.focusMemHistory : Monitor.memHistory
                         color: Main.theme.colViolet
-                        times: Monitor.historyTimes
+                        times: root.focusing ? Monitor.focusTimes : Monitor.historyTimes
                         window: Monitor.historyWindow
                     }
                 }
@@ -406,7 +416,7 @@ Scope {
                     height: parent.height
                     title: "Graphics"
                     icon: "󰢮"
-                    detail: Monitor.gpuName
+                    detail: root.focusing ? root.focusLabel : Monitor.gpuName
 
                     Text {
                         anchors.centerIn: parent
@@ -425,12 +435,12 @@ Scope {
                             width: 120
                             spacing: 4
                             Text {
-                                text: Math.round(Monitor.gpuUsage) + "%"
+                                text: Math.round(root.focusing ? Monitor.focusGpu : Monitor.gpuUsage) + "%"
                                 color: Main.theme.colFg
                                 font: root.midFont
                             }
                             Text {
-                                visible: Monitor.gpuTemp > 0
+                                visible: Monitor.gpuTemp > 0 && !root.focusing
                                 text: Monitor.gpuTemp + "°C"
                                 color: Main.theme.colAccentMid
                                 font: Main.smallFont
@@ -444,7 +454,7 @@ Scope {
                             spacing: 4
                             visible: Monitor.vramTotal > 0
                             Text {
-                                text: "VRAM " + root.gib(Monitor.vramUsed) + "/" + root.gib(Monitor.vramTotal)
+                                text: "VRAM " + root.gib(root.focusing ? Monitor.focusVram : Monitor.vramUsed) + "/" + root.gib(Monitor.vramTotal)
                                 color: Main.theme.colAccentMid
                                 font: Main.smallFont
                             }
@@ -452,7 +462,7 @@ Scope {
                                 width: parent.width
                                 height: 4
                                 max: Monitor.vramTotal
-                                segments: [{ value: Monitor.vramUsed, color: Main.theme.colGreen }]
+                                segments: [{ value: root.focusing ? Monitor.focusVram : Monitor.vramUsed, color: Main.theme.colGreen }]
                             }
                         }
 
@@ -461,9 +471,9 @@ Scope {
                             anchors.right: parent.right
                             anchors.top: parent.top
                             anchors.bottom: parent.bottom
-                            values: Monitor.gpuHistory
+                            values: root.focusing ? Monitor.focusGpuHistory : Monitor.gpuHistory
                             color: Main.theme.colGreen
-                            times: Monitor.historyTimes
+                            times: root.focusing ? Monitor.focusTimes : Monitor.historyTimes
                             window: Monitor.historyWindow
                         }
                     }
@@ -474,19 +484,19 @@ Scope {
                     height: parent.height
                     title: "Network"
                     icon: "󰛳"
-                    detail: Monitor.netIface
+                    detail: root.focusing ? root.focusLabel + " · tcp" : Monitor.netIface
 
                     Column {
                         id: netStats
                         width: 120
                         spacing: 6
                         Text {
-                            text: "↓ " + Monitor.fmtRate(Monitor.netRx)
+                            text: "↓ " + Monitor.fmtRate(root.focusing ? Monitor.focusRx : Monitor.netRx)
                             color: Main.theme.colTeal
                             font: Main.barFont
                         }
                         Text {
-                            text: "↑ " + Monitor.fmtRate(Monitor.netTx)
+                            text: "↑ " + Monitor.fmtRate(root.focusing ? Monitor.focusTx : Monitor.netTx)
                             color: Main.theme.colAmber
                             font: Main.barFont
                         }
@@ -498,14 +508,14 @@ Scope {
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         max: 0
-                        values: Monitor.netRxHistory
-                        values2: Monitor.netTxHistory
+                        values: root.focusing ? Monitor.focusRxHistory : Monitor.netRxHistory
+                        values2: root.focusing ? Monitor.focusTxHistory : Monitor.netTxHistory
                         color: Main.theme.colTeal
                         color2: Main.theme.colAmber
                         format: Monitor.fmtRate
                         label: "↓ "
                         label2: "↑ "
-                        times: Monitor.historyTimes
+                        times: root.focusing ? Monitor.focusTimes : Monitor.historyTimes
                         window: Monitor.historyWindow
                     }
                 }
@@ -521,12 +531,12 @@ Scope {
                         width: 120
                         spacing: 6
                         Text {
-                            text: "R " + Monitor.fmtRate(Monitor.diskRead)
+                            text: "R " + Monitor.fmtRate(root.focusing ? Monitor.focusRead : Monitor.diskRead)
                             color: Main.theme.colTeal
                             font: Main.barFont
                         }
                         Text {
-                            text: "W " + Monitor.fmtRate(Monitor.diskWrite)
+                            text: "W " + Monitor.fmtRate(root.focusing ? Monitor.focusWrite : Monitor.diskWrite)
                             color: Main.theme.colAmber
                             font: Main.barFont
                         }
@@ -538,14 +548,14 @@ Scope {
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
                         max: 0
-                        values: Monitor.diskReadHistory
-                        values2: Monitor.diskWriteHistory
+                        values: root.focusing ? Monitor.focusReadHistory : Monitor.diskReadHistory
+                        values2: root.focusing ? Monitor.focusWriteHistory : Monitor.diskWriteHistory
                         color: Main.theme.colTeal
                         color2: Main.theme.colAmber
                         format: Monitor.fmtRate
                         label: "R "
                         label2: "W "
-                        times: Monitor.historyTimes
+                        times: root.focusing ? Monitor.focusTimes : Monitor.historyTimes
                         window: Monitor.historyWindow
                     }
                 }
@@ -565,12 +575,78 @@ Scope {
                     height: parent.height
                     title: "Processes"
                     icon: "󰑮"
-                    detail: root.armedPid && root.selectedProc ? "press again to " + (root.armedPid.endsWith("KILL") ? "kill " : "end ") + root.selectedProc.name : root.selectedProc ? "x end  ·  X kill  ·  j/k move" : "click a row  ·  s sorts"
+                    detail: root.armedPid && root.selectedProc ? "press again to " + (root.armedPid.endsWith("KILL") ? "kill " : "end ") + root.selectedProc.name : Monitor.procFilter ? Monitor.procTotals.count + " match  ·  " + Monitor.procTotals.cpu.toFixed(1) + "% cpu  ·  " + root.fmtMem(Monitor.procTotals.mem) : root.selectedProc ? "x end  ·  X kill  ·  j/k move" : "/ search  ·  s sorts"
 
                     Column {
                         anchors.fill: parent
                         spacing: 0
-                        readonly property real rowH: height / (Monitor.procLimit + 1)
+                        readonly property real rowH: height / (Monitor.procLimit + 2)
+
+                        Rectangle {
+                            width: parent.width
+                            height: parent.rowH - 2
+                            radius: Main.radius
+                            color: Main.theme.overlay(search.activeFocus ? 0.08 : 0.04)
+                            border.color: search.activeFocus ? Main.theme.colAccentMid : Main.theme.overlay(0.08)
+                            border.width: 1
+
+                            Text {
+                                id: searchIcon
+                                anchors.left: parent.left
+                                anchors.leftMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: "󰍉"
+                                color: Main.theme.colAccentMid
+                                font: Main.smallFont
+                            }
+                            TextInput {
+                                id: search
+                                anchors.left: searchIcon.right
+                                anchors.leftMargin: 8
+                                anchors.right: clearBtn.left
+                                anchors.verticalCenter: parent.verticalCenter
+                                clip: true
+                                color: Main.theme.colFg
+                                font: Main.barFont
+                                selectByMouse: true
+                                onTextChanged: Monitor.procFilter = text.trim()
+                                Keys.onEscapePressed: {
+                                    text = "";
+                                    modal.body.forceActiveFocus();
+                                }
+                                Keys.onReturnPressed: modal.body.forceActiveFocus()
+                                Keys.onDownPressed: {
+                                    modal.body.forceActiveFocus();
+                                    root.moveSelection(1);
+                                }
+
+                                Text {
+                                    visible: !search.text && !search.activeFocus
+                                    text: "search processes  ( / )"
+                                    color: Main.theme.colAccentDark
+                                    font: Main.barFont
+                                }
+                            }
+                            Text {
+                                id: clearBtn
+                                anchors.right: parent.right
+                                anchors.rightMargin: 8
+                                anchors.verticalCenter: parent.verticalCenter
+                                visible: search.text !== ""
+                                text: "󰅖"
+                                color: Main.theme.colAccentMid
+                                font: Main.smallFont
+                                MouseArea {
+                                    anchors.fill: parent
+                                    anchors.margins: -4
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        search.text = "";
+                                        modal.body.forceActiveFocus();
+                                    }
+                                }
+                            }
+                        }
 
                         Item {
                             width: parent.width
@@ -689,6 +765,7 @@ Scope {
                     width: (row3.width - layout.gap * 2) * 0.25
                     height: parent.height
                     title: "Storage"
+                    unavailable: root.focusing
                     icon: "󰋊"
 
                     Column {
@@ -734,6 +811,7 @@ Scope {
                     width: (row3.width - layout.gap * 2) * 0.25
                     height: parent.height
                     title: "Sensors"
+                    unavailable: root.focusing
                     icon: "󰔏"
 
                     Column {

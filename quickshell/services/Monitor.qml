@@ -18,6 +18,12 @@ Singleton {
     property var historyTimes: []
     property bool paused: false
     property string procSort: "cpu" // "cpu" | "mem"
+    property string procFilter: ""
+    property var procTotals: ({ count: 0, cpu: 0, mem: 0 })
+    onProcFilterChanged: {
+        procRefresh.restart();
+        resetFocus();
+    }
     readonly property int procLimit: 10
 
     property string host: ""
@@ -87,6 +93,88 @@ Singleton {
         JsonAdapter {
             id: settings
             property int interval: 200
+        }
+    }
+
+    // with a filter set, every tile shows just the matching processes (sampled by focus_proc.sh)
+    readonly property bool focused: detailed && procFilter !== ""
+    onFocusedChanged: resetFocus()
+    property int focusCount: 0
+    property real focusCpu: 0       // % of the whole machine
+    property real focusMem: 0       // GiB
+    property real focusRead: 0
+    property real focusWrite: 0
+    property real focusGpu: 0       // % busy
+    property real focusVram: 0      // GiB
+    property real focusRx: 0
+    property real focusTx: 0
+    property var focusGpuHistory: []
+    property var focusRxHistory: []
+    property var focusTxHistory: []
+    property var focusTimes: []
+    property var focusCpuHistory: []
+    property var focusMemHistory: []
+    property var focusReadHistory: []
+    property var focusWriteHistory: []
+    property var _prevFocus: null
+
+    function resetFocus() {
+        focusProc.running = false;
+        _prevFocus = null;
+        focusCount = 0;
+        focusCpu = focusMem = focusRead = focusWrite = focusGpu = focusVram = focusRx = focusTx = 0;
+        focusTimes = focusCpuHistory = focusMemHistory = focusReadHistory = focusWriteHistory = focusGpuHistory = focusRxHistory = focusTxHistory = [];
+        if (focused)
+            focusStart.restart();
+    }
+
+    function onFocusSample(line) {
+        const p = line.trim().split(/\s+/).map(Number);
+        if (p.length < 10 || p.some(isNaN))
+            return;
+        const now = Date.now();
+        const cur = { t: now, ticks: p[1], r: p[3], w: p[4], gfx: p[5], rx: p[8], tx: p[9] };
+        const prev = _prevFocus;
+        _prevFocus = cur;
+        focusCount = p[0];
+        focusMem = p[2] / 1073741824;
+        focusVram = p[7] / 1073741824;
+        if (!prev)
+            return;
+        const dt = (now - prev.t) / 1000;
+        focusCpu = Math.min(100, Math.max(0, (cur.ticks - prev.ticks) / 100 / dt / Math.max(1, coreUsage.length) * 100));
+        // exited processes drop out of the totals, so deltas can go negative
+        focusRead = Math.max(0, cur.r - prev.r) / dt;
+        focusWrite = Math.max(0, cur.w - prev.w) / dt;
+        // amd reports cumulative engine time, nvidia an instantaneous percentage
+        focusGpu = Math.min(100, p[6] > 0 ? p[6] : Math.max(0, cur.gfx - prev.gfx) / dt / 1e7);
+        // sockets that close take their counters with them, so clamp
+        focusRx = Math.max(0, cur.rx - prev.rx) / dt;
+        focusTx = Math.max(0, cur.tx - prev.tx) / dt;
+        let drop = 0;
+        while (drop < focusTimes.length && now - focusTimes[drop] > historyWindow)
+            drop++;
+        focusTimes = push(focusTimes, now, drop);
+        focusCpuHistory = push(focusCpuHistory, focusCpu, drop);
+        focusMemHistory = push(focusMemHistory, focusMem / Math.max(0.001, memTotal) * 100, drop);
+        focusReadHistory = push(focusReadHistory, focusRead, drop);
+        focusWriteHistory = push(focusWriteHistory, focusWrite, drop);
+        focusGpuHistory = push(focusGpuHistory, focusGpu, drop);
+        focusRxHistory = push(focusRxHistory, focusRx, drop);
+        focusTxHistory = push(focusTxHistory, focusTx, drop);
+    }
+
+    Timer {
+        id: focusStart
+        interval: 300
+        onTriggered: focusProc.running = root.focused
+    }
+
+    Process {
+        id: focusProc
+        command: [Quickshell.shellPath("scripts/focus_proc.sh"), root.procFilter, String(Math.max(0.5, root.openInterval / 1000))]
+        stdout: SplitParser {
+            onRead: line => root.onFocusSample(line)
         }
     }
 
@@ -379,10 +467,16 @@ Singleton {
 
     Process {
         id: procsProc
-        command: [Quickshell.shellPath("scripts/top_procs.sh"), String(root.procLimit), root.procSort]
+        command: [Quickshell.shellPath("scripts/top_procs.sh"), String(root.procLimit), root.procSort, root.procFilter]
         stdout: StdioCollector {
             onStreamFinished: {
-                root.processes = this.text.trim().split("\n").filter(l => l).map(l => {
+                const lines = this.text.trim().split("\n").filter(l => l);
+                const tot = lines.find(l => l.startsWith("@"));
+                if (tot) {
+                    const t = tot.split(" ");
+                    root.procTotals = { count: Number(t[1]), cpu: Number(t[2]), mem: Number(t[3]) };
+                }
+                root.processes = lines.filter(l => !l.startsWith("@")).map(l => {
                     const p = l.split(" ");
                     return { pid: p[0], cpu: Number(p[1]), mem: Number(p[2]), name: p.slice(3).join(" ").replace(/_/g, " ") };
                 });

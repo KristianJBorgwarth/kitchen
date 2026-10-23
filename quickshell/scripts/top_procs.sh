@@ -1,5 +1,5 @@
 #!/bin/sh
-# top_procs.sh [n] [cpu|mem] — top n processes by CPU (or resident memory) over a 0.5s window,
+# top_procs.sh [n] [cpu|mem] [name] — top n processes by CPU (or resident memory) over a 0.5s window,
 # one per line: "pid cpu% rssMiB name" (cpu% is per core, like top)
 # Two `cat`s and one awk pass, picking the top n itself: few processes and little CPU,
 # since process starts are costly under EDR/AV. cat (not awk) reads /proc because
@@ -7,13 +7,14 @@
 export LC_ALL=C
 n=${1:-8}
 sortby=${2:-cpu}
+filter=$(printf %s "$3" | tr 'A-Z ' 'a-z_')
 page=$(getconf PAGESIZE)
 
 before=$(cat /proc/[0-9]*/stat 2>/dev/null)
 sleep 0.5
 after=$(cat /proc/[0-9]*/stat 2>/dev/null)
 
-printf '%s\n@@\n%s\n' "$before" "$after" | awk -v n="$n" -v by="$sortby" -v page="$page" '
+printf '%s\n@@\n%s\n' "$before" "$after" | awk -v n="$n" -v by="$sortby" -v pat="$filter" -v page="$page" '
     # "pid (comm) state …": comm may hold spaces and parens, so cut at the last ") "
     function parse(line) {
         rest = line
@@ -29,6 +30,8 @@ printf '%s\n@@\n%s\n' "$before" "$after" | awk -v n="$n" -v by="$sortby" -v page
     !second { parse($0); t[$1] = ticks; next }
     ($1 in t) {
         parse($0)
+        if (pat != "" && index(tolower(comm), pat) == 0) next
+        cnt++; tcpu += (ticks - t[$1]) * 2; trss += rss
         cpu = (ticks - t[$1]) * 200 / 100   # USER_HZ is 100 on linux
         # insertion into a top-n list (mawk has no asort)
         for (i = 1; i <= n; i++) {
@@ -42,6 +45,7 @@ printf '%s\n@@\n%s\n' "$before" "$after" | awk -v n="$n" -v by="$sortby" -v page
         }
     }
     END {
+        printf "@ %d %.1f %d\n", cnt, tcpu, trss * page / 1048576
         for (i = 1; i <= n && (i in best); i++) {
             split(best[i], b, " ")
             printf "%s %.1f %d %s\n", b[1], bcpu[i], brss[i] * page / 1048576, b[2]

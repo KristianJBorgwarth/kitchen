@@ -7,6 +7,8 @@ Rectangle {
     property string title: ""
     property string icon: ""
     property string detail: ""
+    // content that can't be narrowed to a single process fades out
+    property bool unavailable: false
     default property alias content: body.data
 
     radius: Main.radius
@@ -40,5 +42,20 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: 16
         anchors.topMargin: 40
+        opacity: root.unavailable ? 0.12 : 1
+
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 150
+            }
+        }
+    }
+
+    Text {
+        visible: root.unavailable
+        anchors.centerIn: parent
+        text: "not tracked per process"
+        color: Main.theme.colAccentDark
+        font: Main.smallFont
     }
 }
