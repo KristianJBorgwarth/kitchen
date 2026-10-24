@@ -8,14 +8,14 @@ import qs.core
 import qs.services
 import "components"
 
-// Lock screen over sway's ext-session-lock: until unlocked, the compositor shows nothing
+// Lock screen over ext-session-lock: until unlocked, the compositor shows nothing
 // else and stays locked even if quickshell dies (recover from a TTY by starting another
 // locker, e.g. swaylock). The password is checked by PAM's "login" config.
 Scope {
     id: root
     readonly property bool locked: sessionLock.locked
     // the monitor that gets the clock and password box, e.g. "DP-2"; empty = the one that's
-    // focused when locking. Sway has to cover every monitor, so the rest show the wallpaper
+    // focused when locking. The lock has to cover every monitor, so the rest show the wallpaper
     property string preferredScreen: ""
     property string mainScreen: ""
     property string password: ""

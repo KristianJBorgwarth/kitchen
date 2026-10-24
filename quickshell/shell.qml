@@ -12,7 +12,7 @@ Scope {
     readonly property var wallpaper: Wallpaper
     readonly property var screenshot: Screenshot
     readonly property var draw: Draw
-    // writes ghostty / sway / k9s colors from the palette
+    // writes ghostty / hyprland / k9s colors from the palette
     readonly property var themeExport: ThemeExport
     Bar {}
     NotificationPopups {}

@@ -7,14 +7,6 @@ mkdir -p "$SOURCE_DIR"
 # pipx
 python3 -m pipx ensurepath
 
-# autotiling
-if [ -d "$SOURCE_DIR/autotiling" ]; then
-    git -C "$SOURCE_DIR/autotiling" pull
-else
-    git clone https://github.com/nwg-piotr/autotiling.git "$SOURCE_DIR/autotiling"
-fi
-pipx install --force "$SOURCE_DIR/autotiling"
-
 # fzf
 if [ -d "$HOME/.fzf" ]; then
     git -C "$HOME/.fzf" pull

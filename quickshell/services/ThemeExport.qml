@@ -6,8 +6,8 @@ import Quickshell.Io
 import qs.core
 
 // Writes other apps' colors from the palettes: ghostty themes for both modes (ghostty picks
-// one from the system color scheme), and for the active mode sway's window border colors
-// (also applied live), the palette block of the k9s skin, and lazygit's theme block and
+// one from the system color scheme), and for the active mode Hyprland's window border colors
+// (reloaded live), the palette block of the k9s skin, and lazygit's theme block and
 // delta config. Switching modes also sets the
 // system color scheme and GTK/icon themes, which Brave, GTK apps and ghostty follow. A file
 // is only rewritten when its content changes, so this doesn't churn git.
@@ -31,15 +31,6 @@ Singleton {
         const t = pal.terminal;
         const bare = v => c(v, pal).replace("#", "");
         return ["# " + banner(mode), ""].concat(t.ansi.map((v, i) => "palette = " + i + "=" + bare(v)), ["", "background = " + bare(t.background), "foreground = " + bare(t.foreground), "cursor-color = " + bare(t.cursor), ""]).join("\n");
-    }
-
-    // border, background, text, indicator, child border
-    function swayLines() {
-        const row = (cls, a, b, t) => cls.padEnd(24) + [a, a, t, a, b].map(v => c(v)).join(" ");
-        return [row("client.focused", "@fg", "@fg", "@bg"), row("client.focused_inactive", "@dim", "@dim", "@fg"), row("client.unfocused", "@muted", "@muted", "@mid"), row("client.urgent", "@red", "@red", "@fg")];
-    }
-    function sway() {
-        return ["# " + banner(Main.theme.name)].concat(swayLines(), [""]).join("\n");
     }
 
     // Hyprland reloads its config when this changes
@@ -146,12 +137,6 @@ Singleton {
         printErrors: false
     }
     FileView {
-        id: swayFile
-        path: root.home + "/.config/sway/config.d/colors"
-        blockLoading: true
-        printErrors: false
-    }
-    FileView {
         id: hyprFile
         path: root.home + "/.config/hypr/conf/colors.lua"
         blockLoading: true
@@ -202,13 +187,7 @@ Singleton {
             if (pal.terminal)
                 write(file, ghostty(pal, mode));
         }
-        if (Compositor.hypr) {
-            write(hyprFile, hypr());
-        } else if (write(swayFile, sway())) {
-            // quoted: over IPC a bare "#" starts a comment and swallows the colors
-            for (const line of swayLines())
-                Compositor.sway(line.replace(/(#[0-9a-fA-F]{6})/g, '"$1"'));
-        }
+        write(hyprFile, hypr());
         if (k9sFile.text())
             write(k9sFile, k9s(k9sFile.text()));
         if (lazygitFile.text()) {

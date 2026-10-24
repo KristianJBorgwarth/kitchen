@@ -139,7 +139,7 @@ Scope {
         { name: "Toggle dark / light mode", glyph: "󰔎", keys: "theme dark light mode", run: () => Main.theme.toggle() },
         { name: "Lock screen", glyph: "󰌾", keys: "lock", run: () => Lock.lock() },
         { name: "Suspend", glyph: "󰤄", keys: "sleep", run: () => Lock.suspend() },
-        { name: "Log out", glyph: "󰍃", keys: "logout exit sway", run: () => Session.logout() },
+        { name: "Log out", glyph: "󰍃", keys: "logout exit hyprland", run: () => Session.logout() },
         { name: "Reboot", glyph: "󰜉", keys: "restart", run: () => Session.reboot() },
         { name: "Power off", glyph: "󰐥", keys: "shutdown poweroff", run: () => Session.poweroff() }
     ]

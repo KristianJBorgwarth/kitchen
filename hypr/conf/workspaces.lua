@@ -1,6 +1,5 @@
--- Monitors are matched by description ("make model serial", what sway calls the output name).
--- Sway takes a list of outputs per workspace and falls back down it; a Hyprland rule takes one,
--- so this picks the first of each list. A workspace whose monitor is missing opens on another.
+-- Monitors are matched by description ("make model serial"), which survives port changes.
+-- A workspace whose monitor is missing opens on another.
 local lenovo = "desc:Lenovo Group Limited G27q-30 UMB5TWAZ"
 local msi = "desc:Microstep MSI MP271 PA2T191107364"
 

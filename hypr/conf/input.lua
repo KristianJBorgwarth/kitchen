@@ -4,7 +4,7 @@ hl.config({
         kb_variant = "nodeadkeys",
         kb_options = "lv3:caps_switch",
 
-        -- sway's default: focus follows the mouse
+        -- focus follows the mouse
         follow_mouse = 1,
 
         touchpad = {

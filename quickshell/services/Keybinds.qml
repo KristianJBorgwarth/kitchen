@@ -4,20 +4,21 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Sway bindings (the Hyprland config mirrors them key for key) parsed into sections: comments become titles, same-command binds merge,
-// and runs like $mod+1…9 collapse into one row.
+// Hyprland's bindings, read live from `hyprctl binds`. Each one carries a description,
+// "Section|Description" or "Section|Description|program" (see hypr/conf/keybinds.lua):
+// binds with the same description merge, and runs like Super+1…9 collapse into one row.
 Singleton {
     id: root
     // [{ title, rows: [{ desc, detail, combos: [[key, …], …], app, glyph }] }]
     property var sections: []
 
     function reload(): void {
-        configProc.running = true;
+        bindsProc.running = true;
     }
 
     Process {
-        id: configProc
-        command: [Quickshell.shellPath("scripts/sway_config.sh")]
+        id: bindsProc
+        command: ["hyprctl", "-j", "binds"]
         stdout: StdioCollector {
             onStreamFinished: root.sections = root.parse(this.text)
         }
@@ -26,11 +27,6 @@ Singleton {
     Component.onCompleted: reload()
 
     readonly property var keyNames: ({
-            mod4: "Super",
-            mod1: "Alt",
-            ctrl: "Ctrl",
-            control: "Ctrl",
-            shift: "Shift",
             return: "Enter",
             space: "Space",
             escape: "Esc",
@@ -42,6 +38,8 @@ Singleton {
             right: "→",
             up: "↑",
             down: "↓",
+            "mouse:272": "LMB",
+            "mouse:273": "RMB",
             xf86audioraisevolume: "Vol +",
             xf86audiolowervolume: "Vol −",
             xf86audiomute: "Mute",
@@ -52,171 +50,57 @@ Singleton {
             xf86monbrightnessup: "Bright +",
             xf86monbrightnessdown: "Bright −"
         })
-    readonly property var modOrder: ["Super", "Ctrl", "Alt", "Shift"]
+    // modmask bits, in the order the caps are drawn
+    readonly property var mods: [[64, "Super"], [4, "Ctrl"], [8, "Alt"], [1, "Shift"]]
 
-    function keys(combo) {
-        const out = combo.split("+").map(k => keyNames[k.toLowerCase()] ?? (k.length === 1 ? k.toUpperCase() : k));
-        return out.sort((a, b) => {
-            const ia = modOrder.indexOf(a), ib = modOrder.indexOf(b);
-            return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
-        });
+    function keys(modmask, key) {
+        const out = mods.filter(m => modmask & m[0]).map(m => m[1]);
+        out.push(keyNames[key.toLowerCase()] ?? (key.length === 1 ? key.toUpperCase() : key));
+        return out;
     }
 
-    readonly property var varLabels: ({
-            term: "Terminal",
-            menu: "App launcher",
-            browser: "Browser",
-            filemanager: "File manager",
-            screenshot: "Screenshot"
-        })
-    readonly property var qsLabels: ({
-            performance: "System monitor",
-            music: "Music player",
-            controlcenter: "Control center",
-            tray: "Tray",
-            keybinds: "Keybinds",
-            launcher: "App launcher",
-            clipboard: "Clipboard history",
-            lock: "Lock screen",
-            theme: "Dark / light mode",
-            switcher: "Workspace switcher",
-            wallpaper: "Wallpaper picker"
-        })
+    readonly property var arrows: ({ left: "󰁍", down: "󰁅", up: "󰁝", right: "󰁔" })
+    readonly property var glyphs: [[/^Close window$|^Leave mode$/, "󰅖"], [/^Reload/, "󰑓"], [/^Move window|^Send to/, "󰆾"], [/^Workspace/, "󰍹"], [/^Fullscreen$/, "󰊓"], [/floating|scratchpad/i, "󰕰"], [/^Resize|^Shrink|^Grow/, "󰩨"], [/^Volume mute$/, "󰝟"], [/^Volume/, "󰕾"], [/^Mic/, "󰍭"], [/^Brightness/, "󰃠"]]
 
-    function titleCase(s) {
-        s = s.replace(/[-_]/g, " ");
-        return s.charAt(0).toUpperCase() + s.slice(1);
-    }
-
-    // programs in an exec line (every stage of a pipeline), skipping env assignments
-    // and `sh -c '…'` wrappers
-    function programs(cmd) {
-        let body = cmd.replace(/^exec\s+(--no-startup-id\s+)?/, "");
-        body = body.replace(/^(\S+=\S+\s+)+/, "");
-        if (/^(sh|bash)\s/.test(body))
-            body = body.replace(/^.*?-c\s+['"]?/, "");
-        return body.split("|").map(stage => {
-            const words = stage.trim().replace(/^(\S+=\S+\s+)+/, "").split(/\s+/);
-            return (words[0] ?? "").split("/").pop().replace(/['"]/g, "");
-        }).filter(p => p);
-    }
-
-    function describe(cmd, varName) {
-        let m;
-        const dir = s => ({ left: "left", right: "right", up: "up", down: "down" })[s];
-        if ((m = cmd.match(/^exec\s+qs\s+ipc\s+call\s+osd\s+(\S+)/)))
-            return ({
-                    volumeUp: { desc: "Volume up", glyph: "󰕾" },
-                    volumeDown: { desc: "Volume down", glyph: "󰕾" },
-                    volumeMute: { desc: "Volume mute", glyph: "󰝟" },
-                    micMute: { desc: "Mic mute", glyph: "󰍭" },
-                    brightnessUp: { desc: "Brightness up", glyph: "󰃠" },
-                    brightnessDown: { desc: "Brightness down", glyph: "󰃠" }
-                })[m[1]] ?? { desc: m[1], glyph: "󰕾" };
-        if ((m = cmd.match(/^exec\s+qs\s+ipc\s+call\s+(\S+)\s+\S+/)))
-            return { desc: qsLabels[m[1]] ?? titleCase(m[1]), glyph: "󰣆" };
-        if (cmd.startsWith("exec")) {
-            const progs = programs(cmd);
-            const entry = progs.map(p => Apps.findEntry(p)).find(e => e) ?? null;
-            const desc = varName ? (varLabels[varName] ?? titleCase(varName)) : (entry?.name ?? progs[0] ?? cmd);
-            return { desc, detail: entry && varName ? entry.name : "", app: entry?.icon ?? "", glyph: "󰘳" };
-        }
-        if (cmd === "kill")
-            return { desc: "Close window", glyph: "󰅖" };
-        if (cmd === "reload")
-            return { desc: "Reload " + (Compositor.hypr ? "Hyprland" : "sway"), glyph: "󰑓" };
-        if (cmd === "exit")
-            return { desc: "Exit " + (Compositor.hypr ? "Hyprland" : "sway"), glyph: "󰍃" };
-        if ((m = cmd.match(/^focus\s+(left|right|up|down)$/)))
-            return { desc: "Focus " + dir(m[1]), glyph: ({ left: "󰁍", down: "󰁅", up: "󰁝", right: "󰁔" })[m[1]] };
-        if ((m = cmd.match(/^move\s+(left|right|up|down)$/)))
-            return { desc: "Move window " + dir(m[1]), glyph: "󰆾" };
-        if (cmd === "focus parent")
-            return { desc: "Focus parent", glyph: "󰁝" };
-        if (cmd === "focus mode_toggle")
-            return { desc: "Toggle tiling / floating focus", glyph: "󰕰" };
-        if ((m = cmd.match(/^move\s+container\s+to\s+workspace\s+(?:number\s+)?(\S+)$/)))
-            return { desc: "Move window to workspace " + m[1], glyph: "󰆾" };
-        if ((m = cmd.match(/^workspace\s+(?:number\s+)?(\S+)$/)))
-            return { desc: "Workspace " + m[1], glyph: "󰍹" };
-        if (cmd === "fullscreen" || cmd === "fullscreen toggle")
-            return { desc: "Fullscreen", glyph: "󰊓" };
-        if (cmd === "floating toggle")
-            return { desc: "Toggle floating", glyph: "󰕰" };
-        if (cmd === "move scratchpad")
-            return { desc: "Send to scratchpad", glyph: "󰆾" };
-        if (cmd === "scratchpad show")
-            return { desc: "Show scratchpad", glyph: "󰕰" };
-        if ((m = cmd.match(/^mode\s+"?([^"]+)"?$/)))
-            return m[1] === "default" ? { desc: "Leave mode", glyph: "󰅖" } : { desc: titleCase(m[1]) + " mode", glyph: "󰩨" };
-        if ((m = cmd.match(/^resize\s+(shrink|grow)\s+(width|height)/)))
-            return { desc: titleCase(m[1]) + " " + m[2], glyph: "󰩨" };
-        return { desc: cmd, glyph: "󰌌" };
+    function glyph(section, desc) {
+        const m = desc.match(/^Focus (left|down|up|right)$/);
+        if (m)
+            return arrows[m[1]];
+        const hit = glyphs.find(g => g[0].test(desc));
+        if (hit)
+            return hit[1];
+        return ({ Apps: "󰘳", Quickshell: "󰣆" })[section] ?? "󰌌";
     }
 
     function parse(text) {
-        const vars = {};
+        let binds;
+        try {
+            binds = JSON.parse(text);
+        } catch (e) {
+            return root.sections;
+        }
         const sections = [];
-        let section = null;
-        let outerTitle = "";
-        let inMode = false;
-
-        const open = title => {
-            section = { title, rows: [], byCmd: {} };
-            sections.push(section);
-        };
-        const substitute = s => {
-            // longest names first so $menu doesn't eat $menu-extra
-            for (const name of Object.keys(vars).sort((a, b) => b.length - a.length))
-                s = s.split("$" + name).join(vars[name]);
-            return s;
-        };
-
-        for (let line of text.split("\n")) {
-            line = line.trim();
-            let m;
-            if ((m = line.match(/^set\s+\$(\S+)\s+(.*)$/))) {
-                vars[m[1]] = substitute(m[2]);
-                continue;
+        const byTitle = {};
+        for (const b of binds) {
+            const [title, desc, prog] = (b.description || "General|" + b.key).split("|");
+            let section = byTitle[title];
+            if (!section) {
+                section = byTitle[title] = { title, rows: [], byDesc: {} };
+                sections.push(section);
             }
-            if ((m = line.match(/^#+\s*(.+)$/))) {
-                if (!inMode) {
-                    outerTitle = m[1].trim();
-                    open(outerTitle);
-                }
-                continue;
-            }
-            if ((m = line.match(/^mode\s+(?:--\S+\s+)*"?([^"{]+?)"?\s*\{$/))) {
-                inMode = true;
-                open(titleCase(m[1]) + " mode");
-                continue;
-            }
-            if (line === "}" && inMode) {
-                inMode = false;
-                open(outerTitle);
-                continue;
-            }
-            if (!(m = line.match(/^bindsym\s+((?:--\S+\s+)*)(\S+)\s+(.+)$/)))
-                continue;
-            if (!section)
-                open("General");
-
-            const rawCmd = m[3].trim();
-            const varName = (rawCmd.match(/^exec\s+\$(\S+)$/) ?? [])[1] ?? "";
-            const cmd = substitute(rawCmd);
-            const combo = keys(substitute(m[2]));
-            const row = section.byCmd[cmd];
+            const combo = keys(b.modmask, b.key);
+            const row = section.byDesc[desc];
             if (row) {
                 row.combos.push(combo);
                 continue;
             }
-            const d = describe(cmd, varName);
-            const newRow = { desc: d.desc, detail: d.detail ?? "", app: d.app ?? "", glyph: d.glyph, combos: [combo], cmd };
-            section.byCmd[cmd] = newRow;
+            const entry = prog ? Apps.findEntry(prog) : null;
+            const newRow = { desc, detail: entry?.name ?? "", app: entry?.icon ?? "", glyph: glyph(title, desc), combos: [combo], cmd: desc };
+            section.byDesc[desc] = newRow;
             section.rows.push(newRow);
         }
 
-        return sections.filter(s => s.rows.length > 0).map(s => ({
+        return sections.map(s => ({
                     title: s.title,
                     rows: collapseRuns(s.rows).map(r => Object.assign({}, r, { parts: parts(r.combos) }))
                 }));

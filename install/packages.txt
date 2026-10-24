@@ -1,12 +1,9 @@
-#tiling
-sway
+#tiling (hyprland itself is installed by the distro scripts)
+# swaylock/swayidle are compositor-agnostic: the fallback locker and the before-sleep lock
 swaylock
 swayidle
-swaybg
 kanshi
-waybar
 wtype
-xdg-desktop-portal-wlr
 
 #audio
 pipewire

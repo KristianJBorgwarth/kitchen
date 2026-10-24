@@ -82,7 +82,7 @@ Scope {
                         font.weight: Font.DemiBold
                     }
                     Text {
-                        text: "sway  ·  " + Keybinds.sections.reduce((n, s) => n + s.rows.length, 0) + " bindings"
+                        text: "hyprland  ·  " + Keybinds.sections.reduce((n, s) => n + s.rows.length, 0) + " bindings"
                         color: Main.theme.colAccentMid
                         font: Main.smallFont
                     }
@@ -288,7 +288,7 @@ Scope {
             Text {
                 anchors.centerIn: flick
                 visible: root.filtered.length === 0
-                text: root.query ? "No keybinds match \"" + root.query + "\"" : "No keybinds found in the sway config"
+                text: root.query ? "No keybinds match \"" + root.query + "\"" : "No keybinds found in Hyprland"
                 color: Main.theme.colAccentDark
                 font: Main.barFont
             }

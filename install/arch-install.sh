@@ -23,7 +23,7 @@ sudo pacman -S --needed --noconfirm aspnet-targeting-pack
 # quickshell (not in packages.txt: ubuntu has no package, see ubuntu-install.sh)
 sudo pacman -S --needed --noconfirm quickshell
 
-# hyprland, as a second session next to sway (ubuntu gets it from a PPA, see hyprland-debs.sh); a system update keeps it current
+# hyprland (ubuntu gets it from a PPA, see hyprland-debs.sh); a system update keeps it current
 sudo pacman -S --needed --noconfirm hyprland xdg-desktop-portal-hyprland
 
 # media tools

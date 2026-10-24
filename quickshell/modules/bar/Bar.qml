@@ -6,7 +6,7 @@ import qs.services
 import qs.modules.widgets
 import "components"
 
-// One bar, on the leftmost monitor (workspace 1's in the sway config)
+// One bar, on the leftmost monitor (workspace 1's in hypr/conf/workspaces.lua)
 Scope {
     id: root
     readonly property var mainScreen: Quickshell.screens.reduce((a, s) => !a || s.x < a.x ? s : a, null)
@@ -17,7 +17,7 @@ Scope {
         anchors.top: true
         anchors.left: true
         anchors.right: true
-        // the pills plus the gap above them; the gap below is sway's own window gap
+        // the pills plus the gap above them; the gap below is Hyprland's own window gap
         implicitHeight: 34
         color: "transparent"
 

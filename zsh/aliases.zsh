@@ -12,7 +12,7 @@ alias gp='git push'
 alias gsm='git switch master'
 
 #utility
-alias get_monitors='swaymsg -t get_outputs'
+alias get_monitors='hyprctl monitors'
 
 # misc
 alias ff='fastfetch'

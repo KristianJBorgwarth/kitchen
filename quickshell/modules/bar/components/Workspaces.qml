@@ -57,12 +57,12 @@ Item {
                 readonly property var apps: ws?.apps ?? []
                 readonly property bool hasContent: apps.length > 0
 
-                // marked while an app on it asks for attention (sway's urgent), or has sent a
+                // marked while an app on it asks for attention (urgent), or has sent a
                 // notification since the workspace was last looked at: the highest urgency of
                 // those notifications, -1 when unmarked
                 onFocusedChanged: if (focused)
                     Notifs.seen(number)
-                // a workspace sway just created for you is already being looked at
+                // a workspace Hyprland just created for you is already being looked at
                 Component.onCompleted: if (focused)
                     Notifs.seen(number)
                 readonly property int level: focused ? -1 : Math.max(Number(Notifs.marks[number] ?? -1), (ws?.urgent ?? false) ? NotificationUrgency.Normal : -1)

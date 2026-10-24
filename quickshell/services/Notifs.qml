@@ -166,7 +166,7 @@ Singleton {
             dismiss(n);
     }
 
-    // whether `n` came from the window with this app id (sway's app_id, or the X11 class).
+    // whether `n` came from the window with this app id (Hyprland's class: the Wayland app id, or the X11 class).
     // Notifications name their app loosely, so this compares the desktop entry and the app
     // name against the id and its last dotted part: "org.telegram.desktop", "Telegram Desktop"
     function fromApp(n, appId) {

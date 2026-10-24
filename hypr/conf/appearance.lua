@@ -8,7 +8,7 @@ hl.config({
         layout = "dwindle",
     },
 
-    -- plain and flat, like the sway setup
+    -- plain and flat
     decoration = {
         rounding = 0,
         shadow = { enabled = false },
@@ -19,7 +19,7 @@ hl.config({
 
     dwindle = { preserve_split = true },
 
-    -- sway's workspace_auto_back_and_forth
+    -- the current workspace's key jumps back to the previous one
     binds = { workspace_back_and_forth = true },
 
     misc = {

@@ -55,7 +55,7 @@ if [ "$QS_INSTALLED" != "$QS_VERSION" ]; then
 fi
 
 
-# hyprland, as a second session next to sway: prebuilt packages from a PPA, see hyprland-debs.sh.
+# hyprland: prebuilt packages from a PPA, see hyprland-debs.sh.
 # A daily timer only notifies; rerun the script to update
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 bash "$here/hyprland-debs.sh"

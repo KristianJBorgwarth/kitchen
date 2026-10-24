@@ -4,11 +4,11 @@ import Quickshell.Wayland
 import qs.core
 import qs.services
 
-// Dim and lock on idle (sway's ext-idle-notify). Inhibitors count: Stay awake, and apps like
+// Dim and lock on idle (ext-idle-notify). Inhibitors count: Stay awake, and apps like
 // fullscreen video that ask for the screen to stay on. The displays are never powered off:
 // monitors waking up under the lock crash quickshell (upstream quickshell #1340, #503).
 // Locking before a sleep started elsewhere (lid, systemctl) is swayidle's before-sleep hook
-// in the sway config, since that needs a logind delay lock this can't take.
+// in hypr/conf/autostart.lua, since that needs a logind delay lock this can't take.
 Scope {
     id: root
     // seconds

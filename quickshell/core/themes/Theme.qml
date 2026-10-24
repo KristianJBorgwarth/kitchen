@@ -3,7 +3,7 @@ import Quickshell
 import Quickshell.Io
 
 // The palette, read from theme/<name>.json: the one place colors are defined. ThemeExport
-// writes the other apps' colors (ghostty, sway, k9s) from the same file.
+// writes the other apps' colors (ghostty, hyprland, k9s) from the same file.
 Scope {
     id: root
     // fixed: always that palette (the lock screen stays dark). Otherwise the saved mode.

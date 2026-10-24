@@ -5,8 +5,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 
-// Workspaces and their windows, from sway's get_tree or Hyprland's clients (Quickshell has no
-// window tree for either). Each window is matched to its Wayland toplevel by app id + title so it can be
+// Workspaces and their windows, from Hyprland's clients (Quickshell has no window tree). Each window is matched to its Wayland toplevel by app id + title so it can be
 // screen-captured. Only refreshed while `active` (switcher, screenshot) or `peeking` (the
 // bar's workspace peek), so otherwise it starts no processes.
 Singleton {
@@ -61,13 +60,6 @@ Singleton {
         }
     }
 
-    function leaves(node) {
-        const kids = (node.nodes ?? []).concat(node.floating_nodes ?? []);
-        if (kids.length === 0)
-            return node.type === "con" || node.type === "floating_con" ? [node] : [];
-        return kids.reduce((all, k) => all.concat(leaves(k)), []);
-    }
-
     function parse(text) {
         let tree;
         try {
@@ -83,15 +75,15 @@ Singleton {
                 i = toplevels.findIndex(t => t.appId === appId);
             return i < 0 ? null : toplevels.splice(i, 1)[0];
         };
-        return Compositor.hypr ? parseHypr(tree, claim) : parseSway(tree, claim);
+        return parseHypr(tree, claim);
     }
 
     // `tree` is { clients, workspaces, monitors } from `hyprctl -j` (see Compositor.treeCommand).
-    // Window ids are the address, and rects are in logical pixels like sway's
+    // Window ids are the address, and rects are in logical pixels
     function parseHypr(tree, claim) {
         const out = [];
         for (const ws of tree.workspaces ?? []) {
-            // the scratchpad, which sway keeps out of the tree too
+            // the scratchpad
             if (ws.name.startsWith("special:"))
                 continue;
             const mon = (tree.monitors ?? []).find(m => m.name === ws.monitor);
@@ -121,43 +113,6 @@ Singleton {
                 rect: outputRect,
                 windows
             });
-        }
-        return out;
-    }
-
-    function parseSway(tree, claim) {
-        const out = [];
-        for (const output of tree.nodes ?? []) {
-            if (output.name === "__i3")
-                continue;
-            for (const ws of output.nodes ?? []) {
-                if (ws.type !== "workspace")
-                    continue;
-                const windows = leaves(ws).map(c => {
-                    const appId = c.app_id ?? c.window_properties?.class ?? "";
-                    return {
-                        id: c.id,
-                        pid: c.pid ?? 0,
-                        appId,
-                        title: c.name ?? "",
-                        rect: { x: c.rect.x - ws.rect.x, y: c.rect.y - ws.rect.y, width: c.rect.width, height: c.rect.height },
-                        floating: c.type === "floating_con",
-                        focused: c.focused,
-                        toplevel: claim(appId, c.name),
-                        icon: Apps.icon(appId)
-                    };
-                });
-                out.push({
-                    name: ws.name,
-                    num: ws.num ?? -1,
-                    output: output.name,
-                    outputRect: output.rect,
-                    visible: ws.visible ?? false,
-                    focused: ws.focused || windows.some(w => w.focused),
-                    rect: ws.rect,
-                    windows
-                });
-            }
         }
         return out;
     }

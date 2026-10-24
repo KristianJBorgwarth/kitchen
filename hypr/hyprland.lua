@@ -1,5 +1,5 @@
--- Hyprland config (Lua, Hyprland >= 0.55). Mirrors sway/: same keys, same quickshell IPC.
--- Sway keeps working as the other session; compositor-specific bits live in quickshell's Compositor.
+-- Hyprland config (Lua, Hyprland >= 0.55). Compositor-specific bits on the quickshell side
+-- live in quickshell's Compositor service.
 
 require("conf/vars")
 require("conf/input")
