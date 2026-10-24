@@ -1,5 +1,4 @@
 import Quickshell // for PanelWindow
-import Quickshell.I3
 import Quickshell.Wayland
 import QtQuick // for Text
 import qs.core

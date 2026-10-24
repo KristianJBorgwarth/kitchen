@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Wayland
+import qs.services
 import qs.core
 
 // A saved screenshot sliding in at the bottom-right of the focused monitor for a few
@@ -27,7 +27,7 @@ PanelWindow {
         onTriggered: root.hide()
     }
 
-    screen: Quickshell.screens.find(s => s.name === I3.focusedMonitor?.name) ?? null
+    screen: Quickshell.screens.find(s => s.name === Compositor.focusedMonitor) ?? null
     visible: card.opacity > 0
     color: "transparent"
     anchors.bottom: true

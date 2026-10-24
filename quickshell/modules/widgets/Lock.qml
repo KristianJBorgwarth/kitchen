@@ -2,7 +2,6 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Services.Pam
 import Quickshell.Wayland
 import qs.core
@@ -29,7 +28,7 @@ Scope {
         failed = false;
         message = "";
         ModalHost.current?.hide();
-        mainScreen = preferredScreen || I3.focusedMonitor?.name || "";
+        mainScreen = preferredScreen || Compositor.focusedMonitor || "";
         sessionLock.locked = true;
     }
 

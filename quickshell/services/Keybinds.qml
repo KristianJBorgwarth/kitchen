@@ -4,7 +4,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 
-// Sway bindings parsed into sections: comments become titles, same-command binds merge,
+// Sway bindings (the Hyprland config mirrors them key for key) parsed into sections: comments become titles, same-command binds merge,
 // and runs like $mod+1…9 collapse into one row.
 Singleton {
     id: root
@@ -124,9 +124,9 @@ Singleton {
         if (cmd === "kill")
             return { desc: "Close window", glyph: "󰅖" };
         if (cmd === "reload")
-            return { desc: "Reload sway", glyph: "󰑓" };
+            return { desc: "Reload " + (Compositor.hypr ? "Hyprland" : "sway"), glyph: "󰑓" };
         if (cmd === "exit")
-            return { desc: "Exit sway", glyph: "󰍃" };
+            return { desc: "Exit " + (Compositor.hypr ? "Hyprland" : "sway"), glyph: "󰍃" };
         if ((m = cmd.match(/^focus\s+(left|right|up|down)$/)))
             return { desc: "Focus " + dir(m[1]), glyph: ({ left: "󰁍", down: "󰁅", up: "󰁝", right: "󰁔" })[m[1]] };
         if ((m = cmd.match(/^move\s+(left|right|up|down)$/)))

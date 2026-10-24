@@ -1,5 +1,4 @@
 import Quickshell
-import Quickshell.I3
 import Quickshell.Services.Notifications
 import QtQuick
 import qs.core
@@ -24,7 +23,7 @@ Item {
     property real activeW: 0
     // straight from the list rather than set by the slots: the old one letting go after the
     // new one took over would switch the pill off
-    readonly property bool hasActive: I3.workspaces.values.some(w => w.focused && w.number >= 1 && w.number <= 9)
+    readonly property bool hasActive: Compositor.spaces.some(w => w.focused && w.number >= 1 && w.number <= 9)
     // no animation on the first layout, only from then on
     property bool placed: false
     Component.onCompleted: Qt.callLater(() => placed = true)
@@ -49,14 +48,13 @@ Item {
                 id: workspace
                 required property int index
                 readonly property int number: index + 1
-                // null while sway doesn't have it: empty and not showing anywhere
-                readonly property var ws: I3.workspaces.values.find(w => w.number === number) ?? null
+                // null while the compositor doesn't have it: empty and not showing anywhere
+                readonly property var ws: Compositor.spaces.find(w => w.number === number) ?? null
                 readonly property bool focused: ws?.focused ?? false
                 // showing on the other monitor
                 readonly property bool isActive: ws?.active ?? false
 
-                // the app ids on it, from sway's layout string: "H[V[ghostty] brave-browser]"
-                readonly property var apps: (ws?.lastIpcObject?.representation ?? "").replace(/[HVTS]?\[|\]/g, " ").split(/\s+/).filter(a => a)
+                readonly property var apps: ws?.apps ?? []
                 readonly property bool hasContent: apps.length > 0
 
                 // marked while an app on it asks for attention (sway's urgent), or has sent a

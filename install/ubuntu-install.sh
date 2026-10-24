@@ -55,6 +55,15 @@ if [ "$QS_INSTALLED" != "$QS_VERSION" ]; then
 fi
 
 
+# hyprland, as a second session next to sway: prebuilt packages from a PPA, see hyprland-debs.sh.
+# A daily timer only notifies; rerun the script to update
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$here/hyprland-debs.sh"
+mkdir -p ~/.config/systemd/user
+ln -sf "$here"/systemd/hyprland-update.{service,timer} ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now hyprland-update.timer
+
 sudo apt install flatpak -y
 flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 

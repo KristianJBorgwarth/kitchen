@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Wayland
+import qs.services
 import qs.core
 import qs.core.components
 
@@ -12,7 +12,7 @@ PanelWindow {
     id: win
     required property var modelData
     required property var draw
-    readonly property bool focusedScreen: modelData.name === (I3.focusedMonitor?.name ?? "")
+    readonly property bool focusedScreen: modelData.name === (Compositor.focusedMonitor ?? "")
 
     screen: modelData
     color: "transparent"

@@ -2,7 +2,6 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Io
 import qs.core
 import qs.services
@@ -47,7 +46,7 @@ Scope {
         clear();
         dragging = false;
         capturing = false;
-        mouseScreen = I3.focusedMonitor?.name ?? "";
+        mouseScreen = Compositor.focusedMonitor ?? "";
         preview.hide();
         ModalHost.current?.hide();
         mkdir.running = true;

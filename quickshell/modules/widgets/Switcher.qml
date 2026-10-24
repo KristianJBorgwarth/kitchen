@@ -3,7 +3,6 @@ pragma Singleton
 import QtQuick
 import QtQuick.Effects
 import Quickshell
-import Quickshell.I3
 import Quickshell.Wayland
 import Quickshell.Widgets
 import qs.core
@@ -22,7 +21,7 @@ Scope {
     property string query: ""
     // tracked by name so a refresh of the list doesn't move the selection
     property string selectedName: ""
-    // false right after opening: the list is still arriving from swaymsg, so the carousel
+    // false right after opening: the list is still arriving from the compositor, so the carousel
     // jumps to the selection instead of sliding (a slide could stop on the wrong card)
     property bool settled: false
 
@@ -46,7 +45,7 @@ Scope {
             return;
         }
         query = "";
-        selectedName = I3.focusedWorkspace?.name ?? "";
+        selectedName = Compositor.focusedWorkspace;
         Windows.active = true;
         settled = false;
         settleOpen.restart();
@@ -62,7 +61,7 @@ Scope {
         const hit = selected?.windows.find(w => matches(w));
         if (hit)
             Windows.focusWindow(hit.id);
-        else if (selected && selected.name !== I3.focusedWorkspace?.name)
+        else if (selected && selected.name !== Compositor.focusedWorkspace)
             Windows.focusWorkspace(selected.name);
         modal.hide();
     }
@@ -81,7 +80,7 @@ Scope {
     function capture() {
         if (ModalHost.active)
             return;
-        for (const m of I3.monitors.values) {
+        for (const m of Compositor.monitors) {
             const view = captures.forScreen(m.name);
             if (view && m.activeWorkspace?.name)
                 view.take(m.activeWorkspace.name);
@@ -101,7 +100,7 @@ Scope {
         onTriggered: root.capture()
     }
     Connections {
-        target: I3
+        target: Compositor
         function onFocusedWorkspaceChanged() {
             settle.restart();
         }

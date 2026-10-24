@@ -1,0 +1,6 @@
+[Unit]
+Description=Check for a Hyprland update (Ubuntu)
+
+[Service]
+Type=oneshot
+ExecStart=%h/kitchen/install/hyprland-debs.sh --notify

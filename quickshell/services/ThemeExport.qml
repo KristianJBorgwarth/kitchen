@@ -2,7 +2,6 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Io
 import qs.core
 
@@ -41,6 +40,12 @@ Singleton {
     }
     function sway() {
         return ["# " + banner(Main.theme.name)].concat(swayLines(), [""]).join("\n");
+    }
+
+    // Hyprland reloads its config when this changes
+    function hypr() {
+        const rgb = v => "rgb(" + c(v).slice(1) + ")";
+        return ["-- " + banner(Main.theme.name), "hl.config({", "    general = {", "        col = {", '            active_border = "' + rgb("@fg") + '",', '            inactive_border = "' + rgb("@muted") + '",', "        },", "    },", "})", ""].join("\n");
     }
 
     // a over b, `t` of the way: "#rrggbb"
@@ -147,6 +152,12 @@ Singleton {
         printErrors: false
     }
     FileView {
+        id: hyprFile
+        path: root.home + "/.config/hypr/conf/colors.lua"
+        blockLoading: true
+        printErrors: false
+    }
+    FileView {
         id: lazygitFile
         path: root.home + "/.config/lazygit/config.yml"
         blockLoading: true
@@ -191,10 +202,12 @@ Singleton {
             if (pal.terminal)
                 write(file, ghostty(pal, mode));
         }
-        if (write(swayFile, sway())) {
+        if (Compositor.hypr) {
+            write(hyprFile, hypr());
+        } else if (write(swayFile, sway())) {
             // quoted: over IPC a bare "#" starts a comment and swallows the colors
             for (const line of swayLines())
-                I3.dispatch(line.replace(/(#[0-9a-fA-F]{6})/g, '"$1"'));
+                Compositor.sway(line.replace(/(#[0-9a-fA-F]{6})/g, '"$1"'));
         }
         if (k9sFile.text())
             write(k9sFile, k9s(k9sFile.text()));

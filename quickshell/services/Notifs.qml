@@ -2,7 +2,6 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Io
 import Quickshell.Services.Notifications
 
@@ -45,9 +44,11 @@ Singleton {
         property string seenTitles: "{}"
     }
 
-    I3IpcListener {
-        subscriptions: ["window"]
-        onIpcEvent: event => root.noteWindow(JSON.parse(event.data))
+    Connections {
+        target: Compositor
+        function onWindowEvent(event) {
+            root.noteWindow(event);
+        }
     }
 
     // titles change constantly (terminal spinners), so they're saved for reloads in batches
@@ -88,7 +89,7 @@ Singleton {
     // that was showing then
     Process {
         id: treeProc
-        command: ["swaymsg", "-t", "get_tree", "-r"]
+        command: Compositor.treeCommand
         stdout: StdioCollector {
             onStreamFinished: root.resolve(Windows.parse(this.text))
         }
