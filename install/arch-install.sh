@@ -22,6 +22,8 @@ sudo pacman -S --needed --noconfirm aspnet-targeting-pack
 
 # quickshell (not in packages.txt: ubuntu has no package, see ubuntu-install.sh)
 sudo pacman -S --needed --noconfirm quickshell
+# qsb, to rebuild quickshell/shaders/*.qsb after editing a shader (the built ones are in git)
+sudo pacman -S --needed --noconfirm qt6-shadertools
 
 # hyprland (ubuntu gets it from a PPA, see hyprland-debs.sh); a system update keeps it current
 sudo pacman -S --needed --noconfirm hyprland xdg-desktop-portal-hyprland

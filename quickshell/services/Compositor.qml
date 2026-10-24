@@ -25,7 +25,8 @@ Singleton {
                 apps: w.toplevels.values.map(t => t.lastIpcObject?.class || "?")
             }))
 
-    // A window opened, closed, retitled or moved: { change, container: { id, name } }
+    // A window opened, closed, retitled, moved, focused or (un)floated:
+    // { change, container: { id, name } }
     signal windowEvent(var event)
 
     // command whose stdout is the window tree, for Windows.parse
@@ -44,6 +45,17 @@ Singleton {
     // `id` is a window id from Windows.workspaces
     function focusWindow(id): void {
         Hyprland.dispatch('hl.dsp.focus({ window = "address:' + id + '" })');
+    }
+
+    // `id` is a window id from Windows.workspaces; `name` as in focusWorkspace. Stays put
+    function moveWindow(id, name: string): void {
+        const target = /^\d+$/.test(name) ? name : "name:" + name;
+        Hyprland.dispatch('hl.dsp.window.move({ workspace = "' + target + '", window = "address:' + id + '", follow = false })');
+    }
+
+    // the Wayland toplevel (for screen capture) of the window with this id, or null
+    function toplevel(id) {
+        return Hyprland.toplevels.values.find(t => "0x" + t.address === id)?.wayland ?? null;
     }
 
     function logout(): void {
@@ -70,6 +82,12 @@ Singleton {
         } else if (name === "movewindowv2") {
             change = "move";
             id = data.split(",")[0];
+        } else if (name === "activewindowv2") {
+            change = "focus";
+            id = data;
+        } else if (name === "changefloatingmode") {
+            change = "floating";
+            id = data.split(",")[0];
         } else {
             return;
         }
@@ -81,6 +99,9 @@ Singleton {
             }
         });
     }
+
+    // Quickshell only learns of windows from events; this fetches the ones already open
+    Component.onCompleted: Hyprland.refreshToplevels()
 
     Connections {
         target: Hyprland

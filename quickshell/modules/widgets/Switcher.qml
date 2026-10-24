@@ -10,11 +10,9 @@ import qs.core.components
 import qs.services
 import "components"
 
-// Workspace switcher: a carousel of workspace snapshots, the selected one large in the
-// middle. Live previews aren't possible: Quickshell only captures single windows through
-// a Hyprland protocol, and a monitor capture would include this overlay itself. Instead
-// each monitor is captured into its current workspace's snapshot shortly after switching
-// and every few seconds, but only while no modal is open.
+// Workspace switcher, two views of live workspace previews (LiveWorkspace), flipped with `o`:
+// a carousel with the selected workspace large in the middle, and a grid of every workspace
+// per monitor where windows can be dragged from one workspace to another.
 Scope {
     id: root
     readonly property alias opened: modal.opened
@@ -24,6 +22,10 @@ Scope {
     // false right after opening: the list is still arriving from the compositor, so the carousel
     // jumps to the selection instead of sliding (a slide could stop on the wrong card)
     property bool settled: false
+    // "carousel" or "grid"; kept between openings
+    property string view: "carousel"
+    // how much of the room the previews take, the same on every monitor
+    readonly property real previewScale: 0.7
 
     readonly property string q: query.trim().toLowerCase()
     readonly property var spaces: Windows.workspaces.slice().sort((a, b) => (a.rect.x - b.rect.x) || ((a.num < 0) - (b.num < 0)) || (a.num - b.num) || a.name.localeCompare(b.name)).filter(ws => q === "" || ws.windows.some(w => matches(w)))
@@ -57,6 +59,18 @@ Scope {
             selectedName = spaces[Math.max(0, Math.min(spaces.length - 1, selectedIndex + d))].name;
     }
 
+    // up/down a row in the grid, staying on the monitor
+    function gridMove(dy) {
+        if (view !== "grid")
+            return;
+        const g = grid.groups.find(g => g.spaces.some(w => w.name === selectedName));
+        if (!g)
+            return;
+        const j = g.spaces.findIndex(w => w.name === selectedName) + dy * g.cols;
+        if (j >= 0 && j < g.spaces.length)
+            selectedName = g.spaces[j].name;
+    }
+
     function commit() {
         const hit = selected?.windows.find(w => matches(w));
         if (hit)
@@ -72,112 +86,11 @@ Scope {
         onTriggered: root.settled = true
     }
 
-    // ── snapshots ─────────────────────────────────────────────
-    // workspace name → { url, result, w, outW }. Kept as grabbed images, not live captures:
-    // capture items lose their frames when the overlay window moves to another monitor
-    property var snapshots: ({})
-
-    function capture() {
-        if (ModalHost.active)
-            return;
-        for (const m of Compositor.monitors) {
-            const view = captures.forScreen(m.name);
-            if (view && m.activeWorkspace?.name)
-                view.take(m.activeWorkspace.name);
-        }
-    }
-
-    function store(name, result, w, outW) {
-        const next = Object.assign({}, snapshots);
-        next[name] = { url: result.url, result, w, outW };
-        snapshots = next;
-    }
-
-    // let a switch finish painting before capturing it
-    Timer {
-        id: settle
-        interval: 400
-        onTriggered: root.capture()
-    }
-    Connections {
-        target: Compositor
-        function onFocusedWorkspaceChanged() {
-            settle.restart();
-        }
-    }
-    Timer {
-        interval: 10000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: root.capture()
-    }
-
-    // one capture per monitor, grabbed into an image after each frame arrives. They live in
-    // their own 1px window that never changes monitor: the modal overlay moves to the focused
-    // monitor, which recreates it, and capture textures inside it crashed the renderer
-    PanelWindow {
-        screen: Quickshell.screens[0] ?? null
-        implicitWidth: 1
-        implicitHeight: 1
-        color: "transparent"
-        anchors.top: true
-        anchors.left: true
-        exclusiveZone: 0
-        mask: Region {}
-        WlrLayershell.layer: WlrLayer.Background
-        WlrLayershell.namespace: "quickshell-captures"
-
-        // grabToImage renders the item itself, so it can sit outside the 1px window
-        Item {
-            id: captures
-            function forScreen(name) {
-                for (let i = 0; i < views.count; i++) {
-                    if (views.itemAt(i)?.modelData.name === name)
-                        return views.itemAt(i);
-                }
-                return null;
-            }
-
-            Repeater {
-                id: views
-                model: Quickshell.screens
-                ScreencopyView {
-                    id: view
-                    required property var modelData
-                    property string pendingName: ""
-                    width: modelData.width / 2
-                    height: modelData.height / 2
-                    live: false
-
-                    function take(name) {
-                        pendingName = name;
-                        // null then the screen: re-setting the same source wouldn't capture again
-                        captureSource = null;
-                        captureSource = modelData;
-                        grabLater.restart();
-                    }
-
-                    // no frame-arrived signal; a capture lands well within this
-                    Timer {
-                        id: grabLater
-                        interval: 250
-                        onTriggered: {
-                            const name = view.pendingName;
-                            if (!view.hasContent || !name)
-                                return;
-                            view.grabToImage(r => root.store(name, r, view.width, view.modelData.width), Qt.size(view.width, view.height));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     Modal {
         id: modal
-        maxWidth: Infinity  // screen width minus the 32px edge gutter
-        maxHeight: 760
+        // the whole screen minus the 32px edge gutter; previewScale sizes what's in it
+        maxWidth: Infinity
+        maxHeight: Infinity
         padding: 24
         frameless: true
         dim: 0.8
@@ -189,6 +102,11 @@ Scope {
             { keys: "<Left>", desc: "", run: () => root.step(-1) },
             { keys: "<Tab>", desc: "", run: () => root.step(1) },
             { keys: "<S-Tab>", desc: "", run: () => root.step(-1) },
+            { keys: "j", desc: "row down (grid)", run: () => root.gridMove(1) },
+            { keys: "k", desc: "row up (grid)", run: () => root.gridMove(-1) },
+            { keys: "<Down>", desc: "", run: () => root.gridMove(1) },
+            { keys: "<Up>", desc: "", run: () => root.gridMove(-1) },
+            { keys: "o", desc: "carousel / grid", run: () => root.view = root.view === "grid" ? "carousel" : "grid" },
             { keys: "gg", desc: "first", run: () => root.step(-1e3) },
             { keys: "G", desc: "last", run: () => root.step(1e3) },
             { keys: "<CR>", desc: "switch", run: () => root.commit() },
@@ -200,6 +118,51 @@ Scope {
             id: header
             width: parent.width
             height: 36
+
+            Row {
+                anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 4
+
+                Repeater {
+                    model: [
+                        { view: "carousel", glyph: "󰍹" },
+                        { view: "grid", glyph: "󰕰" }
+                    ]
+                    Rectangle {
+                        id: viewButton
+                        required property var modelData
+                        readonly property bool on: root.view === modelData.view
+                        width: viewLabel.implicitWidth + 24
+                        height: 32
+                        radius: Main.radius
+                        color: on ? Main.theme.colSurface : "transparent"
+                        border.color: on ? Main.theme.colMuted : "transparent"
+                        border.width: 1
+
+                        Text {
+                            id: viewLabel
+                            anchors.centerIn: parent
+                            text: viewButton.modelData.glyph + "  " + viewButton.modelData.view
+                            color: viewButton.on ? Main.theme.colFg : Main.theme.colAccentMid
+                            font: Main.barFont
+                        }
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.view = viewButton.modelData.view
+                        }
+                    }
+                }
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    leftPadding: 6
+                    text: "o"
+                    color: Main.theme.colAccentDark
+                    font: Main.smallFont
+                }
+            }
 
             Row {
                 anchors.right: parent.right
@@ -270,14 +233,17 @@ Scope {
             anchors.bottom: info.top
             anchors.bottomMargin: 16
             width: parent.width
+            visible: root.view === "carousel"
             orientation: ListView.Horizontal
             interactive: false
             clip: true
             spacing: 28
 
-            readonly property real slotW: width * 0.58
+            readonly property real slotW: width * 0.66 * root.previewScale
+            // keyed, so a refresh keeps the cards and their running captures
             model: ScriptModel {
-                values: root.opened ? root.spaces : []
+                objectProp: "name"
+                values: root.opened && root.view === "carousel" ? root.spaces : []
             }
             highlightRangeMode: ListView.StrictlyEnforceRange
             preferredHighlightBegin: (width - slotW) / 2
@@ -320,7 +286,6 @@ Scope {
                 readonly property real d: (x + width / 2 - carousel.contentX - carousel.width / 2) / carousel.slotW
                 readonly property real ad: Math.min(2, Math.abs(d))
                 readonly property var ws: modelData
-                readonly property var snap: root.snapshots[ws.name] ?? null
                 readonly property real aspect: ws.rect.width / Math.max(1, ws.rect.height)
 
                 width: carousel.slotW
@@ -345,8 +310,8 @@ Scope {
                 Rectangle {
                     id: frame
                     anchors.centerIn: parent
-                    height: Math.min(parent.height, parent.width / slot.aspect)
-                    width: height * slot.aspect
+                    height: Math.round(Math.min(parent.height * root.previewScale, parent.width / slot.aspect))
+                    width: Math.round(height * slot.aspect)
                     radius: Main.radius
                     color: Main.theme.colSurface
                     border.color: slot.current ? Main.theme.colBlue : Main.theme.overlay(0.14)
@@ -359,61 +324,13 @@ Scope {
                         radius: Main.radius
                         color: Main.theme.colBg
 
-                        // the snapshot, cropped from the monitor capture to this workspace's area
-                        Image {
-                            id: picture
+                        LiveWorkspace {
                             anchors.fill: parent
-                            visible: slot.snap !== null
-                            source: slot.snap?.url ?? ""
-                            cache: false
-                            readonly property real k: (slot.snap?.w ?? 1) / Math.max(1, slot.snap?.outW ?? 1)
-                            sourceClipRect: Qt.rect((slot.ws.rect.x - slot.ws.outputRect.x) * k, (slot.ws.rect.y - slot.ws.outputRect.y) * k, slot.ws.rect.width * k, slot.ws.rect.height * k)
-                        }
-
-                        // never-visited workspaces: their window layout with icons
-                        Repeater {
-                            model: picture.visible ? [] : slot.ws.windows.slice().sort((a, b) => a.floating - b.floating)
-                            Rectangle {
-                                required property var modelData
-                                readonly property real s: preview.width / Math.max(1, slot.ws.rect.width)
-                                x: modelData.rect.x * s
-                                y: modelData.rect.y * s
-                                width: modelData.rect.width * s
-                                height: modelData.rect.height * s
-                                radius: Main.radius
-                                color: Main.theme.colSurface
-                                border.color: Main.theme.overlay(0.08)
-                                IconImage {
-                                    anchors.centerIn: parent
-                                    implicitSize: Math.min(48, parent.height / 3)
-                                    source: parent.modelData.icon ? Quickshell.iconPath(parent.modelData.icon, true) : ""
-                                }
-                            }
-                        }
-
-                        Text {
-                            anchors.centerIn: parent
-                            visible: !picture.visible && slot.ws.windows.length === 0
-                            text: "empty"
-                            color: Main.theme.colMuted
-                            font: Main.barFont
-                        }
-
-                        // search hits outlined on top of the picture
-                        Repeater {
-                            model: root.q ? slot.ws.windows.filter(w => root.matches(w)) : []
-                            Rectangle {
-                                required property var modelData
-                                readonly property real s: preview.width / Math.max(1, slot.ws.rect.width)
-                                x: modelData.rect.x * s
-                                y: modelData.rect.y * s
-                                width: modelData.rect.width * s
-                                height: modelData.rect.height * s
-                                radius: Main.radius
-                                color: "transparent"
-                                border.color: Main.theme.colBlue
-                                border.width: 2
-                            }
+                            ws: slot.ws
+                            live: slot.current
+                            // the ones in view keep moving, slower; the rest show one frame
+                            refreshInterval: slot.ad < 1.6 ? 1000 : 0
+                            query: root.q
                         }
                     }
 
@@ -421,6 +338,173 @@ Scope {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: slot.current ? root.commit() : root.selectedName = slot.ws.name
+                    }
+                }
+            }
+        }
+
+        // ── grid ──────────────────────────────────────────────
+        Item {
+            id: grid
+            anchors.top: header.bottom
+            anchors.topMargin: 16
+            anchors.bottom: info.top
+            anchors.bottomMargin: 16
+            width: parent.width
+            visible: root.view === "grid"
+
+            readonly property real gap: 48  // between monitors
+            readonly property real spacing: 14  // between cells
+            readonly property real labelH: 26
+            // the monitors left to right: [{ output, w, h (logical size), cols, rows, spaces }]
+            readonly property var groups: {
+                const out = [];
+                for (const ws of root.opened && root.view === "grid" ? root.spaces : []) {
+                    let g = out.find(g => g.output === ws.output);
+                    if (!g) {
+                        g = { output: ws.output, w: Math.max(1, ws.rect.width), h: Math.max(1, ws.rect.height), spaces: [] };
+                        out.push(g);
+                    }
+                    g.spaces.push(ws);
+                }
+                for (const g of out) {
+                    g.cols = Math.ceil(Math.sqrt(g.spaces.length));
+                    g.rows = Math.ceil(g.spaces.length / g.cols);
+                }
+                return out;
+            }
+            // one scale for every monitor, the largest that fits them all, so cells keep the
+            // monitors' real proportions (a portrait monitor's are narrow and tall)
+            readonly property real k: {
+                if (groups.length === 0)
+                    return 0;
+                const across = groups.reduce((n, g) => n + g.cols * g.w, 0);
+                let k = (width - (groups.length - 1) * gap - groups.reduce((n, g) => n + (g.cols - 1) * spacing, 0)) / across;
+                for (const g of groups)
+                    k = Math.min(k, (height - labelH - (g.rows - 1) * spacing) / (g.rows * g.h));
+                // no cell wider than 900, then previewScale of that
+                return Math.max(0, Math.min(k, 900 / Math.max(...groups.map(g => g.w))) * root.previewScale);
+            }
+            // the workspace a dragged window is over, "" for none
+            property string dropTarget: ""
+
+            // the workspace whose cell is under `pos` (scene coordinates), or ""
+            function cellAt(pos) {
+                for (let i = 0; i < monitors.count; i++) {
+                    const cells = monitors.itemAt(i)?.cells;
+                    for (let j = 0; j < (cells?.count ?? 0); j++) {
+                        const c = cells.itemAt(j);
+                        const p = c.mapFromItem(null, pos.x, pos.y);
+                        if (p.x >= 0 && p.y >= 0 && p.x <= c.width && p.y <= c.height)
+                            return c.ws.name;
+                    }
+                }
+                return "";
+            }
+
+            Row {
+                anchors.centerIn: parent
+                spacing: grid.gap
+
+                Repeater {
+                    id: monitors
+                    model: ScriptModel {
+                        objectProp: "output"
+                        values: grid.groups
+                    }
+
+                    Column {
+                        id: monitor
+                        required property var modelData
+                        readonly property alias cells: cells
+                        spacing: 0
+
+                        Text {
+                            height: grid.labelH
+                            text: monitor.modelData.output
+                            color: Main.theme.colAccentMid
+                            font: Main.smallFont
+                        }
+
+                        Grid {
+                            columns: monitor.modelData.cols
+                            spacing: grid.spacing
+
+                            Repeater {
+                                id: cells
+                                model: ScriptModel {
+                                    objectProp: "name"
+                                    values: monitor.modelData.spaces
+                                }
+
+                                Rectangle {
+                                    id: cell
+                                    required property var modelData
+                                    readonly property var ws: modelData
+                                    readonly property bool current: ws.name === root.selectedName
+                                    readonly property bool target: grid.dropTarget === ws.name
+                                    width: Math.round(monitor.modelData.w * grid.k)
+                                    height: Math.round(monitor.modelData.h * grid.k)
+                                    radius: Main.radius
+                                    color: Main.theme.colSurface
+                                    border.color: target ? Main.theme.colGreen : current ? Main.theme.colBlue : Main.theme.overlay(0.14)
+                                    border.width: current || target ? 2 : 1
+
+                                    // under the windows: a click on the wallpaper goes to the workspace
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: {
+                                            root.selectedName = cell.ws.name;
+                                            root.commit();
+                                        }
+                                    }
+
+                                    ClippingRectangle {
+                                        anchors.fill: parent
+                                        anchors.margins: 3
+                                        radius: Main.radius
+                                        color: Main.theme.colBg
+
+                                        LiveWorkspace {
+                                            anchors.fill: parent
+                                            ws: cell.ws
+                                            live: cell.current
+                                            query: root.q
+                                            dragLayer: liftLayer
+                                            onWindowClicked: win => {
+                                                Windows.focusWindow(win.id);
+                                                modal.hide();
+                                            }
+                                            onWindowDragged: (win, pos) => grid.dropTarget = grid.cellAt(pos)
+                                            onWindowDropped: (win, pos) => {
+                                                const to = grid.cellAt(pos);
+                                                grid.dropTarget = "";
+                                                if (to && to !== cell.ws.name)
+                                                    Windows.moveWindow(win.id, to);
+                                            }
+                                        }
+                                    }
+
+                                    Rectangle {
+                                        anchors.left: parent.left
+                                        anchors.top: parent.top
+                                        anchors.margins: 8
+                                        width: badge.implicitWidth + 12
+                                        height: badge.implicitHeight + 4
+                                        radius: Main.radius
+                                        color: cell.current ? Main.theme.colBlue : Qt.rgba(0, 0, 0, 0.6)
+                                        Text {
+                                            id: badge
+                                            anchors.centerIn: parent
+                                            text: cell.ws.name
+                                            color: cell.current ? Main.theme.colBg : "white"
+                                            font: Main.smallFont
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -483,6 +567,13 @@ Scope {
                     }
                 }
             }
+        }
+
+        // a dragged window lifts into this, above everything in the modal
+        Item {
+            id: liftLayer
+            anchors.fill: parent
+            z: 100
         }
     }
 }

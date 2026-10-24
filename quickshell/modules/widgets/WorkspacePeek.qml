@@ -6,10 +6,10 @@ import Quickshell.Wayland
 import Quickshell.Widgets
 import qs.core
 import qs.services
+import "components"
 
-// Resting on a workspace number in the bar drops a card under it: the switcher's snapshot of
-// that workspace (refreshed every few seconds and on every switch) and its windows; click one
-// to focus it. Once open, moving along the numbers glides the card over without the delay.
+// Resting on a workspace number in the bar drops a card under it: a live preview of that
+// workspace and its windows; click one to focus it. Once open, moving along the numbers glides the card over without the delay.
 // The window is a full-width strip masked to the card, so the card can move inside it.
 Scope {
     id: root
@@ -27,7 +27,6 @@ Scope {
 
     readonly property var ws: Windows.workspaces.find(w => w.name === name) ?? null
     readonly property var windows: ws?.windows ?? []
-    readonly property var snap: ws ? (Switcher.snapshots[ws.name] ?? null) : null
 
     function enter(n: string, item: Item): void {
         hovered = n;
@@ -107,7 +106,7 @@ Scope {
 
         Rectangle {
             id: card
-            width: 320
+            width: 440
             height: content.implicitHeight + 20
             x: Math.max(6, Math.min(panel.width - width - 6, root.anchorX - width / 2))
             y: root.opened ? 0 : -6
@@ -154,14 +153,25 @@ Scope {
                     font: Main.smallFont
                 }
 
-                Image {
-                    visible: root.snap !== null
-                    width: parent.width
-                    height: implicitWidth > 0 ? width * implicitHeight / implicitWidth : 0
-                    source: root.snap?.url ?? ""
-                    fillMode: Image.PreserveAspectFit
-                    smooth: true
-                    mipmap: true
+                // only while mapped: capture views are created and dropped with the card
+                // a portrait monitor's preview narrows instead of growing past 420 tall
+                ClippingRectangle {
+                    readonly property real aspect: root.ws ? root.ws.rect.width / Math.max(1, root.ws.rect.height) : 1
+                    visible: root.ws !== null && panel.visible
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: Math.min(parent.width, 420 * aspect)
+                    height: visible ? width / aspect : 0
+                    radius: Main.radius
+                    color: Main.theme.colSurface
+
+                    Loader {
+                        anchors.fill: parent
+                        active: parent.visible
+                        sourceComponent: LiveWorkspace {
+                            ws: root.ws
+                            live: true
+                        }
+                    }
                 }
 
                 Repeater {

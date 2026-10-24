@@ -5,15 +5,15 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 
-// Workspaces and their windows, from Hyprland's clients (Quickshell has no window tree). Each window is matched to its Wayland toplevel by app id + title so it can be
-// screen-captured. Only refreshed while `active` (switcher, screenshot) or `peeking` (the
+// Workspaces and their windows, from Hyprland's clients (Quickshell has no window tree). Each
+// window comes with its Wayland toplevel so it can be screen-captured (see LiveWorkspace). Only refreshed while `active` (switcher, screenshot) or `peeking` (the
 // bar's workspace peek), so otherwise it starts no processes.
 Singleton {
     id: root
     property bool active: false
     property bool peeking: false
     readonly property bool live: active || peeking
-    // [{ name, num, output, outputRect, visible, focused, rect, windows: [{ id, pid, appId, title, rect, floating, focused, toplevel, icon }] }]
+    // [{ name, num, output, outputRect, visible, focused, rect, windows: [{ id, pid, appId, title, rect, floating, fullscreen, focused, toplevel, icon }] }]
     property var workspaces: []
     property bool pending: false
 
@@ -30,6 +30,10 @@ Singleton {
 
     function focusWorkspace(name: string): void {
         Compositor.focusWorkspace(name);
+    }
+
+    function moveWindow(id, name: string): void {
+        Compositor.moveWindow(id, name);
     }
 
     onLiveChanged: if (live) refresh()
@@ -68,8 +72,14 @@ Singleton {
             return workspaces;
         }
         const toplevels = ToplevelManager.toplevels.values.slice();
-        // first unclaimed toplevel with the same app id and title, else the same app id
-        const claim = (appId, title) => {
+        // by address; failing that (a window newer than Quickshell's list), the first
+        // unclaimed toplevel with the same app id and title, else the same app id
+        const claim = (id, appId, title) => {
+            const exact = Compositor.toplevel(id);
+            if (exact) {
+                const j = toplevels.indexOf(exact);
+                return j < 0 ? exact : toplevels.splice(j, 1)[0];
+            }
             let i = toplevels.findIndex(t => t.appId === appId && t.title === title);
             if (i < 0)
                 i = toplevels.findIndex(t => t.appId === appId);
@@ -90,16 +100,23 @@ Singleton {
             if (!mon)
                 continue;
             const scale = mon.scale || 1;
-            const outputRect = { x: mon.x, y: mon.y, width: Math.round(mon.width / scale), height: Math.round(mon.height / scale) };
-            const windows = (tree.clients ?? []).filter(c => c.mapped && c.workspace.id === ws.id).map(c => ({
+            // width and height are the mode's: a monitor turned 90° or 270° (odd transforms)
+            // is laid out the other way round
+            const turned = (mon.transform ?? 0) % 2 === 1;
+            const w = Math.round((turned ? mon.height : mon.width) / scale);
+            const h = Math.round((turned ? mon.width : mon.height) / scale);
+            const outputRect = { x: mon.x, y: mon.y, width: w, height: h };
+            // hidden: the background tabs of a group
+            const windows = (tree.clients ?? []).filter(c => c.mapped && !c.hidden && c.workspace.id === ws.id).map(c => ({
                         id: c.address,
                         pid: c.pid ?? 0,
                         appId: c.class ?? "",
                         title: c.title ?? "",
                         rect: { x: c.at[0] - mon.x, y: c.at[1] - mon.y, width: c.size[0], height: c.size[1] },
                         floating: c.floating,
+                        fullscreen: (c.fullscreen ?? 0) > 0,
                         focused: c.focusHistoryID === 0,
-                        toplevel: claim(c.class ?? "", c.title ?? ""),
+                        toplevel: claim(c.address, c.class ?? "", c.title ?? ""),
                         icon: Apps.icon(c.class ?? "")
                     }));
             const visible = mon.activeWorkspace?.id === ws.id;
