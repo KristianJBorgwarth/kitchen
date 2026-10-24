@@ -36,7 +36,7 @@ Singleton {
     }
 
     function logout(): void {
-        Quickshell.execDetached(["swaymsg", "exit"]);
+        Compositor.logout();
     }
     function suspend(): void {
         Quickshell.execDetached(["systemctl", "suspend"]);

@@ -1,7 +1,7 @@
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Wayland
+import qs.services
 import qs.core.components
 
 // One monitor's screenshot overlay: the frozen frame, the spotlight on the selection or the
@@ -12,7 +12,7 @@ PanelWindow {
     required property var modelData
     required property var shot
     readonly property string name: modelData.name
-    readonly property bool focusedScreen: name === (I3.focusedMonitor?.name ?? "")
+    readonly property bool focusedScreen: name === (Compositor.focusedMonitor ?? "")
     readonly property bool mine: shot.selScreen === name
     readonly property var wins: shot.windowsOn(name)
     property var hover: null

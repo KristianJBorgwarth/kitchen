@@ -1,6 +1,5 @@
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Wayland
 import qs.core
 import qs.services
@@ -10,7 +9,7 @@ import "components"
 // Always mapped: with no popups the list is empty, so the input mask is too.
 PanelWindow {
     id: root
-    screen: Quickshell.screens.find(s => s.name === I3.focusedMonitor?.name) ?? null
+    screen: Quickshell.screens.find(s => s.name === Compositor.focusedMonitor) ?? null
     color: "transparent"
     anchors.bottom: true
     anchors.right: true

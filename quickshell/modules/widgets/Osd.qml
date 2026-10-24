@@ -2,7 +2,6 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Wayland
 import qs.core
 import qs.services
@@ -53,7 +52,7 @@ Scope {
     }
 
     PanelWindow {
-        screen: Quickshell.screens.find(s => s.name === I3.focusedMonitor?.name) ?? null
+        screen: Quickshell.screens.find(s => s.name === Compositor.focusedMonitor) ?? null
         visible: pill.opacity > 0
         color: "transparent"
         anchors.bottom: true

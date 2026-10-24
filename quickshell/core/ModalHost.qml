@@ -2,8 +2,8 @@ pragma Singleton
 
 import QtQuick
 import Quickshell
-import Quickshell.I3
 import Quickshell.Wayland
+import qs.services
 
 PanelWindow {
     id: root
@@ -17,7 +17,7 @@ PanelWindow {
         if (current && current !== modal)
             current.hide();
         opening();
-        const focused = Quickshell.screens.find(s => s.name === I3.focusedMonitor?.name);
+        const focused = Quickshell.screens.find(s => s.name === Compositor.focusedMonitor);
         if (focused && screen !== focused)
             screen = focused;
         current = modal;

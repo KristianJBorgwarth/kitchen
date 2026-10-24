@@ -1,0 +1,10 @@
+[Unit]
+Description=Daily Hyprland update check
+
+[Timer]
+OnStartupSec=5min
+OnUnitActiveSec=1d
+Persistent=true
+
+[Install]
+WantedBy=timers.target
