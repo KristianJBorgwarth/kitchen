@@ -252,7 +252,7 @@ Singleton {
             record(true, focusMin);
         const next = advance(p, true);
         const msg = p === "focus" ? ["Focus session done", "Time for a " + (next === "long" ? "long" : "short") + " break (" + minutesFor(next) + " min)."] : ["Break over", "Back to focus (" + focusMin + " min)."];
-        notifyProc.command = ["notify-send", "-a", "Pomodoro", "-i", "alarm-clock", msg[0], msg[1]];
+        notifyProc.command = ["notify-send", "-a", "Pomodoro", "-i", Qt.resolvedUrl("../assets/pomodoro.svg").toString().replace("file://", ""), msg[0], msg[1]];
         notifyProc.running = true;
         if (sound)
             soundProc.running = true;
@@ -271,7 +271,7 @@ Singleton {
     }
     Process {
         id: soundProc
-        command: ["pw-play", "/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"]
+        command: ["pw-play", Qt.resolvedUrl("../assets/pomodoro-chime.wav").toString().replace("file://", "")]
     }
 
     SystemClock {
