@@ -60,7 +60,15 @@ Scope {
         }
 
         BarPill {
+            id: pomodoroPill
             anchors.right: rightPill.left
+            anchors.rightMargin: barWindow.gap
+            shown: Pomodoro.active
+            PomodoroTimer {}
+        }
+
+        BarPill {
+            anchors.right: pomodoroPill.visible ? pomodoroPill.left : rightPill.left
             anchors.rightMargin: barWindow.gap
             // only while there are notifications; silent mode is in the control center too
             shown: Notifs.count > 0

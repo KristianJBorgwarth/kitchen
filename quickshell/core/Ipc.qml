@@ -42,6 +42,23 @@ Scope {
     }
 
     IpcHandler {
+        target: "pomodoro"
+
+        function toggle(): void {
+            PomodoroPanel.toggle();
+        }
+        function startpause(): void {
+            Pomodoro.toggle(Pomodoro.target);
+        }
+        function skip(): void {
+            Pomodoro.skip(Pomodoro.target);
+        }
+        function reset(): void {
+            Pomodoro.reset(Pomodoro.target);
+        }
+    }
+
+    IpcHandler {
         target: "keybinds"
 
         function toggle(): void {
