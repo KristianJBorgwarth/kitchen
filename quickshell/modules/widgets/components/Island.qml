@@ -2,7 +2,8 @@ import QtQuick
 import qs.core
 import qs.core.components
 
-Rectangle {
+// A flat section: a divider, a small caps title, then the content.
+Item {
     id: root
     property string title: ""
     property string icon: ""
@@ -11,16 +12,15 @@ Rectangle {
     property bool unavailable: false
     default property alias content: body.data
 
-    radius: Main.radius
-    color: Main.theme.colSurface
-    border.color: Main.theme.overlay(0.05)
-    border.width: 1
+    Divider {
+        width: parent.width
+    }
 
     SectionLabel {
         id: titleText
         anchors.left: parent.left
         anchors.top: parent.top
-        anchors.margins: 16
+        anchors.topMargin: 12
         text: (root.icon ? root.icon + "  " : "") + root.title
     }
 
@@ -29,7 +29,6 @@ Rectangle {
         anchors.left: titleText.right
         anchors.leftMargin: 12
         anchors.baseline: titleText.baseline
-        anchors.rightMargin: 16
         horizontalAlignment: Text.AlignRight
         text: root.detail
         color: Main.theme.colAccentDark
@@ -40,8 +39,7 @@ Rectangle {
     Item {
         id: body
         anchors.fill: parent
-        anchors.margins: 16
-        anchors.topMargin: 40
+        anchors.topMargin: 36
         opacity: root.unavailable ? 0.12 : 1
 
         Behavior on opacity {

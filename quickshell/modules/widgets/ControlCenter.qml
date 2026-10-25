@@ -85,10 +85,13 @@ Scope {
 
     Modal {
         id: modal
+        blocking: false
+        title: "Control center"
+        glyph: "󰒓"
         maxWidth: 1120
-        // as tall as the left column needs, with room for the tab lists either way
-        maxHeight: Math.max(560, leftCol.implicitHeight + padding * 2)
-        padding: 24
+        // as tall as the left column needs, plus the frame's header and footer
+        maxHeight: Math.max(620, leftCol.implicitHeight + padding * 2 + 64)
+        padding: Main.pad
         bindings: [
             { keys: "k", desc: "volume up", run: () => Audio.setVolume(Audio.sink, (Audio.sink?.audio?.volume ?? 0) + 0.05) },
             { keys: "j", desc: "volume down", run: () => Audio.setVolume(Audio.sink, (Audio.sink?.audio?.volume ?? 0) - 0.05) },
@@ -125,27 +128,20 @@ Scope {
                 height: parent.height
                 spacing: 14
 
-                Rectangle {
+                Item {
                     width: parent.width
-                    height: 138
-                    radius: Main.radius
-                    color: Main.theme.colSurface
-                    border.color: Main.theme.overlay(0.05)
-                    border.width: 1
+                    height: 96
 
                     Column {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        anchors.margins: 20
                         spacing: 4
 
                         Text {
                             text: Qt.formatTime(clock.date, "HH:mm")
                             color: Main.theme.colFg
-                            font.family: Main.fontFamily
-                            font.pixelSize: 38
-                            font.weight: Font.Light
+                            font: Main.displayFont
                         }
                         Text {
                             text: clock.date.toLocaleDateString(Qt.locale(), "dddd, d MMMM")
@@ -164,7 +160,6 @@ Scope {
                     Rectangle {
                         anchors.right: parent.right
                         anchors.top: parent.top
-                        anchors.margins: 20
                         visible: root.hasBattery
                         height: 24
                         width: battText.implicitWidth + 20
@@ -182,18 +177,13 @@ Scope {
                     }
                 }
 
-                Rectangle {
+                Item {
                     width: parent.width
-                    height: 56
-                    radius: Main.radius
-                    color: Main.theme.colSurface
-                    border.color: Main.theme.overlay(0.05)
-                    border.width: 1
+                    height: 44
 
                     Row {
                         id: powerRow
                         anchors.fill: parent
-                        anchors.margins: 6
                         Repeater {
                             model: [
                                 { icon: "󰌾", tip: "Lock", confirm: false, danger: false, run: () => { root.hide(); Lock.lock(); } },
@@ -295,13 +285,10 @@ Scope {
                 Rectangle {
                     visible: NightLight.available && NightLight.enabled
                     width: parent.width
-                    height: 44
-                    radius: Main.radius
-                    color: Main.theme.colSurface
+                    height: 36
+                    color: "transparent"
                     SliderRow {
                         anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
                         icon: "󰖔"
                         accent: Main.theme.colAmber
                         // warmer to the right: 6000K → 2500K
@@ -313,13 +300,11 @@ Scope {
                 Rectangle {
                     visible: PowerProfile.available
                     width: parent.width
-                    height: 40
-                    radius: Main.radius
-                    color: Main.theme.colSurface
+                    height: 34
+                    color: "transparent"
 
                     Row {
                         anchors.fill: parent
-                        anchors.margins: 4
                         Repeater {
                             model: [
                                 { id: "power-saver", icon: "󰾆", label: "Saver" },
@@ -362,13 +347,10 @@ Scope {
                 Rectangle {
                     visible: Brightness.available
                     width: parent.width
-                    height: 44
-                    radius: Main.radius
-                    color: Main.theme.colSurface
+                    height: 36
+                    color: "transparent"
                     SliderRow {
                         anchors.fill: parent
-                        anchors.leftMargin: 12
-                        anchors.rightMargin: 12
                         icon: "󰃠"
                         accent: Main.theme.colAmber
                         value: Brightness.value
@@ -381,9 +363,7 @@ Scope {
                     width: parent.width
                     height: stats.implicitHeight + 28
                     radius: Main.radius
-                    color: statsMouse.containsMouse ? Qt.lighter(Main.theme.colSurface, 1.2) : Main.theme.colSurface
-                    border.color: Main.theme.overlay(0.05)
-                    border.width: 1
+                    color: statsMouse.containsMouse ? Main.theme.overlay(0.04) : "transparent"
 
                     MouseArea {
                         id: statsMouse
@@ -480,9 +460,9 @@ Scope {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
                         width: tabRow.implicitWidth + 8
-                        height: 40
+                        height: 36
                         radius: Main.radius
-                        color: Main.theme.colSurface
+                        color: "transparent"
 
                         readonly property var defs: [
                             { id: "sound", icon: "󰕾", label: "Sound" },
@@ -546,23 +526,6 @@ Scope {
                             }
                         }
                     }
-
-                    Row {
-                        anchors.right: parent.right
-                        anchors.verticalCenter: parent.verticalCenter
-                        spacing: 6
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "? keys"
-                            color: Main.theme.colAccentDark
-                            font: Main.smallFont
-                        }
-                        IconButton {
-                            anchors.verticalCenter: parent.verticalCenter
-                            icon: "󰅖"
-                            onClicked: root.hide()
-                        }
-                    }
                 }
 
                 Rectangle {
@@ -571,15 +534,16 @@ Scope {
                     anchors.topMargin: 14
                     anchors.bottom: parent.bottom
                     width: parent.width
-                    radius: Main.radius
-                    color: Main.theme.colSurface
-                    border.color: Main.theme.overlay(0.05)
-                    border.width: 1
+                    color: "transparent"
                     clip: true
+
+                    Divider {
+                        width: parent.width
+                    }
 
                     Flickable {
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.topMargin: Main.gap
                         visible: root.tab === "sound"
                         contentHeight: sound.implicitHeight
                         clip: true
@@ -715,7 +679,7 @@ Scope {
 
                     Item {
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.topMargin: Main.gap
                         visible: root.tab === "network"
 
                         Column {
@@ -970,7 +934,7 @@ Scope {
 
                     Item {
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.topMargin: Main.gap
                         visible: root.tab === "bluetooth"
 
                         Item {
@@ -1152,7 +1116,7 @@ Scope {
 
                     Item {
                         anchors.fill: parent
-                        anchors.margins: 20
+                        anchors.topMargin: Main.gap
                         visible: root.tab === "notifications"
 
                         Item {

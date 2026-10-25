@@ -14,10 +14,8 @@ Rectangle {
 
     implicitHeight: 76
     radius: Main.radius
-    // on: solid inverted, the hover a small opaque step toward the background
-    color: active ? (body.containsMouse ? Qt.tint(Main.theme.colFg, Qt.rgba(Main.theme.colBg.r, Main.theme.colBg.g, Main.theme.colBg.b, 0.12)) : Main.theme.colFg) : (body.containsMouse && clickable ? Qt.lighter(Main.theme.colSurface, 1.35) : Main.theme.colSurface)
-    border.color: active ? color : Main.theme.overlay(0.05)
-    border.width: 1
+    // on: solid inverted; off: a faint fill
+    color: active ? (body.containsMouse ? Qt.tint(Main.theme.colFg, Qt.rgba(Main.theme.colBg.r, Main.theme.colBg.g, Main.theme.colBg.b, 0.12)) : Main.theme.colFg) : (body.containsMouse && clickable ? Main.theme.overlay(0.08) : Main.theme.overlay(0.04))
     scale: body.pressed ? 0.97 : 1
 
     Behavior on color {

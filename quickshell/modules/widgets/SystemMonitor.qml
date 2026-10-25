@@ -11,16 +11,8 @@ Scope {
     id: root
     readonly property alias opened: modal.opened
 
-    readonly property font bigFont: Qt.font({
-        family: Main.fontFamily,
-        pixelSize: 40,
-        weight: Font.Light
-    })
-    readonly property font midFont: Qt.font({
-        family: Main.fontFamily,
-        pixelSize: 22,
-        weight: Font.Light
-    })
+    readonly property font bigFont: Main.heroFont
+    readonly property font midFont: Main.displayFont
 
     function show() {
         Monitor.detailed = true;
@@ -87,9 +79,45 @@ Scope {
 
     Modal {
         id: modal
+        blocking: false
+        title: Monitor.host
+        glyph: "󰍛"
         maxWidth: 1240
-        maxHeight: 820
-        padding: 20
+        maxHeight: 840
+        padding: Main.pad
+
+        actions: [
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                rightPadding: 8
+                text: [Monitor.distro, Monitor.kernel, "up " + Monitor.uptime, "load " + Monitor.load.map(l => l.toFixed(2)).join(" "), Monitor.procCount + " procs"].filter(s => s).join("  ·  ")
+                color: Main.theme.colAccentDark
+                font: Main.smallFont
+            },
+            Chip {
+                anchors.verticalCenter: parent.verticalCenter
+                text: Monitor.paused ? "󰐊  paused" : "󰏤  live"
+                tint: Monitor.paused ? Main.theme.colAmber : Main.theme.colGreen
+                active: true
+                clickable: true
+                onClicked: Monitor.paused = !Monitor.paused
+            },
+            Row {
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 2
+                Repeater {
+                    model: Monitor.intervalChoices
+                    Chip {
+                        required property int modelData
+                        padding: 8
+                        text: modelData >= 1000 ? modelData / 1000 + "s" : modelData + "ms"
+                        active: Monitor.openInterval === modelData
+                        clickable: true
+                        onClicked: Monitor.setOpenInterval(modelData)
+                    }
+                }
+            }
+        ]
         onClosed: {
             Monitor.detailed = false;
             Monitor.paused = false;
@@ -120,104 +148,15 @@ Scope {
             id: layout
             anchors.fill: parent
 
-            readonly property real gap: 12
-            readonly property real headerH: 48
-            readonly property real rowsH: height - headerH - gap * 3
+            readonly property real gap: Main.pad
+            readonly property real rowsH: height - gap * 2
             readonly property real row1H: rowsH * 0.34
             readonly property real row2H: rowsH * 0.24
             readonly property real row3H: rowsH - row1H - row2H
 
-            Item {
-                id: header
-                width: parent.width
-                height: layout.headerH
-
-                Column {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-                    Text {
-                        text: Monitor.host
-                        color: Main.theme.colFg
-                        font.family: Main.fontFamily
-                        font.pixelSize: 20
-                        font.weight: Font.DemiBold
-                    }
-                    Text {
-                        text: [Monitor.distro, Monitor.kernel, "up " + Monitor.uptime].filter(s => s).join("  ·  ")
-                        color: Main.theme.colAccentMid
-                        font: Main.smallFont
-                    }
-                }
-
-                Row {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 8
-
-                    Chip {
-                        anchors.verticalCenter: parent.verticalCenter
-                        implicitHeight: 28
-                        padding: 10
-                        text: Monitor.paused ? "󰐊  paused" : "󰏤  live"
-                        tint: Monitor.paused ? Main.theme.colAmber : Main.theme.colGreen
-                        active: true
-                        clickable: true
-                        onClicked: Monitor.paused = !Monitor.paused
-                    }
-
-                    Rectangle {
-                        anchors.verticalCenter: parent.verticalCenter
-                        height: 28
-                        width: intervalRow.implicitWidth + 6
-                        radius: Main.radius
-                        color: Main.theme.colSurface
-
-                        Row {
-                            id: intervalRow
-                            anchors.centerIn: parent
-                            Repeater {
-                                model: Monitor.intervalChoices
-                                Chip {
-                                    required property int modelData
-                                    implicitHeight: 22
-                                    padding: 8
-                                    text: modelData >= 1000 ? modelData / 1000 + "s" : modelData + "ms"
-                                    active: Monitor.openInterval === modelData
-                                    filled: true
-                                    clickable: true
-                                    onClicked: Monitor.setOpenInterval(modelData)
-                                }
-                            }
-                        }
-                    }
-
-                    Repeater {
-                        model: [
-                            { k: "load", v: Monitor.load.map(l => l.toFixed(2)).join("  ") },
-                            { k: "procs", v: String(Monitor.procCount) }
-                        ]
-                        Chip {
-                            required property var modelData
-                            anchors.verticalCenter: parent.verticalCenter
-                            implicitHeight: 28
-                            padding: 10
-                            text: "<font color='" + Main.theme.colAccentMid + "'>" + modelData.k + "</font>  " + modelData.v
-                        }
-                    }
-
-                    IconButton {
-                        anchors.verticalCenter: parent.verticalCenter
-                        icon: "󰅖"
-                        onClicked: root.hide()
-                    }
-                }
-            }
-
             Row {
                 id: row1
-                anchors.top: header.bottom
-                anchors.topMargin: layout.gap
+                anchors.top: parent.top
                 width: parent.width
                 height: layout.row1H
                 spacing: layout.gap
@@ -250,7 +189,7 @@ Scope {
                                     height: 22
                                     width: t.implicitWidth + 14
                                     radius: Main.radius
-                                    color: Main.theme.colMuted
+                                    color: Main.theme.overlay(0.06)
                                     Text {
                                         id: t
                                         anchors.centerIn: parent

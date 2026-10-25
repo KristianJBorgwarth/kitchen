@@ -41,9 +41,12 @@ Scope {
 
     Modal {
         id: modal
+        blocking: false
+        title: "Pomodoro"
+        glyph: "󰔟"
         maxWidth: 440
-        maxHeight: 880
-        padding: 24
+        maxHeight: 900
+        padding: Main.pad
         bindings: [
             { keys: "<Space>", desc: "start / pause", run: () => Pomodoro.toggle() },
             { keys: "s", desc: "skip phase", run: () => Pomodoro.skip() },
@@ -57,20 +60,15 @@ Scope {
 
         Column {
             anchors.fill: parent
-            spacing: 18
+            spacing: Main.pad
 
             // phase selector
-            Rectangle {
+            Item {
                 width: parent.width
-                height: 34
-                radius: Main.radius
-                color: Main.theme.colSurface
-                border.color: Main.theme.overlay(0.05)
-                border.width: 1
+                height: 30
 
                 Row {
                     anchors.fill: parent
-                    anchors.margins: 3
                     Repeater {
                         model: root.phases
                         Rectangle {
@@ -79,8 +77,8 @@ Scope {
                             readonly property bool current: Pomodoro.phase === modelData.id
                             width: parent.width / 3
                             height: parent.height
-                            radius: Main.radius - 1
-                            color: current ? Qt.rgba(root.phaseColor.r, root.phaseColor.g, root.phaseColor.b, 0.16) : segMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent"
+                            radius: Main.radius
+                            color: current ? Qt.rgba(root.phaseColor.r, root.phaseColor.g, root.phaseColor.b, 0.14) : segMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent"
                             Behavior on color {
                                 ColorAnimation {
                                     duration: Main.anim
@@ -168,9 +166,7 @@ Scope {
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: Pomodoro.fmt(Pomodoro.remainingMs)
                         color: Main.theme.colFg
-                        font.family: Main.fontFamily
-                        font.pixelSize: 54
-                        font.weight: Font.Light
+                        font: Main.heroFont
                     }
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -208,8 +204,7 @@ Scope {
                         anchors.centerIn: parent
                         text: Pomodoro.running ? "󰏤" : "󰐊"
                         color: Main.theme.colBg
-                        font.family: Main.fontFamily
-                        font.pixelSize: 26
+                        font: Main.displayFont
                     }
                     MouseArea {
                         id: playMouse
@@ -232,8 +227,8 @@ Scope {
                 width: parent.width
                 height: 34
                 radius: Main.radius
-                color: Main.theme.colSurface
-                border.color: label.activeFocus ? Main.theme.colAccentMid : Main.theme.overlay(0.05)
+                color: Main.theme.overlay(0.04)
+                border.color: label.activeFocus ? Main.theme.colAccentMid : Main.theme.overlay(0.08)
                 border.width: 1
 
                 TextInput {
@@ -262,7 +257,7 @@ Scope {
 
             Island {
                 width: parent.width
-                height: 158
+                height: 150
                 title: "Today"
 
                 Column {
@@ -284,9 +279,7 @@ Scope {
                                 Text {
                                     text: modelData.value
                                     color: Main.theme.colFg
-                                    font.family: Main.fontFamily
-                                    font.pixelSize: 20
-                                    font.weight: Font.Medium
+                                    font: Main.titleFont
                                 }
                                 Text {
                                     text: modelData.name
@@ -343,7 +336,7 @@ Scope {
                     property bool armed: false
                     visible: Pomodoro.history.length > 0
                     x: parent.width - width
-                    y: -33
+                    y: -24
                     text: armed ? "Click again to clear" : "Clear"
                     color: armed ? Main.theme.colRed : clearMouse.containsMouse ? Main.theme.colFg : Main.theme.colAccentDark
                     font: Main.smallFont

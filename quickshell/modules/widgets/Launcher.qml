@@ -277,7 +277,7 @@ Scope {
         id: modal
         maxWidth: 700
         maxHeight: Math.min(480, 66 + list.contentHeight + padding * 2)
-        padding: 16
+        padding: Main.pad
         // typing goes to the search box, so navigation sticks to keys it doesn't use
         bindings: [
             { keys: "<Down>", desc: "next", run: () => root.move(1) },
@@ -291,23 +291,23 @@ Scope {
             { keys: "<CR>", desc: "launch", run: () => root.launch(root.selected) }
         ]
 
-        Rectangle {
+        Item {
             id: field
             width: parent.width
-            height: 46
-            radius: Main.radius
-            color: Main.theme.colSurface
-            border.color: Main.theme.colMuted
-            border.width: 1
+            height: 40
+
+            Divider {
+                anchors.bottom: parent.bottom
+                width: parent.width
+            }
 
             Text {
                 id: fieldIcon
                 anchors.left: parent.left
-                anchors.leftMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
                 text: root.query.startsWith(">") ? "" : root.query.startsWith("?") ? "󰖟" : "󰍉"
                 color: Main.theme.colAccentMid
-                font: Main.barFont
+                font: Main.iconFont
             }
             TextInput {
                 id: search
@@ -336,7 +336,6 @@ Scope {
             Text {
                 id: hint
                 anchors.right: parent.right
-                anchors.rightMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
                 text: ">  run    ?  web"
                 color: Main.theme.colAccentDark
@@ -347,7 +346,7 @@ Scope {
         ListView {
             id: list
             anchors.top: field.bottom
-            anchors.topMargin: 8
+            anchors.topMargin: Main.gap
             anchors.bottom: parent.bottom
             width: parent.width
             clip: true
@@ -367,7 +366,7 @@ Scope {
                 width: ListView.view.width
                 height: 46
                 radius: Main.radius
-                color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Main.theme.overlay(0.04) : "transparent")
+                color: current ? Main.theme.overlay(0.07) : (rowMouse.containsMouse ? Main.theme.overlay(0.04) : "transparent")
 
                 Rectangle {
                     visible: row.current
@@ -413,7 +412,7 @@ Scope {
                         text: row.modelData.name
                         color: Main.theme.colFg
                         font.family: Main.fontFamily
-                        font.pixelSize: 14
+                        font.pixelSize: Main.barFont.pixelSize
                         font.weight: row.modelData.kind === "calc" ? Font.DemiBold : Font.Normal
                         elide: Text.ElideRight
                     }

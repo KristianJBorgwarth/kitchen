@@ -44,9 +44,65 @@ Scope {
 
     Modal {
         id: modal
+        title: "Keybinds"
+        glyph: "󰌌"
         maxWidth: 760
         maxHeight: 900
-        padding: 22
+        padding: Main.pad
+
+        actions: [
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: Keybinds.sections.reduce((n, s) => n + s.rows.length, 0) + " bindings"
+                color: Main.theme.colAccentDark
+                font: Main.smallFont
+            },
+            Item {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 220
+                height: 28
+
+                Divider {
+                    anchors.bottom: parent.bottom
+                    width: parent.width
+                    color: search.activeFocus ? Main.theme.colAccentMid : Main.theme.overlay(0.08)
+                }
+                Text {
+                    id: searchIcon
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "󰍉"
+                    color: Main.theme.colAccentMid
+                    font: Main.barFont
+                }
+                TextInput {
+                    id: search
+                    anchors.left: searchIcon.right
+                    anchors.leftMargin: 8
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: root.query
+                    onTextEdited: root.query = text
+                    color: Main.theme.colFg
+                    selectionColor: Main.theme.colAccentDark
+                    font: Main.barFont
+                    clip: true
+
+                    // back to vim keys; the filter stays applied
+                    Keys.onEscapePressed: modal.body.forceActiveFocus()
+                    Keys.onReturnPressed: modal.body.forceActiveFocus()
+                    Keys.onDownPressed: modal.body.forceActiveFocus()
+
+                    Text {
+                        anchors.verticalCenter: parent.verticalCenter
+                        visible: !search.text && !search.activeFocus
+                        text: "/ to search"
+                        color: Main.theme.colAccentDark
+                        font: Main.barFont
+                    }
+                }
+            }
+        ]
         bindings: [
             { keys: "j", desc: "scroll down", run: () => root.scrollBy(80) },
             { keys: "k", desc: "scroll up", run: () => root.scrollBy(-80) },
@@ -65,100 +121,9 @@ Scope {
             id: page
             anchors.fill: parent
 
-            Item {
-                id: header
-                width: parent.width
-                height: 44
-
-                Column {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 2
-                    Text {
-                        text: "Keybinds"
-                        color: Main.theme.colFg
-                        font.family: Main.fontFamily
-                        font.pixelSize: 20
-                        font.weight: Font.DemiBold
-                    }
-                    Text {
-                        text: "hyprland  ·  " + Keybinds.sections.reduce((n, s) => n + s.rows.length, 0) + " bindings"
-                        color: Main.theme.colAccentMid
-                        font: Main.smallFont
-                    }
-                }
-
-                Row {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 10
-
-                    Rectangle {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 280
-                        height: 32
-                        radius: Main.radius
-                        color: Main.theme.colSurface
-                        border.color: search.activeFocus ? Main.theme.colAccentMid : Main.theme.colMuted
-                        border.width: 1
-
-                        Text {
-                            id: searchIcon
-                            anchors.left: parent.left
-                            anchors.leftMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: "󰍉"
-                            color: Main.theme.colAccentMid
-                            font: Main.barFont
-                        }
-                        TextInput {
-                            id: search
-                            anchors.left: searchIcon.right
-                            anchors.leftMargin: 8
-                            anchors.right: parent.right
-                            anchors.rightMargin: 12
-                            anchors.verticalCenter: parent.verticalCenter
-                            text: root.query
-                            onTextEdited: root.query = text
-                            color: Main.theme.colFg
-                            selectionColor: Main.theme.colAccentDark
-                            font: Main.barFont
-                            clip: true
-
-                            // back to vim keys; the filter stays applied
-                            Keys.onEscapePressed: modal.body.forceActiveFocus()
-                            Keys.onReturnPressed: modal.body.forceActiveFocus()
-                            Keys.onDownPressed: modal.body.forceActiveFocus()
-
-                            Text {
-                                anchors.verticalCenter: parent.verticalCenter
-                                visible: !search.text && !search.activeFocus
-                                text: "press / to search"
-                                color: Main.theme.colAccentDark
-                                font: Main.barFont
-                            }
-                        }
-                    }
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: "? keys"
-                        color: Main.theme.colAccentDark
-                        font: Main.smallFont
-                    }
-
-                    IconButton {
-                        anchors.verticalCenter: parent.verticalCenter
-                        icon: "󰅖"
-                        onClicked: root.hide()
-                    }
-                }
-            }
-
             Flickable {
                 id: flick
-                anchors.top: header.bottom
-                anchors.topMargin: 18
+                anchors.top: parent.top
                 anchors.bottom: parent.bottom
                 width: parent.width
                 contentHeight: stack.height
@@ -176,7 +141,7 @@ Scope {
                 Column {
                     id: stack
                     width: flick.width
-                    spacing: 12
+                    spacing: Main.gap
 
                     Repeater {
                         model: root.filtered
@@ -185,7 +150,7 @@ Scope {
                             id: island
                             required property var modelData
                             width: parent.width
-                            height: rows.implicitHeight + 56
+                            height: rows.implicitHeight + 44
                             title: modelData.title
 
                             Column {
