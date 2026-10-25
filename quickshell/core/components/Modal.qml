@@ -16,6 +16,9 @@ Item {
     property real dim: 0.5  // backdrop opacity while this modal is open
     // false: no dim and the mouse stays free outside it; it still takes the keyboard
     property bool blocking: true
+    property bool fromBottom: false  // dock to the bottom edge and slide up instead of centering
+    property real edgeMargin: 24  // gap to the bottom edge when fromBottom
+    property int duration: Main.anim  // open/close animation length in ms
     property var bindings: []
     // set a title for the shared frame: header (glyph, title, `actions`, close) and key hints
     property string title: ""
@@ -60,7 +63,8 @@ Item {
     // ClippingRectangle (not clip: true) keeps backgrounds inside the rounded corners
     ClippingRectangle {
         id: card
-        anchors.centerIn: parent
+        x: (root.width - width) / 2
+        y: root.fromBottom ? root.height - height - root.edgeMargin + (root.opened ? 0 : 48) : (root.height - height) / 2
         width: Math.min(root.maxWidth, root.width - 64)
         height: Math.min(root.maxHeight, root.height - 64)
         radius: root.radius
@@ -71,15 +75,22 @@ Item {
         scale: root.opened ? 1 : 0.96
         opacity: root.opened ? 1 : 0
 
+        Behavior on y {
+            enabled: root.fromBottom
+            NumberAnimation {
+                duration: root.duration
+                easing.type: Easing.OutCubic
+            }
+        }
         Behavior on scale {
             NumberAnimation {
-                duration: Main.anim
+                duration: root.duration
                 easing.type: Easing.OutCubic
             }
         }
         Behavior on opacity {
             NumberAnimation {
-                duration: Main.anim
+                duration: root.duration
             }
         }
 

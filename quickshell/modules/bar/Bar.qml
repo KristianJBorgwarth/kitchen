@@ -81,9 +81,8 @@ Scope {
             spacing: 20
             Privacy {}
             AwakeIndicator {}
+            Internet {}
             Battery {}
-            Volume {}
-            Tray {}
             PowerMenu {}
         }
     }

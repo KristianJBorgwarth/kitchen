@@ -10,21 +10,13 @@ import qs.core.components
 import qs.services
 import "components"
 
-// Workspace switcher, two views of live workspace previews (LiveWorkspace), flipped with `o`:
-// a carousel with the selected workspace large in the middle, and a grid of every workspace
-// per monitor where windows can be dragged from one workspace to another.
 Scope {
     id: root
     readonly property alias opened: modal.opened
     property string query: ""
-    // tracked by name so a refresh of the list doesn't move the selection
     property string selectedName: ""
-    // false right after opening: the list is still arriving from the compositor, so the carousel
-    // jumps to the selection instead of sliding (a slide could stop on the wrong card)
     property bool settled: false
-    // "carousel" or "grid"; kept between openings
     property string view: "carousel"
-    // how much of the room the previews take, the same on every monitor
     readonly property real previewScale: 0.7
 
     readonly property string q: query.trim().toLowerCase()
@@ -113,6 +105,23 @@ Scope {
             { keys: "/", desc: "search windows", run: () => search.forceActiveFocus() },
             { keys: "<Esc>", desc: "", run: () => root.query ? root.query = "" : modal.hide() }
         ]
+
+        // touchpad two-finger swipe, sideways: steps through workspaces
+        WheelHandler {
+            id: swipe
+            property real acc: 0
+            readonly property real threshold: 150
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            orientation: Qt.Horizontal
+            onWheel: event => {
+                const dx = event.pixelDelta.x !== 0 ? event.pixelDelta.x : event.angleDelta.x / 2;
+                acc += dx;
+                if (Math.abs(acc) >= threshold) {
+                    root.step(acc < 0 ? 1 : -1);
+                    acc = 0;
+                }
+            }
+        }
 
         Item {
             id: header
