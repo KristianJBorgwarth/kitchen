@@ -1,7 +1,8 @@
 -- shared by the other conf/ files
 return {
     mod = "SUPER",
-    term = "ghostty",
+    -- GTK 4.24 sends an empty blur region and Hyprland then skips blur (hyprwm/Hyprland#16508)
+    term = "GDK_WAYLAND_DISABLE=ext_background_effect_manager_v1 ghostty",
     browser = "brave",
     menu = "qs ipc call launcher toggle",
     screenshot = "qs ipc call screenshot start",
