@@ -14,8 +14,6 @@ Item {
     property real radius: Main.radius
     property bool frameless: false  // no card fill or border; content floats on the backdrop
     property real dim: 0  // backdrop opacity while this modal is open
-    // false: no dim and the mouse stays free outside it; it still takes the keyboard
-    property bool blocking: true
     property bool fromBottom: false  // dock to the bottom edge and slide up instead of centering
     property real edgeMargin: 24  // gap to the bottom edge when fromBottom
     property int duration: Main.anim  // open/close animation length in ms
@@ -60,13 +58,13 @@ Item {
     anchors.fill: parent ?? undefined
     visible: card.opacity > 0
 
-    // ClippingRectangle (not clip: true) keeps backgrounds inside the rounded corners
-    ClippingRectangle {
+    Rectangle {
         id: card
-        x: (root.width - width) / 2
-        y: root.fromBottom ? root.height - height - root.edgeMargin + (root.opened ? 0 : 48) : (root.height - height) / 2
-        width: Math.min(root.maxWidth, root.width - 64)
-        height: Math.min(root.maxHeight, root.height - 64)
+        // whole pixels, so text inside lands on the pixel grid
+        x: Math.round((root.width - width) / 2)
+        y: root.fromBottom ? root.height - height - root.edgeMargin + (root.opened ? 0 : 48) : Math.round((root.height - height) / 2)
+        width: Math.round(Math.min(root.maxWidth, root.width - 64))
+        height: Math.round(Math.min(root.maxHeight, root.height - 64))
         radius: root.radius
         color: root.frameless ? "transparent" : Main.theme.colBg
         border.color: Main.theme.overlay(0.08)
@@ -99,9 +97,16 @@ Item {
             anchors.fill: parent
         }
 
-        Item {
-            id: backgroundSlot
+        // only the background goes through the rounded clip: it renders to a texture, which
+        // would soften any text drawn inside it
+        ClippingRectangle {
             anchors.fill: parent
+            radius: card.radius
+            color: "transparent"
+            Item {
+                id: backgroundSlot
+                anchors.fill: parent
+            }
         }
 
         Item {

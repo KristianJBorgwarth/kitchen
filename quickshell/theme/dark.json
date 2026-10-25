@@ -3,7 +3,7 @@
 
     "bg": "#141414",
     "surface": "#1e1e1e",
-    "fg": "#e8e8e8",
+    "fg": "#cfcfcf",
 
     "muted": "#3a3a3a",
     "dim": "#5a5a5a",
@@ -21,7 +21,7 @@
 
     "terminal": {
         "background": "@bg",
-        "foreground": "@fg",
+        "foreground": "#e8e8e8",
         "cursor": "#ffffff",
         "ansi": [
             "#232a2e", "#e67e80", "#a7c080", "#dbbc7f", "#7fbbb3", "#d699b6", "#83c092", "#d3c6aa",

@@ -37,7 +37,7 @@ PanelWindow {
     }
     exclusionMode: ExclusionMode.Ignore
     mask: Region {
-        item: !root.active ? null : root.current.blocking ? backdrop : root.current.card
+        item: root.active ? backdrop : null
     }
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell-modal"
@@ -46,18 +46,18 @@ PanelWindow {
     Rectangle {
         id: backdrop
         anchors.fill: parent
-        color: "black"
-        opacity: root.active && root.current.blocking ? root.current.dim : 0
+        // keyboard focus is exclusive while open, so a press anywhere outside the card closes it
+        color: Qt.rgba(0, 0, 0, root.active ? root.current.dim : 0)
 
-        Behavior on opacity {
-            NumberAnimation {
+        Behavior on color {
+            ColorAnimation {
                 duration: Main.anim
             }
         }
 
         MouseArea {
             anchors.fill: parent
-            onClicked: root.current?.hide()
+            onPressed: root.current?.hide()
         }
     }
 
