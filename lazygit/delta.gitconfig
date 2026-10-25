@@ -12,7 +12,7 @@
     line-numbers-zero-style = "#5a5a5a"
     line-numbers-left-style = "#3a3a3a"
     line-numbers-right-style = "#3a3a3a"
-    file-style = "#e8e8e8" bold
+    file-style = "#cfcfcf" bold
     file-decoration-style = "#3a3a3a" ul
     hunk-header-style = file line-number syntax
     hunk-header-file-style = "#808080"

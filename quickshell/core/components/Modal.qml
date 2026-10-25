@@ -59,10 +59,9 @@ Item {
     anchors.fill: parent ?? undefined
     visible: card.opacity > 0
 
-    // ClippingRectangle (not clip: true) keeps backgrounds inside the rounded corners
-    ClippingRectangle {
+    Rectangle {
         id: card
-        // whole pixels: the clip renders the content to a texture, and a half-pixel offset smears its text
+        // whole pixels, so text inside lands on the pixel grid
         x: Math.round((root.width - width) / 2)
         y: root.fromBottom ? root.height - height - root.edgeMargin + (root.opened ? 0 : 48) : root.fromTop ? root.edgeMargin - (root.opened ? 0 : 48) : Math.round((root.height - height) / 2)
         width: Math.round(Math.min(root.maxWidth, root.width - 64))
@@ -99,9 +98,16 @@ Item {
             anchors.fill: parent
         }
 
-        Item {
-            id: backgroundSlot
+        // only the background goes through the rounded clip: it renders to a texture, which
+        // would soften any text drawn inside it
+        ClippingRectangle {
             anchors.fill: parent
+            radius: card.radius
+            color: "transparent"
+            Item {
+                id: backgroundSlot
+                anchors.fill: parent
+            }
         }
 
         Item {

@@ -1,4 +1,5 @@
 //@ pragma UseQApplication
+//@ pragma NativeTextRendering
 import Quickshell // for PanelWindow
 import QtQuick // for Text
 import qs.core // for Scope

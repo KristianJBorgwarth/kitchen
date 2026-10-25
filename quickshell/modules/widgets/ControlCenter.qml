@@ -123,7 +123,7 @@ Scope {
 
             Column {
                 id: leftCol
-                width: Math.max(320, Math.min(420, layout.width * 0.38))
+                width: Math.round(Math.max(320, Math.min(420, layout.width * 0.38)))
                 height: parent.height
                 spacing: 14
 
@@ -581,23 +581,51 @@ Scope {
                                         onIconClicked: Audio.toggleMute(dev.node)
                                     }
 
-                                    Flow {
+                                    // the devices as a plain list; a check marks the default
+                                    Column {
                                         width: parent.width
-                                        spacing: 6
                                         visible: dev.devices.length > 1
                                         Repeater {
                                             model: ScriptModel {
                                                 values: root.opened ? dev.devices : []
                                             }
-                                            Chip {
+                                            Rectangle {
+                                                id: devRow
                                                 required property var modelData
-                                                implicitHeight: 26
-                                                maxWidth: sound.width
-                                                text: Audio.label(modelData)
-                                                tint: dev.modelData.tint
-                                                active: modelData === dev.node
-                                                clickable: true
-                                                onClicked: Audio.setDefault(modelData)
+                                                readonly property bool current: modelData === dev.node
+                                                width: parent.width
+                                                height: 32
+                                                radius: Main.radius
+                                                color: devRowMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent"
+
+                                                Text {
+                                                    id: devCheck
+                                                    anchors.left: parent.left
+                                                    anchors.leftMargin: 8
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    width: 16
+                                                    text: devRow.current ? "󰄬" : ""
+                                                    color: Main.theme.colFg
+                                                    font: Main.barFont
+                                                }
+                                                Text {
+                                                    anchors.left: devCheck.right
+                                                    anchors.leftMargin: 10
+                                                    anchors.right: parent.right
+                                                    anchors.rightMargin: 8
+                                                    anchors.verticalCenter: parent.verticalCenter
+                                                    text: Audio.label(devRow.modelData)
+                                                    color: devRow.current ? Main.theme.colFg : Main.theme.colAccentMid
+                                                    font: Main.barFont
+                                                    elide: Text.ElideRight
+                                                }
+                                                MouseArea {
+                                                    id: devRowMouse
+                                                    anchors.fill: parent
+                                                    hoverEnabled: true
+                                                    cursorShape: Qt.PointingHandCursor
+                                                    onClicked: Audio.setDefault(devRow.modelData)
+                                                }
                                             }
                                         }
                                     }
