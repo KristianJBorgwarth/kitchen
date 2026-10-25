@@ -25,7 +25,7 @@ Item {
     clip: true
 
     Timer {
-        interval: 150
+        interval: 30
         running: root.followHover && !root.open && root.hovered
         onTriggered: root.open = true
     }
@@ -38,13 +38,13 @@ Item {
     // out with a soft landing, back in a little quicker
     Behavior on width {
         NumberAnimation {
-            duration: root.open ? 220 : 160
+            duration: root.open ? 110 : 100
             easing.type: root.open ? Easing.OutCubic : Easing.InCubic
         }
     }
     Behavior on opacity {
         NumberAnimation {
-            duration: root.open ? 220 : 120
+            duration: root.open ? 110 : 80
         }
     }
 

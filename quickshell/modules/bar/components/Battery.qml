@@ -4,7 +4,7 @@ import qs.core
 import qs.modules.widgets
 
 // Battery level, on laptops only: yellow at 20%, red at 10% unless it's charging. Resting on
-// it slides out the percentage and the time left (or until full). Click for the control center.
+// it slides out the percentage and the time left (or until full). Display only.
 Item {
     id: root
     anchors.verticalCenter: parent.verticalCenter
@@ -58,12 +58,5 @@ Item {
 
             HoverChip {}
         }
-    }
-
-    MouseArea {
-        anchors.fill: parent
-        anchors.margins: -4
-        cursorShape: Qt.PointingHandCursor
-        onClicked: ControlCenter.opened ? ControlCenter.hide() : ControlCenter.show()
     }
 }
