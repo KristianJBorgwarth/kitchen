@@ -19,6 +19,7 @@ Item {
     property bool framed: false
     property alias actions: actionRow.data
     property alias headerLeft: leftRow.data  // header items aligned left instead of beside the buttons
+    property alias headerCenter: centerRow.data  // header items centered in the card
 
     default property alias content: body.data
     property alias background: backgroundSlot.data
@@ -114,7 +115,7 @@ Item {
         // with no actions the row takes no space: the close button floats over the content's corner
         Item {
             id: header
-            readonly property bool hasActions: actionRow.children.length + leftRow.children.length > 0
+            readonly property bool hasActions: actionRow.children.length + leftRow.children.length + centerRow.children.length > 0
             visible: root.framed
             z: 1
             x: root.padding
@@ -125,6 +126,12 @@ Item {
             Row {
                 id: leftRow
                 anchors.left: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 8
+            }
+            Row {
+                id: centerRow
+                anchors.horizontalCenter: parent.horizontalCenter
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 8
             }

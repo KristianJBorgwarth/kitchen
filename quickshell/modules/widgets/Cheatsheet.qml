@@ -49,7 +49,7 @@ Scope {
         maxHeight: 900
         padding: Main.pad
 
-        actions: [
+        headerCenter: [
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: Keybinds.sections.reduce((n, s) => n + s.rows.length, 0) + " bindings"
