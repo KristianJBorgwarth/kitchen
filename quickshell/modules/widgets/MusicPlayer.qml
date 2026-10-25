@@ -103,7 +103,6 @@ Scope {
 
     Modal {
         id: modal
-        blocking: false
         title: "Music"
         glyph: "󰝚"
         maxWidth: 1100

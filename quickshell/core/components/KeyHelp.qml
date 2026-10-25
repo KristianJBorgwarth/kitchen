@@ -34,16 +34,26 @@ Rectangle {
         }
 
         Grid {
+            id: grid
             anchors.horizontalCenter: parent.horizontalCenter
-            columns: root.vimKeys.bindings.length > 8 ? 2 : 1
-            columnSpacing: root.compact ? 16 : 40
+            // two columns only when they fit inside the card with a margin
+            property var rowWidths: []
+            readonly property real splitWidth: Math.max(0, ...rowWidths.filter((w, i) => i % 2 === 0)) + Math.max(0, ...rowWidths.filter((w, i) => i % 2 === 1)) + columnSpacing
+            columns: root.vimKeys.bindings.length > 8 && splitWidth <= root.width - 48 ? 2 : 1
+            columnSpacing: root.compact ? 24 : 40
             rowSpacing: root.compact ? 6 : 8
 
             Repeater {
                 model: root.vimKeys.bindings.filter(b => b.desc)
                 Row {
                     required property var modelData
+                    required property int index
                     spacing: root.compact ? 8 : 12
+                    onImplicitWidthChanged: {
+                        const w = grid.rowWidths.slice();
+                        w[index] = implicitWidth;
+                        grid.rowWidths = w;
+                    }
                     Rectangle {
                         width: Math.max(root.compact ? 28 : 44, keyText.implicitWidth + 14)
                         height: 22

@@ -85,7 +85,6 @@ Scope {
 
     Modal {
         id: modal
-        blocking: false
         title: "Control center"
         glyph: "󰒓"
         maxWidth: 1120
@@ -164,7 +163,7 @@ Scope {
                         height: 24
                         width: battText.implicitWidth + 20
                         radius: Main.radius
-                        readonly property color tint: root.batteryLevel < 0.15 ? Main.theme.colRed : root.batteryLevel < 0.35 ? Main.theme.colAmber : Main.theme.colGreen
+                        readonly property color tint: root.batteryLevel < 0.15 ? Main.theme.colRed : root.batteryLevel < 0.35 ? Main.theme.colAmber : Main.theme.colAccentLight
                         color: Qt.rgba(tint.r, tint.g, tint.b, 0.15)
                         Text {
                             id: battText
@@ -177,107 +176,103 @@ Scope {
                     }
                 }
 
-                Item {
-                    width: parent.width
-                    height: 44
-
-                    Row {
-                        id: powerRow
-                        anchors.fill: parent
-                        Repeater {
-                            model: [
-                                { icon: "󰌾", tip: "Lock", confirm: false, danger: false, run: () => { root.hide(); Lock.lock(); } },
-                                { icon: "󰤄", tip: "Sleep", confirm: false, danger: false, run: () => { root.hide(); Lock.suspend(); } },
-                                { icon: "󰍃", tip: "Log out", confirm: true, danger: true, run: () => Session.logout() },
-                                { icon: "󰜉", tip: "Reboot", confirm: true, danger: true, run: () => Session.reboot() },
-                                { icon: "󰐥", tip: "Power off", confirm: true, danger: true, run: () => Session.poweroff() }
-                            ]
-                            IconButton {
-                                required property var modelData
-                                implicitWidth: powerRow.width / 5
-                                implicitHeight: powerRow.height
-                                radius: Main.radius
-                                icon: modelData.icon
-                                confirm: modelData.confirm
-                                armedColor: modelData.danger ? Main.theme.colRed : Main.theme.colFg
-                                tooltip: modelData.tip
-                                armedTooltip: "Click again to " + modelData.tip.toLowerCase()
-                                onClicked: modelData.run()
-                            }
+                Row {
+                    spacing: 4
+                    Repeater {
+                        model: [
+                            { icon: "󰌾", tip: "Lock", confirm: false, run: () => { root.hide(); Lock.lock(); } },
+                            { icon: "󰤄", tip: "Sleep", confirm: false, run: () => { root.hide(); Lock.suspend(); } },
+                            { icon: "󰍃", tip: "Log out", confirm: true, run: () => Session.logout() },
+                            { icon: "󰜉", tip: "Reboot", confirm: true, run: () => Session.reboot() },
+                            { icon: "󰐥", tip: "Power off", confirm: true, run: () => Session.poweroff() }
+                        ]
+                        IconButton {
+                            required property var modelData
+                            implicitWidth: 34
+                            implicitHeight: 34
+                            icon: modelData.icon
+                            iconFont: Main.pillFont
+                            confirm: modelData.confirm
+                            armedColor: Main.theme.colRed
+                            tooltip: modelData.tip
+                            armedTooltip: "Click again to " + modelData.tip.toLowerCase()
+                            onClicked: modelData.run()
                         }
                     }
                 }
 
-                Grid {
-                    id: tiles
+                Rectangle {
                     width: parent.width
-                    columns: 2
-                    spacing: 12
-                    readonly property real tileW: (width - spacing) / 2
+                    height: toggles.implicitHeight + 8
+                    radius: Main.radius
+                    color: Main.theme.overlay(0.03)
 
-                    ToggleTile {
-                        width: tiles.tileW
-                        icon: Network.hasWifi ? (Network.wifiEnabled ? "󰤨" : "󰤭") : "󰈀"
-                        label: Network.hasWifi ? "Wi-Fi" : "Network"
-                        sublabel: Network.hasWifi && !Network.wifiEnabled ? (Network.wired ? "Off · wired" : "Off") : Network.label
-                        active: Network.hasWifi ? Network.wifiEnabled : Network.connected
-                        clickable: Network.hasWifi
-                        hasDetails: true
-                        onClicked: Network.toggleWifi()
-                        onDetailsClicked: root.openTab("network")
-                    }
-                    ToggleTile {
-                        width: tiles.tileW
-                        visible: Bt.available
-                        icon: Bt.enabled ? "󰂯" : "󰂲"
-                        label: "Bluetooth"
-                        sublabel: Bt.label
-                        active: Bt.enabled
-                        hasDetails: true
-                        onClicked: Bt.toggle()
-                        onDetailsClicked: root.openTab("bluetooth")
-                    }
-                    ToggleTile {
-                        width: tiles.tileW
-                        icon: Dnd.enabled ? "󰂛" : "󰂚"
-                        label: "Silent"
-                        sublabel: Dnd.enabled ? "Don't disturb" : "Off"
-                        active: Dnd.enabled
-                        onClicked: Dnd.toggle()
-                    }
-                    ToggleTile {
-                        width: tiles.tileW
-                        icon: "󰈈"
-                        label: "Stay awake"
-                        sublabel: Awake.enabled ? "On" : "Off"
-                        active: Awake.enabled
-                        onClicked: Awake.enabled = !Awake.enabled
-                    }
-                    ToggleTile {
-                        width: tiles.tileW
-                        visible: NightLight.available
-                        icon: "󰖔"
-                        label: "Night light"
-                        sublabel: NightLight.enabled ? NightLight.temperature + "K" : "Off"
-                        active: NightLight.enabled
-                        onClicked: NightLight.toggle()
-                    }
-                    ToggleTile {
-                        width: tiles.tileW
-                        icon: Main.theme.dark ? "󰖔" : "󰖙"
-                        label: "Dark mode"
-                        sublabel: Main.theme.dark ? "On" : "Off  ·  light"
-                        active: Main.theme.dark
-                        onClicked: Main.theme.toggle()
-                    }
-                    ToggleTile {
-                        width: tiles.tileW
-                        readonly property bool muted: Audio.source?.audio?.muted ?? false
-                        icon: muted ? "󰍭" : "󰍬"
-                        label: "Microphone"
-                        sublabel: muted ? "Muted" : "On"
-                        active: !muted
-                        onClicked: Audio.toggleMute(Audio.source)
+                    Column {
+                        id: toggles
+                        anchors.fill: parent
+                        anchors.margins: 4
+
+                        ToggleRow {
+                            width: parent.width
+                            icon: Network.hasWifi ? (Network.wifiEnabled ? "󰤨" : "󰤭") : "󰈀"
+                            label: Network.hasWifi ? "Wi-Fi" : "Network"
+                            sublabel: Network.hasWifi && !Network.wifiEnabled ? (Network.wired ? "wired" : "") : Network.label
+                            active: Network.hasWifi ? Network.wifiEnabled : Network.connected
+                            clickable: Network.hasWifi
+                            hasDetails: true
+                            onClicked: Network.toggleWifi()
+                            onDetailsClicked: root.openTab("network")
+                        }
+                        ToggleRow {
+                            width: parent.width
+                            visible: Bt.available
+                            icon: Bt.enabled ? "󰂯" : "󰂲"
+                            label: "Bluetooth"
+                            sublabel: Bt.enabled ? Bt.label : ""
+                            active: Bt.enabled
+                            hasDetails: true
+                            onClicked: Bt.toggle()
+                            onDetailsClicked: root.openTab("bluetooth")
+                        }
+                        ToggleRow {
+                            width: parent.width
+                            readonly property bool muted: Audio.source?.audio?.muted ?? false
+                            icon: muted ? "󰍭" : "󰍬"
+                            label: "Microphone"
+                            sublabel: muted ? "muted" : ""
+                            active: !muted
+                            onClicked: Audio.toggleMute(Audio.source)
+                        }
+                        ToggleRow {
+                            width: parent.width
+                            icon: Dnd.enabled ? "󰂛" : "󰂚"
+                            label: "Silent"
+                            active: Dnd.enabled
+                            onClicked: Dnd.toggle()
+                        }
+                        ToggleRow {
+                            width: parent.width
+                            visible: NightLight.available
+                            icon: "󰖔"
+                            label: "Night light"
+                            sublabel: NightLight.enabled ? NightLight.temperature + "K" : ""
+                            active: NightLight.enabled
+                            onClicked: NightLight.toggle()
+                        }
+                        ToggleRow {
+                            width: parent.width
+                            icon: Main.theme.dark ? "󰖔" : "󰖙"
+                            label: "Dark mode"
+                            active: Main.theme.dark
+                            onClicked: Main.theme.toggle()
+                        }
+                        ToggleRow {
+                            width: parent.width
+                            icon: "󰈈"
+                            label: "Stay awake"
+                            active: Awake.enabled
+                            onClicked: Awake.enabled = !Awake.enabled
+                        }
                     }
                 }
 
@@ -290,7 +285,7 @@ Scope {
                     SliderRow {
                         anchors.fill: parent
                         icon: "󰖔"
-                        accent: Main.theme.colAmber
+                        accent: Main.theme.colFg
                         // warmer to the right: 6000K → 2500K
                         value: (6000 - NightLight.temperature) / 3500
                         onMoved: v => NightLight.setTemperature(6000 - v * 3500)
@@ -301,7 +296,8 @@ Scope {
                     visible: PowerProfile.available
                     width: parent.width
                     height: 34
-                    color: "transparent"
+                    radius: Main.radius
+                    color: Main.theme.overlay(0.03)
 
                     Row {
                         anchors.fill: parent
@@ -318,7 +314,7 @@ Scope {
                                 width: parent.width / 3
                                 height: parent.height
                                 radius: Main.radius
-                                color: selected ? Main.theme.colFg : (segMouse.containsMouse ? Main.theme.overlay(0.06) : "transparent")
+                                color: selected ? Main.theme.overlay(0.1) : (segMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent")
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -329,7 +325,7 @@ Scope {
                                 Text {
                                     anchors.centerIn: parent
                                     text: seg.modelData.icon + "  " + seg.modelData.label
-                                    color: seg.selected ? Main.theme.colBg : Main.theme.colFg
+                                    color: seg.selected ? Main.theme.colFg : Main.theme.colAccentMid
                                     font: Main.smallFont
                                 }
                                 MouseArea {
@@ -352,7 +348,7 @@ Scope {
                     SliderRow {
                         anchors.fill: parent
                         icon: "󰃠"
-                        accent: Main.theme.colAmber
+                        accent: Main.theme.colFg
                         value: Brightness.value
                         onMoved: v => Brightness.set(v)
                     }
@@ -405,10 +401,10 @@ Scope {
 
                             Repeater {
                                 model: [
-                                    { label: "CPU", value: Monitor.cpuUsage, text: Math.round(Monitor.cpuUsage) + "%", tint: Main.theme.colBlue },
-                                    { label: "Memory", value: Monitor.memUsage, text: Monitor.memUsed.toFixed(1) + " / " + Math.round(Monitor.memTotal) + "G", tint: Main.theme.colViolet },
-                                    { label: "GPU", value: Monitor.gpuUsage, text: Monitor.gpuVendor ? Math.round(Monitor.gpuUsage) + "%" : "n/a", tint: Main.theme.colGreen },
-                                    { label: "CPU temp", value: Monitor.cpuTemp, text: Monitor.cpuTemp > 0 ? Monitor.cpuTemp + "°C" : "…", tint: Monitor.cpuTemp >= 85 ? Main.theme.colRed : Main.theme.colAmber }
+                                    { label: "CPU", value: Monitor.cpuUsage, text: Math.round(Monitor.cpuUsage) + "%", tint: Main.theme.colAccentLight },
+                                    { label: "Memory", value: Monitor.memUsage, text: Monitor.memUsed.toFixed(1) + " / " + Math.round(Monitor.memTotal) + "G", tint: Main.theme.colAccentLight },
+                                    { label: "GPU", value: Monitor.gpuUsage, text: Monitor.gpuVendor ? Math.round(Monitor.gpuUsage) + "%" : "n/a", tint: Main.theme.colAccentLight },
+                                    { label: "CPU temp", value: Monitor.cpuTemp, text: Monitor.cpuTemp > 0 ? Monitor.cpuTemp + "°C" : "…", tint: Monitor.cpuTemp >= 85 ? Main.theme.colRed : Main.theme.colAccentLight }
                                 ]
                                 Column {
                                     required property var modelData
@@ -481,7 +477,7 @@ Scope {
                             width: active?.width ?? 0
                             height: tabTrack.height - 8
                             radius: Main.radius
-                            color: Main.theme.colFg
+                            color: Main.theme.overlay(0.1)
 
                             Behavior on x {
                                 NumberAnimation {
@@ -514,7 +510,7 @@ Scope {
                                         id: tabText
                                         anchors.centerIn: parent
                                         text: tabItem.modelData.icon + "  " + tabItem.modelData.label
-                                        color: root.tab === tabItem.modelData.id ? Main.theme.colBg : Main.theme.colAccentLight
+                                        color: root.tab === tabItem.modelData.id ? Main.theme.colFg : Main.theme.colAccentMid
                                         font: Main.barFont
                                     }
                                     MouseArea {
@@ -558,8 +554,8 @@ Scope {
                             // so device changes don't rebuild these sections
                             Repeater {
                                 model: [
-                                    { title: "Output", output: true, tint: Main.theme.colGreen, on: "󰕾", off: "󰝟" },
-                                    { title: "Input", output: false, tint: Main.theme.colTeal, on: "󰍬", off: "󰍭" }
+                                    { title: "Output", output: true, tint: Main.theme.colFg, on: "󰕾", off: "󰝟" },
+                                    { title: "Input", output: false, tint: Main.theme.colFg, on: "󰍬", off: "󰍭" }
                                 ]
                                 Column {
                                     id: dev
@@ -667,7 +663,7 @@ Scope {
                                         readonly property bool muted: app.modelData?.audio?.muted ?? false
                                         icon: muted ? "󰝟" : "󰕾"
                                         dimmed: muted
-                                        accent: Main.theme.colBlue
+                                        accent: Main.theme.colFg
                                         value: app.modelData?.audio?.volume ?? 0
                                         onMoved: v => Audio.setVolume(app.modelData, v)
                                         onIconClicked: Audio.toggleMute(app.modelData)
@@ -695,7 +691,7 @@ Scope {
                                     width: 8
                                     height: 8
                                     radius: 4
-                                    color: Network.wiredDevice?.connected ? Main.theme.colGreen : Main.theme.colMuted
+                                    color: Network.wiredDevice?.connected ? Main.theme.colFg : Main.theme.colMuted
                                 }
                                 Text {
                                     anchors.verticalCenter: parent.verticalCenter
@@ -735,7 +731,6 @@ Scope {
                                     Switch {
                                         anchors.verticalCenter: parent.verticalCenter
                                         checked: Network.wifiEnabled
-                                        accent: Main.theme.colBlue
                                         onToggled: Network.toggleWifi()
                                     }
                                 }
@@ -771,8 +766,8 @@ Scope {
                                 width: ListView.view.width
                                 height: expanded ? 88 : 44
                                 radius: Main.radius
-                                color: modelData.connected ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.12) : (netMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent")
-                                border.color: modelData.connected ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.35) : "transparent"
+                                color: modelData.connected ? Main.theme.overlay(0.06) : (netMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent")
+                                border.color: modelData.connected ? "transparent" : "transparent"
                                 border.width: 1
 
                                 Behavior on height {
@@ -807,7 +802,7 @@ Scope {
                                         anchors.leftMargin: 12
                                         anchors.verticalCenter: parent.verticalCenter
                                         text: root.signalIcon(net.modelData.signalStrength)
-                                        color: net.modelData.connected ? Main.theme.colBlue : Main.theme.colAccentLight
+                                        color: net.modelData.connected ? Main.theme.colFg : Main.theme.colAccentLight
                                         font: Main.iconFont
                                     }
                                     Column {
@@ -827,7 +822,7 @@ Scope {
                                             width: parent.width
                                             visible: text !== ""
                                             text: net.modelData.stateChanging ? "Connecting…" : net.modelData.connected ? "Connected" : net.modelData.known ? "Saved" : ""
-                                            color: net.modelData.connected ? Main.theme.colBlue : Main.theme.colAccentMid
+                                            color: net.modelData.connected ? Main.theme.colFg : Main.theme.colAccentMid
                                             font: Main.smallFont
                                         }
                                     }
@@ -869,7 +864,7 @@ Scope {
                                         height: 32
                                         radius: Main.radius
                                         color: Main.theme.colBg
-                                        border.color: psk.activeFocus ? Main.theme.colBlue : Main.theme.colMuted
+                                        border.color: psk.activeFocus ? Main.theme.colFg : Main.theme.colMuted
                                         border.width: 1
                                         TextInput {
                                             id: psk
@@ -905,7 +900,7 @@ Scope {
                                         width: 84
                                         height: 32
                                         radius: Main.radius
-                                        color: joinMouse.containsMouse ? Qt.lighter(Main.theme.colBlue, 1.1) : Main.theme.colBlue
+                                        color: joinMouse.containsMouse ? Main.theme.colAccentLight : Main.theme.colFg
                                         onClicked: {
                                             if (!root.pskText)
                                                 return;
@@ -958,8 +953,8 @@ Scope {
                                     height: 26
                                     width: scanRow.implicitWidth + 20
                                     radius: Main.radius
-                                    color: Bt.scanning ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.18) : (scanMouse.containsMouse ? Main.theme.overlay(0.08) : Main.theme.overlay(0.03))
-                                    border.color: Bt.scanning ? Main.theme.colViolet : Main.theme.overlay(0.08)
+                                    color: Bt.scanning ? Main.theme.overlay(0.1) : (scanMouse.containsMouse ? Main.theme.overlay(0.08) : Main.theme.overlay(0.03))
+                                    border.color: Main.theme.overlay(0.08)
                                     border.width: 1
                                     Row {
                                         id: scanRow
@@ -967,7 +962,7 @@ Scope {
                                         spacing: 6
                                         Text {
                                             text: "󰑓"
-                                            color: Bt.scanning ? Main.theme.colViolet : Main.theme.colAccentLight
+                                            color: Bt.scanning ? Main.theme.colFg : Main.theme.colAccentLight
                                             font: Main.smallFont
                                             RotationAnimation on rotation {
                                                 from: 0
@@ -979,7 +974,7 @@ Scope {
                                         }
                                         Text {
                                             text: Bt.scanning ? "Scanning" : "Scan"
-                                            color: Bt.scanning ? Main.theme.colViolet : Main.theme.colAccentLight
+                                            color: Bt.scanning ? Main.theme.colFg : Main.theme.colAccentLight
                                             font: Main.smallFont
                                         }
                                     }
@@ -994,7 +989,6 @@ Scope {
                                 Switch {
                                     anchors.verticalCenter: parent.verticalCenter
                                     checked: Bt.enabled
-                                    accent: Main.theme.colViolet
                                     onToggled: Bt.toggle()
                                 }
                             }
@@ -1028,8 +1022,8 @@ Scope {
                                 width: ListView.view.width
                                 height: 48
                                 radius: Main.radius
-                                color: modelData.connected ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.12) : (devMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent")
-                                border.color: modelData.connected ? Qt.rgba(Main.theme.colViolet.r, Main.theme.colViolet.g, Main.theme.colViolet.b, 0.35) : "transparent"
+                                color: modelData.connected ? Main.theme.overlay(0.06) : (devMouse.containsMouse ? Main.theme.overlay(0.05) : "transparent")
+                                border.color: modelData.connected ? "transparent" : "transparent"
                                 border.width: 1
 
                                 MouseArea {
@@ -1090,7 +1084,7 @@ Scope {
                                             const s = d.connected ? "Connected" : d.paired ? "Paired · click to connect" : "Click to pair";
                                             return d.batteryAvailable ? s + "  ·  󰁹 " + Math.round(d.battery * 100) + "%" : s;
                                         }
-                                        color: btDev.modelData.connected ? Main.theme.colViolet : Main.theme.colAccentMid
+                                        color: btDev.modelData.connected ? Main.theme.colFg : Main.theme.colAccentMid
                                         font: Main.smallFont
                                         elide: Text.ElideRight
                                     }
@@ -1142,7 +1136,6 @@ Scope {
                                 Switch {
                                     anchors.verticalCenter: parent.verticalCenter
                                     checked: Dnd.enabled
-                                    accent: Main.theme.colRed
                                     onToggled: Dnd.toggle()
                                 }
                                 Chip {

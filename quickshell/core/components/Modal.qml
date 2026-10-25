@@ -14,10 +14,9 @@ Item {
     property real radius: Main.radius
     property bool frameless: false  // no card fill or border; content floats on the backdrop
     property real dim: 0  // backdrop opacity while this modal is open
-    // false: no dim and the mouse stays free outside it; it still takes the keyboard
-    property bool blocking: true
     property bool fromBottom: false  // dock to the bottom edge and slide up instead of centering
-    property real edgeMargin: 24  // gap to the bottom edge when fromBottom
+    property bool fromTop: false  // dock to the top edge and slide down instead of centering
+    property real edgeMargin: 24  // gap to the docked edge when fromBottom or fromTop
     property int duration: Main.anim  // open/close animation length in ms
     property var bindings: []
     // set a title for the shared frame: header (glyph, title, `actions`, close) and key hints
@@ -63,10 +62,11 @@ Item {
     // ClippingRectangle (not clip: true) keeps backgrounds inside the rounded corners
     ClippingRectangle {
         id: card
-        x: (root.width - width) / 2
-        y: root.fromBottom ? root.height - height - root.edgeMargin + (root.opened ? 0 : 48) : (root.height - height) / 2
-        width: Math.min(root.maxWidth, root.width - 64)
-        height: Math.min(root.maxHeight, root.height - 64)
+        // whole pixels: the clip renders the content to a texture, and a half-pixel offset smears its text
+        x: Math.round((root.width - width) / 2)
+        y: root.fromBottom ? root.height - height - root.edgeMargin + (root.opened ? 0 : 48) : root.fromTop ? root.edgeMargin - (root.opened ? 0 : 48) : Math.round((root.height - height) / 2)
+        width: Math.round(Math.min(root.maxWidth, root.width - 64))
+        height: Math.round(Math.min(root.maxHeight, root.height - 64))
         radius: root.radius
         color: root.frameless ? "transparent" : Main.theme.colBg
         border.color: Main.theme.overlay(0.08)
@@ -76,7 +76,7 @@ Item {
         opacity: root.opened ? 1 : 0
 
         Behavior on y {
-            enabled: root.fromBottom
+            enabled: root.fromBottom || root.fromTop
             NumberAnimation {
                 duration: root.duration
                 easing.type: Easing.OutCubic

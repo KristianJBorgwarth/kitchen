@@ -79,7 +79,6 @@ Scope {
 
     Modal {
         id: modal
-        blocking: false
         title: Monitor.host
         glyph: "󰍛"
         maxWidth: 1240

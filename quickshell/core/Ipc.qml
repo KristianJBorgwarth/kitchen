@@ -42,19 +42,16 @@ Scope {
     }
 
     IpcHandler {
-        target: "pomodoro"
+        target: "alarm"
 
         function toggle(): void {
-            PomodoroPanel.toggle();
+            AlarmPanel.toggle();
         }
         function startpause(): void {
-            Pomodoro.toggle(Pomodoro.target);
-        }
-        function skip(): void {
-            Pomodoro.skip(Pomodoro.target);
+            Alarm.toggle();
         }
         function reset(): void {
-            Pomodoro.reset(Pomodoro.target);
+            Alarm.reset();
         }
     }
 
