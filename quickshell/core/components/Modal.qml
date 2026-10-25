@@ -107,9 +107,12 @@ Item {
             }
         }
 
+        // with no actions the row takes no space: the close button floats over the content's corner
         Item {
             id: header
+            readonly property bool hasActions: actionRow.children.length > 0
             visible: root.framed
+            z: 1
             x: root.padding
             y: root.padding
             width: parent.width - root.padding * 2
@@ -155,7 +158,7 @@ Item {
             id: body
             anchors.fill: parent
             anchors.margins: root.padding
-            anchors.topMargin: root.framed ? root.padding + header.height + Main.gap : root.padding
+            anchors.topMargin: root.framed && header.hasActions ? root.padding + header.height + Main.gap : root.padding
             anchors.bottomMargin: root.framed ? root.padding + footer.implicitHeight + 8 : root.padding
             focus: true
             Keys.onPressed: event => keys.handle(event)

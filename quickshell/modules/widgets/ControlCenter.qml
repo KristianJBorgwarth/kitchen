@@ -87,8 +87,8 @@ Scope {
         id: modal
         framed: true
         maxWidth: 1120
-        // as tall as the left column needs, plus the frame's header and footer
-        maxHeight: Math.max(620, leftCol.implicitHeight + padding * 2 + 64)
+        // as tall as the left column needs, plus the frame's footer
+        maxHeight: leftCol.implicitHeight + padding * 2 + 24
         padding: Main.pad
         bindings: [
             { keys: "k", desc: "volume up", run: () => Audio.setVolume(Audio.sink, (Audio.sink?.audio?.volume ?? 0) + 0.05) },
@@ -128,9 +128,10 @@ Scope {
 
                 Item {
                     width: parent.width
-                    height: 96
+                    height: clockCol.implicitHeight
 
                     Column {
+                        id: clockCol
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.top: parent.top
