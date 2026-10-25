@@ -85,8 +85,7 @@ Scope {
 
     Modal {
         id: modal
-        title: "Control center"
-        glyph: "󰒓"
+        framed: true
         maxWidth: 1120
         // as tall as the left column needs, plus the frame's header and footer
         maxHeight: Math.max(620, leftCol.implicitHeight + padding * 2 + 64)

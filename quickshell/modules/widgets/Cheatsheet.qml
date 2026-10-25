@@ -44,8 +44,7 @@ Scope {
 
     Modal {
         id: modal
-        title: "Keybinds"
-        glyph: "󰌌"
+        framed: true
         maxWidth: 760
         maxHeight: 900
         padding: Main.pad

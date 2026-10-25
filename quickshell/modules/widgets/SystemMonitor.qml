@@ -79,8 +79,7 @@ Scope {
 
     Modal {
         id: modal
-        title: Monitor.host
-        glyph: "󰍛"
+        framed: true
         maxWidth: 1240
         maxHeight: 840
         padding: Main.pad

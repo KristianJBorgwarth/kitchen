@@ -18,11 +18,9 @@ Item {
     property real edgeMargin: 24  // gap to the bottom edge when fromBottom
     property int duration: Main.anim  // open/close animation length in ms
     property var bindings: []
-    // set a title for the shared frame: header (glyph, title, `actions`, close) and key hints
-    property string title: ""
-    property string glyph: ""
+    // the shared frame: a header row (`actions`, close) and key hints
+    property bool framed: false
     property alias actions: actionRow.data
-    readonly property bool framed: title !== ""
 
     default property alias content: body.data
     property alias background: backgroundSlot.data
@@ -117,24 +115,6 @@ Item {
             width: parent.width - root.padding * 2
             height: 28
 
-            Text {
-                id: headerGlyph
-                anchors.verticalCenter: parent.verticalCenter
-                visible: root.glyph !== ""
-                text: root.glyph
-                color: Main.theme.colAccentMid
-                font: Main.iconFont
-            }
-            Text {
-                anchors.left: headerGlyph.visible ? headerGlyph.right : parent.left
-                anchors.leftMargin: headerGlyph.visible ? 10 : 0
-                anchors.right: actionRow.left
-                anchors.verticalCenter: parent.verticalCenter
-                text: root.title
-                color: Main.theme.colFg
-                font: Main.titleFont
-                elide: Text.ElideRight
-            }
             Row {
                 id: actionRow
                 anchors.right: closeButton.left

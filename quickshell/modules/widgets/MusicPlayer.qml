@@ -103,8 +103,7 @@ Scope {
 
     Modal {
         id: modal
-        title: "Music"
-        glyph: "󰝚"
+        framed: true
         maxWidth: 1100
         maxHeight: 680
         padding: Main.pad
