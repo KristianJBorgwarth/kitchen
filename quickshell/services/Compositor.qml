@@ -58,6 +58,16 @@ Singleton {
         return Hyprland.toplevels.values.find(t => "0x" + t.address === id)?.wayland ?? null;
     }
 
+    // on: keyboard focus moves only on click, not when the mouse passes over a window. The user's
+    // follow_mouse is saved to a file while it's switched, so a reload or restart still restores it.
+    readonly property string followMouseFile: Quickshell.env("XDG_RUNTIME_DIR") + "/quickshell-follow-mouse"
+    function clickToFocus(on: bool): void {
+        const set = v => "hyprctl eval \"hl.config({ input = { follow_mouse = " + v + " } })\" >/dev/null";
+        const script = on ? "v=$(hyprctl getoption input:follow_mouse | awk '/int:/ {print $2}'); [ \"$v\" != 2 ] && echo \"$v\" > \"$1\"; " + set(2) : "[ -f \"$1\" ] && " + set("$(cat \"$1\")") + " && rm -f \"$1\"";
+        // under a lock, so a quick close and reopen can't run out of order
+        Quickshell.execDetached(["flock", followMouseFile + ".lock", "sh", "-c", script, "sh", followMouseFile]);
+    }
+
     function logout(): void {
         Quickshell.execDetached(["sh", "-c", "command -v hyprshutdown >/dev/null && exec hyprshutdown; exec hyprctl dispatch 'hl.dsp.exit()'"]);
     }
@@ -100,8 +110,12 @@ Singleton {
         });
     }
 
-    // Quickshell only learns of windows from events; this fetches the ones already open
-    Component.onCompleted: Hyprland.refreshToplevels()
+    // Quickshell only learns of windows from events; this fetches the ones already open. Nothing is
+    // open at startup either, so put back a follow_mouse a previous instance left switched.
+    Component.onCompleted: {
+        Hyprland.refreshToplevels();
+        clickToFocus(false);
+    }
 
     Connections {
         target: Hyprland

@@ -153,7 +153,7 @@ Scope {
         if (t.startsWith(">")) {
             const cmd = t.slice(1).trim();
             if (cmd) {
-                out.push({ kind: "run", name: cmd, sub: "Run in " + terminal, glyph: "", run: () => Quickshell.execDetached([terminal, "-e", "sh", "-c", cmd + "; exec ${SHELL:-sh}"]) });
+                out.push({ kind: "run", name: cmd, glyph: "", run: () => Quickshell.execDetached([terminal, "-e", "sh", "-c", cmd + "; exec ${SHELL:-sh}"]) });
             }
             return out;
         }
@@ -171,11 +171,11 @@ Scope {
 
         const calc = calculate(t);
         if (calc !== null)
-            out.push({ kind: "calc", name: String(calc), sub: "= " + t.replace(/^=/, "").trim() + "  ·  Enter copies", glyph: "󰃬", score: 1000, run: () => Quickshell.clipboardText = String(calc) });
+            out.push({ kind: "calc", name: String(calc), glyph: "󰃬", score: 1000, run: () => Quickshell.clipboardText = String(calc) });
 
         const conv = convert(t);
         if (conv)
-            out.push({ kind: "calc", name: conv.text, sub: conv.from + "  ·  Enter copies", glyph: "󰑭", score: 1000, run: () => Quickshell.clipboardText = conv.text.split(" ")[0] });
+            out.push({ kind: "calc", name: conv.text, glyph: "󰑭", score: 1000, run: () => Quickshell.clipboardText = conv.text.split(" ")[0] });
 
         for (const e of apps) {
             const s = Math.max(score(q, e.name), score(q, e.genericName) * 0.7, score(q, (e.keywords ?? []).join(" ")) * 0.6, score(q, e.id) * 0.5);
@@ -184,20 +184,20 @@ Scope {
             for (const a of e.actions ?? []) {
                 const sa = score(q, e.name + " " + a.name) * 0.8;
                 if (sa > 0)
-                    out.push({ kind: "action", name: a.name, sub: e.name, icon: a.icon || e.icon, score: sa, run: () => { root.remember(e.id); a.execute(); } });
+                    out.push({ kind: "action", name: a.name, icon: a.icon || e.icon, score: sa, run: () => { root.remember(e.id); a.execute(); } });
             }
         }
 
         for (const w of ToplevelManager.toplevels.values) {
             const s = Math.max(score(q, w.title) * 0.7, score(q, w.appId) * 0.9);
             if (s > 0)
-                out.push({ kind: "window", name: w.title || w.appId, sub: "Open window  ·  " + (Apps.findEntry(w.appId)?.name ?? w.appId), icon: Apps.icon(w.appId), score: s + 5, run: () => w.activate() });
+                out.push({ kind: "window", name: w.title || w.appId, icon: Apps.icon(w.appId), score: s + 5, run: () => w.activate() });
         }
 
         for (const qa of quickActions) {
             const s = Math.max(score(q, qa.name), score(q, qa.keys) * 0.6);
             if (s > 0)
-                out.push({ kind: "shell", name: qa.name, sub: "Shell", glyph: qa.glyph, score: s, run: qa.run });
+                out.push({ kind: "shell", name: qa.name, glyph: qa.glyph, score: s, run: qa.run });
         }
 
         out.sort((a, b) => b.score - a.score);
@@ -207,7 +207,23 @@ Scope {
     }
 
     function app(e, score) {
-        return { kind: "app", name: e.name, sub: e.genericName || e.comment || "", icon: e.icon, score, run: () => { root.remember(e.id); e.execute(); } };
+        return { kind: "app", name: e.name, icon: e.icon, score, run: () => root.start(e) };
+    }
+
+    function windowsOf(e) {
+        return ToplevelManager.toplevels.values.filter(w => Apps.findEntry(w.appId)?.id === e.id);
+    }
+
+    // an app that already has a window gets that window, on whichever workspace, unless it says it
+    // opens new ones (a new-window action: browsers, terminals); launched again, a single-instance
+    // app (Discord, Feishin) would only raise itself where it is
+    function start(e) {
+        root.remember(e.id);
+        const existing = windowsOf(e)[0];
+        if (existing && !(e.actions ?? []).some(a => a.id === "new-window"))
+            existing.activate();
+        else
+            e.execute();
     }
 
     // a new Brave window opens on the current workspace; a plain URL open would add a tab
@@ -215,7 +231,7 @@ Scope {
     // the binary's name in Ubuntu's package
     function web(q) {
         const url = "https://duckduckgo.com/?q=" + encodeURIComponent(q);
-        return { kind: "web", name: q, sub: "Search the web in a new Brave window", glyph: "󰖟", score: -1, run: () => Quickshell.execDetached(["sh", "-c", "exec \"$(command -v brave || command -v brave-browser)\" --new-window \"$1\"", "sh", url]) };
+        return { kind: "web", name: q, glyph: "󰖟", score: -1, run: () => Quickshell.execDetached(["sh", "-c", "exec \"$(command -v brave || command -v brave-browser)\" --new-window \"$1\"", "sh", url]) };
     }
 
     function launch(i) {
@@ -276,6 +292,8 @@ Scope {
     Modal {
         id: modal
         maxWidth: 700
+        rise: true
+        duration: 220
         maxHeight: Math.min(480, 66 + list.contentHeight + padding * 2)
         padding: Main.pad
         // typing goes to the search box, so navigation sticks to keys it doesn't use
@@ -412,16 +430,8 @@ Scope {
                         text: row.modelData.name
                         color: Main.theme.colFg
                         font.family: Main.fontFamily
-                        font.pixelSize: Main.barFont.pixelSize
+                        font.pixelSize: 14
                         font.weight: row.modelData.kind === "calc" ? Font.DemiBold : Font.Normal
-                        elide: Text.ElideRight
-                    }
-                    Text {
-                        width: parent.width
-                        visible: text !== ""
-                        text: row.modelData.sub ?? ""
-                        color: Main.theme.colAccentMid
-                        font: Main.smallFont
                         elide: Text.ElideRight
                     }
                 }

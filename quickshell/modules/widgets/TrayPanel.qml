@@ -97,19 +97,19 @@ Scope {
             { keys: "<CR>", desc: "activate", run: () => root.activate(root.selected) }
         ]
 
-        Rectangle {
+        Item {
             id: field
             width: parent.width
             height: 46
-            radius: Main.radius
-            color: Main.theme.colSurface
-            border.color: Main.theme.colMuted
-            border.width: 1
+
+            Divider {
+                anchors.bottom: parent.bottom
+                width: parent.width
+            }
 
             Text {
                 id: fieldIcon
                 anchors.left: parent.left
-                anchors.leftMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
                 text: "\u{f003b}"
                 color: Main.theme.colAccentMid
@@ -172,7 +172,7 @@ Scope {
                 width: ListView.view.width
                 height: 46
                 radius: Main.radius
-                color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Main.theme.overlay(0.04) : "transparent")
+                color: current ? Main.theme.overlay(0.07) : (rowMouse.containsMouse ? Main.theme.overlay(0.04) : "transparent")
 
                 Rectangle {
                     visible: row.current

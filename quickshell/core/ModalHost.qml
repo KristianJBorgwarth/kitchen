@@ -14,18 +14,33 @@ PanelWindow {
     signal opening
 
     function open(modal) {
-        if (current && current !== modal)
-            current.hide();
         opening();
         const focused = Quickshell.screens.find(s => s.name === Compositor.focusedMonitor);
         if (focused && screen !== focused)
             screen = focused;
+        // switch before hiding the old one, so `active` never dips to false in between
+        const previous = current;
         current = modal;
+        if (previous && previous !== modal)
+            previous.hide();
     }
 
     function release(modal) {
         if (current === modal)
             current = null;
+    }
+
+    property bool grabbing: false
+    onActiveChanged: {
+        Compositor.clickToFocus(active);
+        grabbing = active;
+        if (active)
+            grabEnd.restart();
+    }
+    Timer {
+        id: grabEnd
+        interval: 200
+        onTriggered: root.grabbing = false
     }
 
     color: "transparent"
@@ -37,27 +52,21 @@ PanelWindow {
     }
     exclusionMode: ExclusionMode.Ignore
     mask: Region {
-        item: root.active ? backdrop : null
+        item: root.active ? root.current.card : null
     }
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell-modal"
-    WlrLayershell.keyboardFocus: active ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: !active ? WlrKeyboardFocus.None : grabbing ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.OnDemand
 
     Rectangle {
         id: backdrop
         anchors.fill: parent
-        // keyboard focus is exclusive while open, so a press anywhere outside the card closes it
         color: Qt.rgba(0, 0, 0, root.active ? root.current.dim : 0)
 
         Behavior on color {
             ColorAnimation {
                 duration: Main.anim
             }
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            onPressed: root.current?.hide()
         }
     }
 
