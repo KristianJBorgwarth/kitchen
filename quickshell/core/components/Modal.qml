@@ -13,7 +13,7 @@ Item {
     property real padding: 24
     property real radius: Main.radius
     property bool frameless: false  // no card fill or border; content floats on the backdrop
-    property real dim: 0.5  // backdrop opacity while this modal is open
+    property real dim: 0  // backdrop opacity while this modal is open
     // false: no dim and the mouse stays free outside it; it still takes the keyboard
     property bool blocking: true
     property bool fromBottom: false  // dock to the bottom edge and slide up instead of centering

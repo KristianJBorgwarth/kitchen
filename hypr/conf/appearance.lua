@@ -22,7 +22,8 @@ hl.config({
         },
     },
 
-    dwindle = { preserve_split = true },
+    -- new windows open to the right (or below), not wherever the cursor is
+    dwindle = { preserve_split = true, force_split = 2 },
 
     -- the current workspace's key jumps back to the previous one
     binds = { workspace_back_and_forth = true },

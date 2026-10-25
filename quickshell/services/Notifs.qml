@@ -277,8 +277,9 @@ Singleton {
 
     // ms a popup stays up; 0 = until dismissed
     function timeout(n) {
+        // already ms: the docs say seconds, but quickshell passes the D-Bus value through
         if (n.expireTimeout > 0)
-            return n.expireTimeout * 1000;
+            return n.expireTimeout;
         if (n.urgency === NotificationUrgency.Critical)
             return 0;
         return n.urgency === NotificationUrgency.Low ? 4000 : 6000;
