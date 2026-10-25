@@ -187,7 +187,9 @@ Singleton {
             if (pal.terminal)
                 write(file, ghostty(pal, mode));
         }
-        write(hyprFile, hypr());
+        // applied live too: Hyprland's autoreload is off
+        if (write(hyprFile, hypr()))
+            Quickshell.execDetached(["hyprctl", "eval", hypr().split("\n").slice(1).join("\n")]);
         if (k9sFile.text())
             write(k9sFile, k9s(k9sFile.text()));
         if (lazygitFile.text()) {

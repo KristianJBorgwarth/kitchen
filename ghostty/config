@@ -15,3 +15,6 @@ confirm-close-surface = false
 window-inherit-working-directory = false
 
 theme = light:kitchen-light.conf,dark:kitchen-dark.conf
+
+custom-shader = shaders/cursor_trail.glsl
+custom-shader-animation = true
