@@ -15,8 +15,7 @@ Item {
     property bool frameless: false  // no card fill or border; content floats on the backdrop
     property real dim: 0  // backdrop opacity while this modal is open
     property bool fromBottom: false  // dock to the bottom edge and slide up instead of centering
-    property bool fromTop: false  // dock to the top edge and slide down instead of centering
-    property real edgeMargin: 24  // gap to the docked edge when fromBottom or fromTop
+    property real edgeMargin: 24  // gap to the bottom edge when fromBottom
     property int duration: Main.anim  // open/close animation length in ms
     property var bindings: []
     // set a title for the shared frame: header (glyph, title, `actions`, close) and key hints
@@ -63,7 +62,7 @@ Item {
         id: card
         // whole pixels, so text inside lands on the pixel grid
         x: Math.round((root.width - width) / 2)
-        y: root.fromBottom ? root.height - height - root.edgeMargin + (root.opened ? 0 : 48) : root.fromTop ? root.edgeMargin - (root.opened ? 0 : 48) : Math.round((root.height - height) / 2)
+        y: root.fromBottom ? root.height - height - root.edgeMargin + (root.opened ? 0 : 48) : Math.round((root.height - height) / 2)
         width: Math.round(Math.min(root.maxWidth, root.width - 64))
         height: Math.round(Math.min(root.maxHeight, root.height - 64))
         radius: root.radius
@@ -75,7 +74,7 @@ Item {
         opacity: root.opened ? 1 : 0
 
         Behavior on y {
-            enabled: root.fromBottom || root.fromTop
+            enabled: root.fromBottom
             NumberAnimation {
                 duration: root.duration
                 easing.type: Easing.OutCubic

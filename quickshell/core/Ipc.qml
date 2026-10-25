@@ -42,20 +42,6 @@ Scope {
     }
 
     IpcHandler {
-        target: "alarm"
-
-        function toggle(): void {
-            AlarmPanel.toggle();
-        }
-        function startpause(): void {
-            Alarm.toggle();
-        }
-        function reset(): void {
-            Alarm.reset();
-        }
-    }
-
-    IpcHandler {
         target: "keybinds"
 
         function toggle(): void {

@@ -103,9 +103,7 @@ bind(mod .. " + SHIFT + T", run("qs ipc call theme toggle"), "Dark / light mode"
 bind(mod .. " + Tab", run("qs ipc call switcher toggle"), "Workspace switcher")
 bind(mod .. " + SHIFT + W", run("qs ipc call wallpaper toggle"), "Wallpaper picker")
 bind(mod .. " + Z", run("qs ipc call draw toggle"), "Draw on screen")
-bind(mod .. " + T", run("qs ipc call alarm toggle"), "Timer / alarm")
 bind(mod .. " + S", run("qs ipc call tray toggle"), "System tray")
-bind(mod .. " + SHIFT + P", run("qs ipc call alarm startpause"), "Timer start / pause")
 
 section = "Utilities"
 local function locked() return { locked = true } end
