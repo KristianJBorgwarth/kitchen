@@ -53,10 +53,14 @@ hl.window_rule({
 
 hl.window_rule({ match = { class = "code-oss" }, opacity = "0.85" })
 
--- Toolbox places itself off-screen; put it under the tray
+-- Toolbox places itself off-screen; put it under the tray. It also re-requests its own position
+-- after mapping, so those X11 configure requests are ignored to keep the move. The monitor is a
+-- separate rule so a missing external display doesn't stop the move from applying.
 hl.window_rule({
     match = { class = "jetbrains-toolbox" },
     float = true,
-    monitor = monitors.lenovo,
+    no_anim = true,
+    suppress_event = "x11configurerequest",
     move = "(monitor_w-window_w-8) 42",
 })
+hl.window_rule({ match = { class = "jetbrains-toolbox" }, monitor = monitors.lenovo })

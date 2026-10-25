@@ -3,211 +3,243 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
-import Quickshell.Wayland
 import Quickshell.Widgets
 import qs.core
 import qs.core.components
 
+// Tray as a searchable list in the shared modal, like the launcher.
+// Enter activates, Ctrl+L (or right click) opens the item's menu, middle click is the secondary action.
 Scope {
     id: root
-    property bool opened: false
-    // the bar's tray button, set by Tray.qml; measured on every open since the bar reflows
-    property Item anchorItem: null
-    property real anchorX: 0
-    property var screen: null
+    readonly property alias opened: modal.opened
+    property string query: ""
     property int selected: 0
 
-    function show() {
-        ModalHost.current?.hide();
-        if (anchorItem) {
-            anchorX = anchorItem.mapToItem(null, anchorItem.width / 2, 0).x;
-            screen = anchorItem.QsWindow.window.screen;
-        }
-        selected = 0;
-        unmapTimer.stop();
-        panel.visible = true;
-        opened = true;
+    function itemName(it) {
+        return it.tooltipTitle || it.title || it.id || "";
     }
 
-    function hide() {
-        opened = false;
-        unmapTimer.restart();
+    function matches(it, q) {
+        return [it.title, it.tooltipTitle, it.id].some(s => s && String(s).toLowerCase().includes(q));
+    }
+
+    readonly property var results: {
+        const q = query.trim().toLowerCase();
+        const all = SystemTray.items.values.filter(it => !q || matches(it, q));
+        return all.sort((a, b) => itemName(a).localeCompare(itemName(b)));
     }
 
     function toggle() {
-        if (opened)
-            hide();
-        else
-            show();
+        if (opened) {
+            modal.hide();
+            return;
+        }
+        query = "";
+        selected = 0;
+        modal.show();
+        search.forceActiveFocus();
     }
 
-    Connections {
-        target: ModalHost
-        function onOpening() {
-            root.hide();
-        }
+    function show() {
+        if (!opened)
+            toggle();
     }
 
-    Timer {
-        id: unmapTimer
-        interval: Main.anim + 20
-        onTriggered: {
-            if (!root.opened)
-                panel.visible = false;
-        }
+    function hide() {
+        modal.hide();
     }
 
-    PanelWindow {
-        visible: root.opened
-        screen: root.screen
-        color: "transparent"
-        anchors {
-            top: true
-            bottom: true
-            left: true
-            right: true
-        }
-        exclusionMode: ExclusionMode.Ignore
-        WlrLayershell.layer: WlrLayer.Top
-        WlrLayershell.namespace: "quickshell-tray-backdrop"
-
-        MouseArea {
-            anchors.fill: parent
-            onClicked: root.hide()
-        }
+    function move(d) {
+        if (results.length > 0)
+            selected = Math.max(0, Math.min(results.length - 1, selected + d));
     }
 
-    PanelWindow {
-        id: panel
-        visible: false
-        screen: root.screen
-        color: "transparent"
-        anchors.top: true
-        anchors.left: true
-        exclusiveZone: 0
-        margins.top: 4
-        margins.left: Math.max(6, Math.min((screen?.width ?? 0) - implicitWidth - 6, root.anchorX - implicitWidth / 2))
-        WlrLayershell.layer: WlrLayer.Overlay
-        WlrLayershell.namespace: "quickshell-tray"
-        WlrLayershell.keyboardFocus: root.opened ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    function activate(i) {
+        const it = results[i];
+        if (!it)
+            return;
+        if (it.onlyMenu) {
+            openMenu(i);
+            return;
+        }
+        modal.hide();
+        it.activate();
+    }
 
-        readonly property int cols: Math.min(4, Math.max(1, SystemTray.items.values.length))
-        implicitWidth: grid.implicitWidth + 12
-        implicitHeight: grid.implicitHeight + 12
+    function openMenu(i) {
+        const it = results[i];
+        const win = search.QsWindow.window;
+        if (!it?.hasMenu || !win)
+            return;
+        const pos = search.mapToItem(null, 0, search.height + 16);
+        it.display(win, pos.x, pos.y);
+    }
+
+    onQueryChanged: selected = 0
+
+    Modal {
+        id: modal
+        maxWidth: 520
+        maxHeight: Math.min(420, 66 + Math.max(list.contentHeight, 46) + padding * 2)
+        padding: 16
+        bindings: [
+            { keys: "<Down>", desc: "next", run: () => root.move(1) },
+            { keys: "<Up>", desc: "previous", run: () => root.move(-1) },
+            { keys: "<C-j>", desc: "next", run: () => root.move(1) },
+            { keys: "<C-k>", desc: "previous", run: () => root.move(-1) },
+            { keys: "<C-n>", desc: "", run: () => root.move(1) },
+            { keys: "<C-p>", desc: "", run: () => root.move(-1) },
+            { keys: "<Tab>", desc: "", run: () => root.move(1) },
+            { keys: "<S-Tab>", desc: "", run: () => root.move(-1) },
+            { keys: "<C-l>", desc: "menu", run: () => root.openMenu(root.selected) },
+            { keys: "<CR>", desc: "activate", run: () => root.activate(root.selected) }
+        ]
 
         Rectangle {
-            anchors.fill: parent
+            id: field
+            width: parent.width
+            height: 46
             radius: Main.radius
-            color: Main.theme.colBg
-            focus: true
-            Keys.onPressed: event => vimKeys.handle(event)
-
-            VimKeys {
-                id: vimKeys
-                readonly property int count: SystemTray.items.values.length
-                function move(d) {
-                    if (count > 0)
-                        root.selected = Math.max(0, Math.min(count - 1, root.selected + d));
-                }
-                function current() {
-                    return SystemTray.items.values[root.selected];
-                }
-                bindings: [
-                    { keys: "h", desc: "left", run: () => move(-1) },
-                    { keys: "l", desc: "right", run: () => move(1) },
-                    { keys: "k", desc: "up", run: () => move(-panel.cols) },
-                    { keys: "j", desc: "down", run: () => move(panel.cols) },
-                    { keys: "<CR>", desc: "activate", run: () => cells.itemAt(root.selected)?.activate() },
-                    { keys: "o", desc: "", run: () => cells.itemAt(root.selected)?.activate() },
-                    { keys: "m", desc: "menu", run: () => cells.itemAt(root.selected)?.openMenu() },
-                    { keys: "q", desc: "close", run: () => root.hide() },
-                    { keys: "<Esc>", desc: "", run: () => root.hide() }
-                ]
-            }
+            color: Main.theme.colSurface
             border.color: Main.theme.colMuted
             border.width: 1
 
-            transformOrigin: Item.Top
-            scale: root.opened ? 1 : 0
-            opacity: root.opened ? 1 : 0
+            Text {
+                id: fieldIcon
+                anchors.left: parent.left
+                anchors.leftMargin: 12
+                anchors.verticalCenter: parent.verticalCenter
+                text: "\u{f003b}"
+                color: Main.theme.colAccentMid
+                font: Main.barFont
+            }
+            TextInput {
+                id: search
+                anchors.left: fieldIcon.right
+                anchors.leftMargin: 10
+                anchors.right: parent.right
+                anchors.rightMargin: 12
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.query
+                onTextEdited: root.query = text
+                color: Main.theme.colFg
+                selectionColor: Main.theme.colAccentDark
+                font.family: Main.fontFamily
+                font.pixelSize: 15
+                clip: true
+                Keys.onReturnPressed: root.activate(root.selected)
 
-            Behavior on scale {
-                NumberAnimation {
-                    duration: Main.anim
-                    easing.type: Easing.OutCubic
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    visible: !search.text
+                    text: "Search tray…"
+                    color: Main.theme.colAccentDark
+                    font: search.font
                 }
             }
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: Main.anim
-                }
+        }
+
+        ListView {
+            id: list
+            anchors.top: field.bottom
+            anchors.topMargin: 8
+            anchors.bottom: parent.bottom
+            width: parent.width
+            clip: true
+            spacing: 2
+            boundsBehavior: Flickable.StopAtBounds
+            currentIndex: root.selected
+            highlightMoveDuration: 0
+            model: ScriptModel {
+                values: root.opened ? root.results : []
             }
 
-            Grid {
-                id: grid
+            Text {
                 anchors.centerIn: parent
-                columns: panel.cols
-                spacing: 2
+                visible: list.count === 0
+                text: root.query ? "No matches" : "Nothing in the tray"
+                color: Main.theme.colAccentDark
+                font: Main.smallFont
+            }
 
-                Repeater {
-                    id: cells
-                    model: SystemTray.items
+            delegate: Rectangle {
+                id: row
+                required property var modelData
+                required property int index
+                readonly property bool current: index === root.selected
+                width: ListView.view.width
+                height: 46
+                radius: Main.radius
+                color: current ? Qt.rgba(Main.theme.colBlue.r, Main.theme.colBlue.g, Main.theme.colBlue.b, 0.16) : (rowMouse.containsMouse ? Main.theme.overlay(0.04) : "transparent")
 
-                    delegate: Rectangle {
-                        id: cell
-                        required property var modelData
-                        required property int index
-                        width: 28
-                        height: 28
-                        radius: Main.radius
-                        color: mouse.containsMouse ? Main.theme.colMuted : "transparent"
-                        border.color: root.selected === index ? Main.theme.colAccentMid : "transparent"
-                        border.width: 1
+                Rectangle {
+                    visible: row.current
+                    anchors.left: parent.left
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 3
+                    height: 26
+                    radius: 2
+                    color: Main.theme.colBlue
+                }
 
-                        function activate() {
-                            if (modelData.onlyMenu) {
-                                openMenu();
-                                return;
-                            }
-                            modelData.activate();
-                            root.hide();
-                        }
+                IconImage {
+                    id: rowIcon
+                    anchors.left: parent.left
+                    anchors.leftMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    implicitSize: 26
+                    source: row.modelData.icon
+                }
 
-                        function openMenu() {
-                            if (!modelData.hasMenu)
-                                return;
-                            const pos = cell.mapToItem(null, 0, cell.height);
-                            modelData.display(panel, pos.x, pos.y);
-                        }
+                Column {
+                    anchors.left: rowIcon.right
+                    anchors.leftMargin: 12
+                    anchors.right: tag.left
+                    anchors.rightMargin: 12
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: 0
+                    Text {
+                        width: parent.width
+                        text: root.itemName(row.modelData)
+                        color: Main.theme.colFg
+                        font.family: Main.fontFamily
+                        font.pixelSize: 14
+                        elide: Text.ElideRight
+                    }
+                    Text {
+                        width: parent.width
+                        visible: text !== ""
+                        text: row.modelData.tooltipDescription ?? ""
+                        color: Main.theme.colAccentMid
+                        font: Main.smallFont
+                        elide: Text.ElideRight
+                    }
+                }
 
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: Main.anim
-                            }
-                        }
+                Text {
+                    id: tag
+                    anchors.right: parent.right
+                    anchors.rightMargin: 14
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: row.modelData.onlyMenu ? "menu" : row.modelData.hasMenu ? "C-l menu" : ""
+                    color: row.current ? Main.theme.colBlue : Main.theme.colAccentDark
+                    font: Main.smallFont
+                }
 
-                        IconImage {
-                            anchors.centerIn: parent
-                            implicitSize: 16
-                            source: cell.modelData.icon
-                        }
-
-                        MouseArea {
-                            id: mouse
-                            anchors.fill: parent
-                            hoverEnabled: true
-                            cursorShape: Qt.PointingHandCursor
-                            acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
-                            onClicked: mouse => {
-                                root.selected = cell.index;
-                                if (mouse.button === Qt.MiddleButton)
-                                    cell.modelData.secondaryActivate();
-                                else if (mouse.button === Qt.RightButton)
-                                    cell.openMenu();
-                                else
-                                    cell.activate();
-                            }
-                        }
+                MouseArea {
+                    id: rowMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton | Qt.MiddleButton
+                    onClicked: mouse => {
+                        root.selected = row.index;
+                        if (mouse.button === Qt.MiddleButton)
+                            row.modelData.secondaryActivate();
+                        else if (mouse.button === Qt.RightButton)
+                            root.openMenu(row.index);
+                        else
+                            root.activate(row.index);
                     }
                 }
             }

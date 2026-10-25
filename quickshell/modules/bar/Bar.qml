@@ -82,7 +82,6 @@ Scope {
             Privacy {}
             AwakeIndicator {}
             Battery {}
-            Tray {}
             PowerMenu {}
         }
     }

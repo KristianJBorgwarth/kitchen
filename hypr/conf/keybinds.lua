@@ -94,6 +94,7 @@ bind(mod .. " + Tab", run("qs ipc call switcher toggle"), "Workspace switcher")
 bind(mod .. " + SHIFT + W", run("qs ipc call wallpaper toggle"), "Wallpaper picker")
 bind(mod .. " + Z", run("qs ipc call draw toggle"), "Draw on screen")
 bind(mod .. " + T", run("qs ipc call pomodoro toggle"), "Pomodoro")
+bind(mod .. " + S", run("qs ipc call tray toggle"), "System tray")
 bind(mod .. " + SHIFT + P", run("qs ipc call pomodoro startpause"), "Pomodoro start / pause")
 
 section = "Utilities"
