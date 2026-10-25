@@ -10,7 +10,7 @@ while IFS= read -r pkg; do
   sudo apt-get install -y "$pkg"
 done < "$PKGFILE"
 
-sudo apt-get install -y network-manager-gnome
+sudo apt-get install -y network-manager-gnome libnotify-bin
 
 # quickshell — not packaged for ubuntu, so build a pinned release (same version as arch).
 # needs Qt >= 6.9 (the config uses QtQuick.Effects' RectangularShadow): ubuntu 25.10+

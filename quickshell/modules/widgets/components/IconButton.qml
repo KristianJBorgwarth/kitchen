@@ -17,7 +17,7 @@ Rectangle {
 
     implicitWidth: 36
     implicitHeight: 36
-    radius: 4
+    radius: Main.radius
     color: armed ? armedColor : (mouse.containsMouse ? Main.theme.colMuted : "transparent")
 
     Behavior on color {

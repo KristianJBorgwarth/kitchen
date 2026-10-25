@@ -5,10 +5,8 @@ import Quickshell.Widgets
 import qs.core
 import qs.services
 
-// A workspace in miniature: the wallpaper with each window captured where it sits, scaled to
-// this item's width (Hyprland captures single windows, hidden workspaces included). Windows
-// without a capture show their icon. With `dragLayer` set, windows can be dragged out: the
-// tile lifts into that item and `windowDropped` reports where it was let go.
+// A workspace in miniature: wallpaper plus a live capture of each window. With `dragLayer`
+// set, windows can be dragged out and `windowDropped` reports where.
 Item {
     id: root
     // a workspace from Windows.workspaces
@@ -35,7 +33,6 @@ Item {
         anchors.fill: parent
         visible: root.wallpaper
         source: Wallpaper.url
-        // decoded at the size it's shown, rounded up so resizing doesn't reload it constantly
         sourceSize.width: Math.max(320, Math.ceil(root.width / 320) * 320)
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
@@ -54,8 +51,7 @@ Item {
 
     Repeater {
         id: tiles
-        // keyed by window, so a refresh (a title change…) keeps the running captures.
-        // Tiled under floating under fullscreen, like on screen
+        // keyed, so a refresh keeps the captures running
         model: ScriptModel {
             objectProp: "id"
             values: root.ws.windows.slice().sort((a, b) => (a.floating - b.floating) || (a.fullscreen - b.fullscreen))
@@ -64,7 +60,6 @@ Item {
         Item {
             id: slot
             required property var modelData
-            // whole pixels: a capture drawn at a fractional position is resampled once more
             x: Math.round(modelData.rect.x * root.s)
             y: Math.round(modelData.rect.y * root.s)
             width: Math.round(modelData.rect.width * root.s)
@@ -74,21 +69,18 @@ Item {
                 view.captureFrame();
             }
 
-            // the part that lifts out while dragging; `slot` keeps the place
             ClippingRectangle {
                 id: tile
                 width: slot.width
                 height: slot.height
-                radius: Main.radius
+                radius: Math.max(1, Main.radius * root.s)
                 color: Main.theme.colSurface
                 border.color: Main.theme.overlay(0.08)
                 border.width: 1
                 opacity: dragArea.drag.active ? 0.85 : 1
                 scale: dragArea.drag.active ? 1.06 : 1
 
-                // The view samples its texture linearly with no mipmaps, so shrunk straight to
-                // tile size, text turns to noise. Instead it sits hidden at the window's own
-                // size, and shaders/downsample.frag scales its mipmapped texture down
+                // captured at full size, scaled down by shaders/downsample.frag
                 readonly property size src: view.sourceSize.width > 0 ? view.sourceSize : Qt.size(Math.max(1, slot.width), Math.max(1, slot.height))
 
                 ScreencopyView {
@@ -149,7 +141,6 @@ Item {
                 cursorShape: drag.active ? Qt.ClosedHandCursor : Qt.PointingHandCursor
                 drag.target: tile
                 drag.threshold: 6
-                // set once a drag starts, so the release isn't taken as a click
                 property bool dragged: false
                 readonly property bool dragging: drag.active
 

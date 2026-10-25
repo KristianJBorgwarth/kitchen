@@ -97,7 +97,7 @@ Scope {
 
         Rectangle {
             anchors.fill: parent
-            radius: 4
+            radius: Main.radius
             color: Main.theme.colBg
             focus: true
             Keys.onPressed: event => vimKeys.handle(event)
@@ -159,7 +159,7 @@ Scope {
                         required property int index
                         width: 28
                         height: 28
-                        radius: 4
+                        radius: Main.radius
                         color: mouse.containsMouse ? Main.theme.colMuted : "transparent"
                         border.color: root.selected === index ? Main.theme.colAccentMid : "transparent"
                         border.width: 1

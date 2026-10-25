@@ -4,6 +4,7 @@
 require("conf/vars")
 require("conf/input")
 require("conf/appearance")
+require("conf/animations")
 require("conf/colors")
 require("conf/workspaces")
 require("conf/keybinds")

@@ -15,7 +15,7 @@ done < "$PKGFILE"
 
 sudo pacman -S --needed --noconfirm base-devel
 sudo pacman -S --needed --noconfirm openssh
-sudo pacman -S --needed --noconfirm network-manager-applet
+sudo pacman -S --needed --noconfirm network-manager-applet libnotify
 sudo pacman -S --needed --noconfirm papirus-icon-theme nwg-look qt5ct qt6ct
 sudo pacman -S --needed --noconfirm xorg-xwayland
 sudo pacman -S --needed --noconfirm aspnet-targeting-pack

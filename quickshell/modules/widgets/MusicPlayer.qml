@@ -511,7 +511,7 @@ Scope {
                                     y: -height - 6
                                     width: hoverTime.implicitWidth + 12
                                     height: 20
-                                    radius: 4
+                                    radius: Main.radius
                                     color: Main.theme.colFg
                                     Text {
                                         id: hoverTime

@@ -1,7 +1,6 @@
--- Monitors are matched by description ("make model serial"), which survives port changes.
 -- A workspace whose monitor is missing opens on another.
-local lenovo = "desc:Lenovo Group Limited G27q-30 UMB5TWAZ"
-local msi = "desc:Microstep MSI MP271 PA2T191107364"
+local monitors = require("conf/vars").monitors
+local lenovo, msi = monitors.lenovo, monitors.msi
 
 -- kanshi (autostart) sets the actual layout; this is only the fallback
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })

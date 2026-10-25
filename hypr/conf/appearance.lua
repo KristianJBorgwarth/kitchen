@@ -1,4 +1,5 @@
 -- window border colors come from the quickshell palette: conf/colors.lua (generated)
+local monitors = require("conf/vars").monitors
 
 hl.config({
     general = {
@@ -8,14 +9,12 @@ hl.config({
         layout = "dwindle",
     },
 
-    -- plain and flat
+    -- same radius as quickshell's Main.radius
     decoration = {
-        rounding = 0,
+        rounding = 8,
         shadow = { enabled = false },
         blur = { enabled = false },
     },
-
-    animations = { enabled = false },
 
     dwindle = { preserve_split = true },
 
@@ -23,6 +22,8 @@ hl.config({
     binds = { workspace_back_and_forth = true },
 
     misc = {
+        -- reload with mod+shift+b only: autoreload fires mid-save and breaks the requires
+        disable_autoreload = true,
         force_default_wallpaper = 0,
         disable_hyprland_logo = true,
     },
@@ -45,3 +46,11 @@ hl.window_rule({
 })
 
 hl.window_rule({ match = { class = "code-oss" }, opacity = "0.85" })
+
+-- Toolbox places itself off-screen; put it under the tray
+hl.window_rule({
+    match = { class = "jetbrains-toolbox" },
+    float = true,
+    monitor = monitors.lenovo,
+    move = "(monitor_w-window_w-8) 42",
+})

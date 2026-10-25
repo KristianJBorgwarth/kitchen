@@ -7,4 +7,8 @@ return {
     screenshot = "qs ipc call screenshot start",
     filemanager = "thunar",
     clipboard = "qs ipc call clipboard toggle",
+    monitors = {
+        lenovo = "desc:Lenovo Group Limited G27q-30 UMB5TWAZ",
+        msi = "desc:Microstep MSI MP271 PA2T191107364",
+    },
 }

@@ -240,7 +240,6 @@ Scope {
             spacing: 28
 
             readonly property real slotW: width * 0.66 * root.previewScale
-            // keyed, so a refresh keeps the cards and their running captures
             model: ScriptModel {
                 objectProp: "name"
                 values: root.opened && root.view === "carousel" ? root.spaces : []
@@ -373,8 +372,7 @@ Scope {
                 }
                 return out;
             }
-            // one scale for every monitor, the largest that fits them all, so cells keep the
-            // monitors' real proportions (a portrait monitor's are narrow and tall)
+            // one scale for all monitors, so cells keep real proportions
             readonly property real k: {
                 if (groups.length === 0)
                     return 0;
@@ -450,7 +448,6 @@ Scope {
                                     border.color: target ? Main.theme.colGreen : current ? Main.theme.colBlue : Main.theme.overlay(0.14)
                                     border.width: current || target ? 2 : 1
 
-                                    // under the windows: a click on the wallpaper goes to the workspace
                                     MouseArea {
                                         anchors.fill: parent
                                         cursorShape: Qt.PointingHandCursor
