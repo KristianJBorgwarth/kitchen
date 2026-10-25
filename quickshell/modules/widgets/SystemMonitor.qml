@@ -84,14 +84,13 @@ Scope {
         maxHeight: 840
         padding: Main.pad
 
+        headerLeft: Text {
+            anchors.verticalCenter: parent.verticalCenter
+            text: [Monitor.distro, Monitor.kernel, "up " + Monitor.uptime, "load " + Monitor.load.map(l => l.toFixed(2)).join(" "), Monitor.procCount + " procs"].filter(s => s).join("  ·  ")
+            color: Main.theme.colAccentDark
+            font: Main.smallFont
+        }
         actions: [
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                rightPadding: 8
-                text: [Monitor.distro, Monitor.kernel, "up " + Monitor.uptime, "load " + Monitor.load.map(l => l.toFixed(2)).join(" "), Monitor.procCount + " procs"].filter(s => s).join("  ·  ")
-                color: Main.theme.colAccentDark
-                font: Main.smallFont
-            },
             Chip {
                 anchors.verticalCenter: parent.verticalCenter
                 text: Monitor.paused ? "󰐊  paused" : "󰏤  live"

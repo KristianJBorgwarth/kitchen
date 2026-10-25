@@ -8,10 +8,7 @@ Singleton {
     id: root
     property Theme theme: Theme {}
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
-    // how long UI motion takes (open/close, dim, hovers); data smoothing has its own timings
     readonly property int anim: 50
-    // corner radius for everything boxy: cards, islands, chips, buttons, popups. Hyprland
-    // rounds windows the same (decoration.rounding in hypr/conf/appearance.lua)
     readonly property int radius: 8
 
     property font barFont: Qt.font({
@@ -19,7 +16,6 @@ Singleton {
         pixelSize: 13
     })
 
-    // the bar's own text, a size up from barFont (which most popups use)
     property font pillFont: Qt.font({
         family: root.fontFamily,
         pixelSize: 14
@@ -35,7 +31,6 @@ Singleton {
         pixelSize: 11
     })
 
-    // panel type scale: smallFont, barFont, then these
     property font titleFont: Qt.font({
         family: root.fontFamily,
         pixelSize: 15,

@@ -25,12 +25,6 @@ Scope {
 
     onPlayerChanged: if (!player && opened) hide()
 
-    readonly property string lyricsKey: opened ? [player?.trackArtist, player?.trackTitle, Lyrics.enabled].join("|") : ""
-    onLyricsKeyChanged: {
-        if (opened && player)
-            Lyrics.load(player.trackTitle ?? "", player.trackArtist ?? "", player.trackAlbum ?? "", player.length ?? 0);
-    }
-
     function show() {
         if (player)
             modal.show();
@@ -93,9 +87,9 @@ Scope {
             player.volume = Math.max(0, Math.min(1, player.volume + d));
     }
 
-    // MPRIS doesn't push position updates; poke it often enough for synced lyrics
+    // MPRIS doesn't push position updates; poke it for the progress bar
     Timer {
-        interval: 250
+        interval: 1000
         running: root.opened && root.playing
         repeat: true
         onTriggered: root.player.positionChanged()
@@ -105,8 +99,9 @@ Scope {
         id: modal
         framed: true
         maxWidth: 1100
-        maxHeight: 680
-        padding: Main.pad
+        maxHeight: 620
+        // roomier than other panels, so the cover and text don't crowd the edges
+        padding: 36
 
         actions: [
             Repeater {
@@ -119,14 +114,6 @@ Scope {
                     clickable: true
                     onClicked: root.selected = modelData
                 }
-            },
-            // opt-in: it sends artist/title to lrclib.net
-            Chip {
-                anchors.verticalCenter: parent.verticalCenter
-                text: "󰎈  Lyrics"
-                active: Lyrics.enabled
-                clickable: true
-                onClicked: Lyrics.setEnabled(!Lyrics.enabled)
             },
             IconButton {
                 anchors.verticalCenter: parent.verticalCenter
@@ -157,7 +144,6 @@ Scope {
             { keys: "m", desc: "mute", run: () => root.toggleMute() },
             { keys: "s", desc: "shuffle", run: () => { if (root.player?.shuffleSupported) root.player.shuffle = !root.player.shuffle; } },
             { keys: "r", desc: "repeat mode", run: () => root.cycleLoop() },
-            { keys: "t", desc: "lyrics", run: () => Lyrics.setEnabled(!Lyrics.enabled) },
             { keys: "gt", desc: "next player", run: () => root.cyclePlayer(1) },
             { keys: "gT", desc: "previous player", run: () => root.cyclePlayer(-1) },
             { keys: "o", desc: "open app", run: () => { if (root.player?.canRaise) { root.player.raise(); root.hide(); } } }
@@ -224,12 +210,12 @@ Scope {
                 anchors.bottomMargin: 20
                 width: parent.width
 
-                readonly property real coverSize: Math.min(height, 380)
+                readonly property real coverSize: Math.min(height, 340)
 
                 ClippingRectangle {
                     id: cover
                     anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
+                    anchors.top: parent.top
                     width: main.coverSize
                     height: main.coverSize
                     radius: Main.radius
@@ -282,8 +268,9 @@ Scope {
                     anchors.left: parent.left
                     anchors.leftMargin: main.coverSize + 40
                     anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+                    // the text and controls span exactly the cover's height
+                    anchors.top: cover.top
+                    anchors.bottom: cover.bottom
 
                     Column {
                         id: titleBlock
@@ -334,71 +321,6 @@ Scope {
                                     required property var modelData
                                     implicitHeight: 22
                                     text: String(modelData)
-                                }
-                            }
-                        }
-                    }
-
-                    Item {
-                        id: lyricsBox
-                        anchors.top: titleBlock.bottom
-                        anchors.topMargin: 16
-                        anchors.bottom: controls.top
-                        anchors.bottomMargin: 16
-                        width: parent.width
-                        clip: true
-
-                        readonly property int current: {
-                            if (Lyrics.status !== "synced")
-                                return -1;
-                            const pos = (root.player?.position ?? 0) + 0.3;
-                            let i = -1;
-                            for (let j = 0; j < Lyrics.lines.length && Lyrics.lines[j].time <= pos; j++)
-                                i = j;
-                            return i;
-                        }
-
-                        Text {
-                            anchors.verticalCenter: parent.verticalCenter
-                            visible: Lyrics.status !== "synced" && Lyrics.status !== "plain"
-                            text: ({
-                                    off: "Press t or the Lyrics button for synced lyrics",
-                                    loading: "Looking up lyrics…",
-                                    none: "No lyrics found for this track"
-                                })[Lyrics.status] ?? ""
-                            color: Main.theme.colAccentDark
-                            font: Main.barFont
-                        }
-
-                        ListView {
-                            id: lyricsView
-                            anchors.fill: parent
-                            visible: Lyrics.status === "synced" || Lyrics.status === "plain"
-                            model: Lyrics.lines
-                            interactive: Lyrics.status === "plain"
-                            currentIndex: Math.max(0, lyricsBox.current)
-                            highlightRangeMode: Lyrics.status === "synced" ? ListView.StrictlyEnforceRange : ListView.NoHighlightRange
-                            preferredHighlightBegin: height / 2 - 14
-                            preferredHighlightEnd: height / 2 + 14
-                            highlightMoveDuration: Main.anim * 2
-                            spacing: 4
-
-                            delegate: Text {
-                                required property var modelData
-                                required property int index
-                                readonly property bool active: index === lyricsBox.current
-                                width: lyricsView.width
-                                text: modelData.text || "♪"
-                                color: active || Lyrics.status === "plain" ? Main.theme.colFg : Main.theme.colAccentDark
-                                font.family: Main.fontFamily
-                                font.pixelSize: active ? 18 : 15
-                                font.weight: active ? Font.DemiBold : Font.Normal
-                                wrapMode: Text.Wrap
-
-                                Behavior on font.pixelSize {
-                                    NumberAnimation {
-                                        duration: Main.anim
-                                    }
                                 }
                             }
                         }
