@@ -34,4 +34,25 @@ Singleton {
         family: root.fontFamily,
         pixelSize: 11
     })
+
+    // panel type scale: smallFont, barFont, then these
+    property font titleFont: Qt.font({
+        family: root.fontFamily,
+        pixelSize: 15,
+        weight: Font.DemiBold
+    })
+    property font displayFont: Qt.font({
+        family: root.fontFamily,
+        pixelSize: 26,
+        weight: Font.Light
+    })
+    property font heroFont: Qt.font({
+        family: root.fontFamily,
+        pixelSize: 48,
+        weight: Font.Light
+    })
+
+    // panel spacing
+    readonly property int pad: 20
+    readonly property int gap: 12
 }

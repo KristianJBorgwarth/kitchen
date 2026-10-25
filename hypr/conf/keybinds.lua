@@ -59,7 +59,17 @@ bind(mod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10 }), "Move window
 
 section = "Layout"
 bind(mod .. " + F", hl.dsp.window.fullscreen({ mode = "fullscreen" }), "Fullscreen")
-bind(mod .. " + SHIFT + space", hl.dsp.window.float({ action = "toggle" }), "Toggle floating")
+-- a floated window gets 60% x 65% of the monitor, centered, instead of its tiled size
+local function toggle_float()
+  hl.dispatch(hl.dsp.window.float({ action = "toggle" }))
+  local w, m = hl.get_active_window(), hl.get_active_monitor()
+  if not (w and w.floating and m) then return end
+  local mw, mh = m.width / m.scale, m.height / m.scale
+  if m.transform % 2 == 1 then mw, mh = mh, mw end
+  hl.dispatch(hl.dsp.window.resize({ x = math.floor(mw * 0.6), y = math.floor(mh * 0.65) }))
+  hl.dispatch(hl.dsp.window.center())
+end
+bind(mod .. " + SHIFT + space", toggle_float, "Toggle floating")
 
 section = "Scratchpad"
 bind(mod .. " + SHIFT + minus", hl.dsp.window.move({ workspace = "special:scratchpad" }), "Send to scratchpad")

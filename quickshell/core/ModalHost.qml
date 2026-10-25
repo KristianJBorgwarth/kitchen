@@ -37,7 +37,7 @@ PanelWindow {
     }
     exclusionMode: ExclusionMode.Ignore
     mask: Region {
-        item: root.active ? backdrop : null
+        item: !root.active ? null : root.current.blocking ? backdrop : root.current.card
     }
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.namespace: "quickshell-modal"
@@ -47,7 +47,7 @@ PanelWindow {
         id: backdrop
         anchors.fill: parent
         color: "black"
-        opacity: root.active ? root.current.dim : 0
+        opacity: root.active && root.current.blocking ? root.current.dim : 0
 
         Behavior on opacity {
             NumberAnimation {

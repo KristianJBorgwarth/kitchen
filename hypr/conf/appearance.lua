@@ -24,6 +24,8 @@ hl.config({
     misc = {
         -- reload with mod+shift+b only: autoreload fires mid-save and breaks the requires
         disable_autoreload = true,
+        -- a restarted quickshell can take over the lock if the old one died
+        allow_session_lock_restore = true,
         force_default_wallpaper = 0,
         disable_hyprland_logo = true,
     },

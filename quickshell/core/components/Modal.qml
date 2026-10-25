@@ -14,7 +14,14 @@ Item {
     property real radius: Main.radius
     property bool frameless: false  // no card fill or border; content floats on the backdrop
     property real dim: 0.5  // backdrop opacity while this modal is open
+    // false: no dim and the mouse stays free outside it; it still takes the keyboard
+    property bool blocking: true
     property var bindings: []
+    // set a title for the shared frame: header (glyph, title, `actions`, close) and key hints
+    property string title: ""
+    property string glyph: ""
+    property alias actions: actionRow.data
+    readonly property bool framed: title !== ""
 
     default property alias content: body.data
     property alias background: backgroundSlot.data
@@ -58,7 +65,7 @@ Item {
         height: Math.min(root.maxHeight, root.height - 64)
         radius: root.radius
         color: root.frameless ? "transparent" : Main.theme.colBg
-        border.color: Main.theme.colMuted
+        border.color: Main.theme.overlay(0.08)
         border.width: root.frameless ? 0 : 1
 
         scale: root.opened ? 1 : 0.96
@@ -87,9 +94,73 @@ Item {
         }
 
         Item {
+            id: header
+            visible: root.framed
+            x: root.padding
+            y: root.padding
+            width: parent.width - root.padding * 2
+            height: 28
+
+            Text {
+                id: headerGlyph
+                anchors.verticalCenter: parent.verticalCenter
+                visible: root.glyph !== ""
+                text: root.glyph
+                color: Main.theme.colAccentMid
+                font: Main.iconFont
+            }
+            Text {
+                anchors.left: headerGlyph.visible ? headerGlyph.right : parent.left
+                anchors.leftMargin: headerGlyph.visible ? 10 : 0
+                anchors.right: actionRow.left
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.title
+                color: Main.theme.colFg
+                font: Main.titleFont
+                elide: Text.ElideRight
+            }
+            Row {
+                id: actionRow
+                anchors.right: closeButton.left
+                anchors.rightMargin: 8
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 8
+            }
+            Text {
+                id: closeButton
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                text: "󰅖"
+                color: closeMouse.containsMouse ? Main.theme.colFg : Main.theme.colAccentDark
+                font: Main.iconFont
+                MouseArea {
+                    id: closeMouse
+                    anchors.fill: parent
+                    anchors.margins: -6
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.hide()
+                }
+            }
+        }
+
+        Text {
+            id: footer
+            visible: root.framed
+            x: root.padding
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: root.padding - 4
+            text: "q close   ? keys"
+            color: Main.theme.colAccentDark
+            font: Main.smallFont
+        }
+
+        Item {
             id: body
             anchors.fill: parent
             anchors.margins: root.padding
+            anchors.topMargin: root.framed ? root.padding + header.height + Main.gap : root.padding
+            anchors.bottomMargin: root.framed ? root.padding + footer.implicitHeight + 8 : root.padding
             focus: true
             Keys.onPressed: event => keys.handle(event)
             Keys.onReleased: event => root.keyReleased(event)

@@ -103,9 +103,45 @@ Scope {
 
     Modal {
         id: modal
+        blocking: false
+        title: "Music"
+        glyph: "󰝚"
         maxWidth: 1100
-        maxHeight: 660
-        padding: 28
+        maxHeight: 680
+        padding: Main.pad
+
+        actions: [
+            Repeater {
+                model: root.players.length > 1 ? root.players : []
+                Chip {
+                    required property var modelData
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: (modelData.isPlaying ? "󰐊  " : "󰏤  ") + modelData.identity
+                    active: modelData === root.player
+                    clickable: true
+                    onClicked: root.selected = modelData
+                }
+            },
+            // opt-in: it sends artist/title to lrclib.net
+            Chip {
+                anchors.verticalCenter: parent.verticalCenter
+                text: "󰎈  Lyrics"
+                active: Lyrics.enabled
+                clickable: true
+                onClicked: Lyrics.setEnabled(!Lyrics.enabled)
+            },
+            IconButton {
+                anchors.verticalCenter: parent.verticalCenter
+                implicitWidth: 28
+                implicitHeight: 28
+                visible: root.player?.canRaise ?? false
+                icon: "󰏌"
+                onClicked: {
+                    root.player.raise();
+                    root.hide();
+                }
+            }
+        ]
         bindings: [
             { keys: "<Space>", desc: "play / pause", run: () => root.player?.togglePlaying() },
             { keys: "h", desc: "previous track", run: () => root.player?.previous() },
@@ -184,90 +220,13 @@ Scope {
             anchors.fill: parent
 
             Item {
-                id: header
-                width: parent.width
-                height: 32
-
-                Row {
-                    anchors.left: parent.left
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 6
-
-                    Repeater {
-                        model: root.players
-                        Chip {
-                            required property var modelData
-                            implicitHeight: 30
-                            padding: 12
-                            font: Main.barFont
-                            text: (modelData.isPlaying ? "󰐊  " : "󰏤  ") + modelData.identity
-                            active: modelData === root.player
-                            filled: true
-                            clickable: true
-                            onClicked: root.selected = modelData
-                        }
-                    }
-                }
-
-                Row {
-                    anchors.right: parent.right
-                    anchors.verticalCenter: parent.verticalCenter
-                    spacing: 4
-
-                    Text {
-                        anchors.verticalCenter: parent.verticalCenter
-                        rightPadding: 8
-                        text: "? keys"
-                        color: Main.theme.colAccentDark
-                        font: Main.smallFont
-                    }
-
-                    // lyrics toggle (opt-in: it sends artist/title to lrclib.net)
-                    Chip {
-                        anchors.verticalCenter: parent.verticalCenter
-                        implicitHeight: 30
-                        padding: 12
-                        font: Main.barFont
-                        text: "󰎈  Lyrics"
-                        active: Lyrics.enabled
-                        filled: true
-                        clickable: true
-                        onClicked: Lyrics.setEnabled(!Lyrics.enabled)
-                    }
-                    IconButton {
-                        anchors.verticalCenter: parent.verticalCenter
-                        visible: root.player?.canRaise ?? false
-                        icon: "󰏌"
-                        onClicked: {
-                            root.player.raise();
-                            root.hide();
-                        }
-                    }
-                    IconButton {
-                        anchors.verticalCenter: parent.verticalCenter
-                        icon: "󰅖"
-                        onClicked: root.hide()
-                    }
-                }
-            }
-
-            Item {
                 id: main
-                anchors.top: header.bottom
-                anchors.topMargin: 24
+                anchors.top: parent.top
                 anchors.bottom: spectrum.top
                 anchors.bottomMargin: 20
                 width: parent.width
 
                 readonly property real coverSize: Math.min(height, 380)
-
-                RectangularShadow {
-                    anchors.fill: cover
-                    radius: cover.radius
-                    blur: 32
-                    offset.y: 10
-                    color: Qt.rgba(0, 0, 0, 0.7)
-                }
 
                 ClippingRectangle {
                     id: cover
@@ -299,8 +258,7 @@ Scope {
                                 anchors.horizontalCenter: parent.horizontalCenter
                                 text: "󰎈"
                                 color: Main.theme.colAccentLight
-                                font.family: Main.fontFamily
-                                font.pixelSize: 96
+                                font: Main.heroFont
                             }
                             Text {
                                 anchors.horizontalCenter: parent.horizontalCenter
@@ -338,9 +296,7 @@ Scope {
                             width: parent.width
                             text: root.player?.trackTitle || root.player?.identity || ""
                             color: Main.theme.colFg
-                            font.family: Main.fontFamily
-                            font.pixelSize: 30
-                            font.weight: Font.DemiBold
+                            font: Main.displayFont
                             wrapMode: Text.Wrap
                             maximumLineCount: 2
                             elide: Text.ElideRight
@@ -351,7 +307,7 @@ Scope {
                             text: root.player?.trackArtist ?? ""
                             color: Main.theme.colAccentLight
                             font.family: Main.fontFamily
-                            font.pixelSize: 17
+                            font.pixelSize: Main.titleFont.pixelSize
                             elide: Text.ElideRight
                         }
                         Text {
@@ -610,8 +566,7 @@ Scope {
                                         anchors.centerIn: parent
                                         text: root.playing ? "󰏤" : "󰐊"
                                         color: Main.theme.colBg
-                                        font.family: Main.fontFamily
-                                        font.pixelSize: 28
+                                        font: Main.displayFont
                                     }
                                     MouseArea {
                                         id: playMouse
