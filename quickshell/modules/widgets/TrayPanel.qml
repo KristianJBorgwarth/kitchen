@@ -80,6 +80,9 @@ Scope {
     Modal {
         id: modal
         maxWidth: 520
+        fromBottom: true
+        duration: 220
+        dim: 0.3
         maxHeight: Math.min(420, 66 + Math.max(list.contentHeight, 46) + padding * 2)
         padding: 16
         bindings: [
