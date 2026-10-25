@@ -4,7 +4,7 @@ local monitors = require("conf/vars").monitors
 hl.config({
     general = {
         gaps_in = 2,
-        gaps_out = 2,
+        gaps_out = 5,
         border_size = 2,
         layout = "dwindle",
     },
@@ -13,7 +13,13 @@ hl.config({
     decoration = {
         rounding = 8,
         shadow = { enabled = false },
-        blur = { enabled = false },
+        blur = {
+            enabled = true,
+            size = 6,
+            passes = 3,
+            new_optimizations = true,
+            ignore_opacity = true,
+        },
     },
 
     dwindle = { preserve_split = true },
