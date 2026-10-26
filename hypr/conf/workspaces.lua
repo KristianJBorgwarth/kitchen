@@ -1,8 +1,6 @@
--- A workspace whose monitor is missing opens on another.
 local monitors = require("conf/vars").monitors
 local lenovo, msi = monitors.lenovo, monitors.msi
 
--- kanshi (autostart) sets the actual layout; this is only the fallback
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1 })
 
 for _, ws in ipairs({ "1", "2", "3", "4", "5", "name:m" }) do
@@ -10,4 +8,11 @@ for _, ws in ipairs({ "1", "2", "3", "4", "5", "name:m" }) do
 end
 for _, ws in ipairs({ "6", "7", "8", "9", "name:d" }) do
     hl.workspace_rule({ workspace = ws, monitor = msi })
+end
+
+for _, ws in ipairs({ "1", "2", "3", "4", "5", "name:m" }) do
+    hl.workspace_rule({ workspace = ws, monitor = monitors.officeLeft })
+end
+for _, ws in ipairs({ "6", "7", "8", "9", "name:d" }) do
+    hl.workspace_rule({ workspace = ws, monitor = monitors.officeRight })
 end

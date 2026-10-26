@@ -1,4 +1,3 @@
--- shared by the other conf/ files
 return {
     mod = "SUPER",
     -- GTK 4.24 sends an empty blur region and Hyprland then skips blur (hyprwm/Hyprland#16508)
@@ -11,5 +10,7 @@ return {
     monitors = {
         lenovo = "desc:Lenovo Group Limited G27q-30 UMB5TWAZ",
         msi = "desc:Microstep MSI MP271 PA2T191107364",
+        officeLeft = "desc:HP Inc. HP 527pu CNC51706GJ",
+        officeRight = "desc:HP Inc. HP 527pu CNC5170681",
     },
 }
