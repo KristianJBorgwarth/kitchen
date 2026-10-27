@@ -23,7 +23,11 @@ Scope {
     readonly property bool busy: pam.active
     property string message: ""
 
+    // a no-op while locked: suspend() locks and then swayidle's before-sleep locks again,
+    // which would wipe a half-typed password and re-pick the main screen
     function lock(): void {
+        if (sessionLock.locked)
+            return;
         password = "";
         failed = false;
         message = "";

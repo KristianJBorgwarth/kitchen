@@ -117,9 +117,22 @@ Singleton {
         clickToFocus(false);
     }
 
+    // Quickshell tracks monitors from events, and a replug (Hyprland's FALLBACK monitor
+    // coming and going) leaves it out of sync, so re-read them once the outputs settle
+    Timer {
+        id: resync
+        interval: 500
+        onTriggered: {
+            Hyprland.refreshMonitors();
+            Hyprland.refreshWorkspaces();
+        }
+    }
+
     Connections {
         target: Hyprland
         function onRawEvent(event) {
+            if (event.name.startsWith("monitoradded") || event.name.startsWith("monitorremoved"))
+                resync.restart();
             root.hyprWindowEvent(event.name, event.data);
         }
     }

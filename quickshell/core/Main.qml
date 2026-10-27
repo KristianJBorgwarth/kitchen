@@ -10,6 +10,9 @@ Singleton {
     property string fontFamily: "JetBrainsMono Nerd Font Propo"
     readonly property int anim: 50
     readonly property int radius: 8
+    // the connected screens, without the nameless placeholder Qt stands in while there are
+    // none (mid unplug or undock); a window bound to that one is closed and never comes back
+    readonly property var screens: Quickshell.screens.filter(s => s.name !== "")
 
     property font barFont: Qt.font({
         family: root.fontFamily,
