@@ -9,10 +9,3 @@ end
 for _, ws in ipairs({ "6", "7", "8", "9", "name:d" }) do
     hl.workspace_rule({ workspace = ws, monitor = msi })
 end
-
-for _, ws in ipairs({ "1", "2", "3", "4", "5", "name:m" }) do
-    hl.workspace_rule({ workspace = ws, monitor = monitors.officeLeft })
-end
-for _, ws in ipairs({ "6", "7", "8", "9", "name:d" }) do
-    hl.workspace_rule({ workspace = ws, monitor = monitors.officeRight })
-end
