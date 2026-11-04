@@ -51,8 +51,8 @@ Item {
                 // null while the compositor doesn't have it: empty and not showing anywhere
                 readonly property var ws: Compositor.spaces.find(w => w.number === number) ?? null
                 readonly property bool focused: ws?.focused ?? false
-                // showing on the other monitor
-                readonly property bool isActive: ws?.active ?? false
+                // showing on the other monitor; an empty one stays a plain ring
+                readonly property bool isActive: (ws?.active ?? false) && hasContent
 
                 readonly property var apps: ws?.apps ?? []
                 readonly property bool hasContent: apps.length > 0
