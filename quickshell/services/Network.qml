@@ -35,7 +35,23 @@ Singleton {
         value: root.scanning && root.wifiEnabled
     }
 
+    function scan(): void {
+        scanning = true;
+        scanTimer.restart();
+    }
+
+    Timer {
+        id: scanTimer
+        interval: 10000
+        onTriggered: root.scanning = false
+    }
+
     function toggleWifi(): void {
         Networking.wifiEnabled = !Networking.wifiEnabled;
+    }
+
+    function toggleWired(): void {
+        if (wiredDevice)
+            Quickshell.execDetached(["nmcli", "device", wiredDevice.connected ? "disconnect" : "connect", wiredDevice.name]);
     }
 }

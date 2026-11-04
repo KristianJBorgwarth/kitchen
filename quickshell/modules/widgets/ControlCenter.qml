@@ -77,11 +77,6 @@ Scope {
         property: "wantSensors"
         value: root.opened
     }
-    Binding {
-        target: Network
-        property: "scanning"
-        value: root.opened && root.tab === "network"
-    }
 
     Modal {
         id: modal
@@ -98,6 +93,8 @@ Scope {
             { keys: "J", desc: "mic down", run: () => Audio.setVolume(Audio.source, (Audio.source?.audio?.volume ?? 0) - 0.05) },
             { keys: "M", desc: "mute mic", run: () => Audio.toggleMute(Audio.source) },
             { keys: "w", desc: "wi-fi", run: () => { if (Network.hasWifi) Network.toggleWifi(); } },
+            { keys: "e", desc: "ethernet", run: () => Network.toggleWired() },
+            { keys: "r", desc: "scan wi-fi", run: () => { if (Network.wifiEnabled) Network.scan(); } },
             { keys: "b", desc: "bluetooth", run: () => Bt.toggle() },
             { keys: "s", desc: "silent", run: () => Dnd.toggle() },
             { keys: "n", desc: "night light", run: () => NightLight.toggle() },
@@ -711,27 +708,38 @@ Scope {
                             width: parent.width
                             spacing: 12
 
-                            Row {
+                            Item {
                                 visible: Network.wiredDevice !== null
-                                spacing: 10
-                                Rectangle {
+                                width: parent.width
+                                height: 28
+                                Row {
                                     anchors.verticalCenter: parent.verticalCenter
-                                    width: 8
-                                    height: 8
-                                    radius: 4
-                                    color: Network.wiredDevice?.connected ? Main.theme.colFg : Main.theme.colMuted
+                                    spacing: 10
+                                    Rectangle {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        width: 8
+                                        height: 8
+                                        radius: 4
+                                        color: Network.wiredDevice?.connected ? Main.theme.colFg : Main.theme.colMuted
+                                    }
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: "󰈀  Ethernet"
+                                        color: Main.theme.colFg
+                                        font: Main.barFont
+                                    }
+                                    Text {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        text: Network.wiredDevice?.connected ? "Connected" + ((Network.wiredDevice?.linkSpeed ?? 0) > 0 ? " · " + (Network.wiredDevice.linkSpeed >= 1000 ? Network.wiredDevice.linkSpeed / 1000 + " Gb/s" : Network.wiredDevice.linkSpeed + " Mb/s") : "") : "Unplugged"
+                                        color: Main.theme.colAccentMid
+                                        font: Main.smallFont
+                                    }
                                 }
-                                Text {
+                                Switch {
+                                    anchors.right: parent.right
                                     anchors.verticalCenter: parent.verticalCenter
-                                    text: "󰈀  Ethernet"
-                                    color: Main.theme.colFg
-                                    font: Main.barFont
-                                }
-                                Text {
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    text: Network.wiredDevice?.connected ? "Connected" + ((Network.wiredDevice?.linkSpeed ?? 0) > 0 ? " · " + (Network.wiredDevice.linkSpeed >= 1000 ? Network.wiredDevice.linkSpeed / 1000 + " Gb/s" : Network.wiredDevice.linkSpeed + " Mb/s") : "") : "Unplugged"
-                                    color: Main.theme.colAccentMid
-                                    font: Main.smallFont
+                                    checked: Network.wiredDevice?.connected ?? false
+                                    onToggled: Network.toggleWired()
                                 }
                             }
 
@@ -751,10 +759,20 @@ Scope {
                                     spacing: 10
                                     Text {
                                         anchors.verticalCenter: parent.verticalCenter
-                                        visible: Network.wifiEnabled
+                                        visible: Network.scanning
                                         text: "scanning…"
                                         color: Main.theme.colAccentDark
                                         font: Main.smallFont
+                                    }
+                                    IconButton {
+                                        anchors.verticalCenter: parent.verticalCenter
+                                        visible: Network.wifiEnabled && !Network.scanning
+                                        implicitWidth: 28
+                                        implicitHeight: 28
+                                        icon: "󰑐"
+                                        iconFont: Main.barFont
+                                        tooltip: "Scan"
+                                        onClicked: Network.scan()
                                     }
                                     Switch {
                                         anchors.verticalCenter: parent.verticalCenter
