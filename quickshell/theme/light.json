@@ -3,29 +3,29 @@
 
     "bg": "#f4f1ea",
     "surface": "#ebe7de",
-    "fg": "#26241f",
+    "fg": "#1d1b17",
 
-    "muted": "#d6d1c6",
-    "dim": "#a8a296",
-    "mid": "#7c766b",
-    "light": "#4f4a42",
+    "muted": "#c9c3b6",
+    "dim": "#8a8477",
+    "mid": "#625d53",
+    "light": "#3f3b34",
 
     "overlay": "#000000",
 
-    "blue": "#3f6a94",
-    "violet": "#6a60a0",
-    "amber": "#a57a1e",
-    "green": "#5a7f2f",
-    "red": "#b8463f",
-    "teal": "#3c7f7f",
+    "blue": "#345c82",
+    "violet": "#5a5092",
+    "amber": "#85610f",
+    "green": "#4a6b22",
+    "red": "#a33a34",
+    "teal": "#2f6a6a",
 
     "terminal": {
         "background": "@bg",
         "foreground": "@fg",
-        "cursor": "#26241f",
+        "cursor": "#1d1b17",
         "ansi": [
-            "#5c6a72", "#f85552", "#8da101", "#dfa000", "#3a94c5", "#df69ba", "#35a77c", "#dfddc8",
-            "#829181", "#f85552", "#8da101", "#dfa000", "#3a94c5", "#df69ba", "#35a77c", "#5c6a72"
+            "#5c6a72", "#d03b39", "#5c7a00", "#a87400", "#2a73a3", "#b8448f", "#23845f", "#dfddc8",
+            "#6b7a6b", "#d03b39", "#5c7a00", "#a87400", "#2a73a3", "#b8448f", "#23845f", "#4a565d"
         ]
     }
 }
