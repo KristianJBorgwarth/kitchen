@@ -39,6 +39,7 @@ Scope {
             modal.hide();
             return;
         }
+        Wallpaper.rescan();
         query = "";
         selectedPath = Wallpaper.path;
         settled = false;

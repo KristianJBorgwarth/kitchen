@@ -20,7 +20,7 @@ launch(mod .. " + B", v.browser, "Browser")
 bind(mod .. " + SHIFT + S", run(v.screenshot), "Screenshot")
 bind("Print", run("qs ipc call screenshot screen"), "Screenshot whole screen")
 launch(mod .. " + SHIFT + Return", v.filemanager, "File manager")
-bind(mod .. " + SHIFT + B", run("hyprctl reload && notify-send -a Hyprland -t 1500 'Config reloaded'"), "Reload Hyprland")
+bind(mod .. " + SHIFT + B", run("hyprctl reload && qs ipc call shell reload && notify-send -a Hyprland -t 1500 'Config reloaded'"), "Reload Hyprland + Quickshell")
 bind(mod .. " + SHIFT + V", run(v.clipboard), "Clipboard history")
 
 -- mod + left button moves, mod + right button resizes

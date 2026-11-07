@@ -152,4 +152,12 @@ Scope {
             Osd.brightness(-0.05);
         }
     }
+
+    IpcHandler {
+        target: "shell"
+
+        function reload(): void {
+            Quickshell.reload(true);
+        }
+    }
 }

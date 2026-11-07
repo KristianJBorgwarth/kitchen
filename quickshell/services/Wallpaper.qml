@@ -46,8 +46,13 @@ Singleton {
         printErrors: false
     }
 
+    function rescan(): void {
+        scan.running = true;
+    }
+
     // the config is usually reached through a symlink, so resolve it to find the repo's assets
     Process {
+        id: scan
         running: true
         command: ["sh", "-c", "cd \"$(readlink -f \"$1\")/../assets/wallpaper\" 2>/dev/null && find \"$PWD\" -maxdepth 1 -type f \\( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \\) | sort", "sh", Quickshell.shellDir]
         stdout: StdioCollector {
