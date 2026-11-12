@@ -39,12 +39,12 @@ Singleton {
         Compositor.logout();
     }
     function suspend(): void {
-        Quickshell.execDetached(["systemctl", "suspend"]);
+        Quickshell.execDetached(["/usr/bin/systemctl", "suspend"]);
     }
     function reboot(): void {
-        Quickshell.execDetached(["systemctl", "reboot"]);
+        Quickshell.execDetached(["/usr/bin/systemctl", "reboot"]);
     }
     function poweroff(): void {
-        Quickshell.execDetached(["systemctl", "poweroff"]);
+        Quickshell.execDetached(["/usr/bin/systemctl", "poweroff"]);
     }
 }

@@ -104,7 +104,7 @@ Scope {
                     width: parent.width * Math.max(0, Math.min(1, root.value))
                     height: parent.height
                     radius: 3
-                    color: root.muted ? Main.theme.colAccentDark : root.kind === "brightness" ? Main.theme.colAmber : root.kind === "mic" ? Main.theme.colTeal : Main.theme.colGreen
+                    color: root.muted ? Main.theme.colAccentDark : root.kind === "brightness" ? Main.theme.colAmber : root.kind === "mic" ? Main.theme.colTeal : Main.theme.colFg
 
                     Behavior on width {
                         NumberAnimation {
