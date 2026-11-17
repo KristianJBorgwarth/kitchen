@@ -92,6 +92,15 @@ fi
 
 export PATH="$HOME/opt/go/bin:$HOME/go/bin:$PATH"
 
+# .NET SDKs side by side in ~/.dotnet: ubuntu/arch repos lag new majors and no PPA/AUR mixing.
+# rerunning picks up the latest patch of each channel
+DOTNET_CHANNELS="10.0 11.0"
+curl -sSfL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install.sh
+for channel in $DOTNET_CHANNELS; do
+    bash /tmp/dotnet-install.sh --channel "$channel" --install-dir "$HOME/.dotnet" --no-path
+done
+rm /tmp/dotnet-install.sh
+
 # k9s (can be installed with home_brew, but i don't want 6000 package managers)
 K9S_VERSION="v0.51.0"
 K9S_BIN="$HOME/.local/bin/k9s"
