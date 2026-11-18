@@ -5,6 +5,7 @@ alias zhr='source ~/.zshrc'
 alias pacu='sudo pacman -Syu'
 alias ubu='sudo apt update && sudo apt upgrade'
 alias lg='lazygit'
+alias za='z ~/vault/atlas'
 
 #git aliases
 alias ga='git add .'
