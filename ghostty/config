@@ -18,4 +18,4 @@ theme = light:kitchen-light.conf,dark:kitchen-dark.conf
 
 cursor-style = block
 # shell integration would switch it to a bar at the prompt
-shell-integration-features = no-cursor
+shell-integration-features = no-cursor,ssh-terminfo,ssh-env
